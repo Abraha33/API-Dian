@@ -1,4 +1,4 @@
-# FACTURA SAAS API - ROADMAP COMPLETO
+# ROADMAP COMPLETO - 50+ TICKETS
 
 ## FASE 0: FUNDACION (Semana 1-2)
 | Ticket | Tarea | Tech | Horas | Prioridad |
@@ -56,7 +56,7 @@
 | Ticket | Tarea | Tech | Horas | Prioridad |
 |--------|-------|------|-------|-----------|
 | T3.1.1 | Provider factory | IoC container | 4h | Media |
-| T3.1.2 | Segundo proveedor | Alegra API v2 | 6h | Media |
+| T3.1.2 | Segundo proveedor Alegra | Alegra API v2 | 6h | Media |
 | T3.1.3 | Circuit breaker | Auto-failover | 3h | Media |
 
 ## FASE 4: SAAS MONETIZABLE (Mes 9-12)
@@ -79,15 +79,3 @@
 | T5.2.1 | Sentry Enterprise | Sentry Pro | 3h | Baja |
 | T5.2.2 | Datadog APM | Datadog RUM | 4h | Baja |
 | T5.2.3 | Log draining | ClickHouse | 3h | Baja |
-
-## TECH STACK COMPLETO
-| Fase | Core | Database | Queue | Auth | Monitoring |
-|------|------|----------|-------|------|------------|
-| 0-2 | Next.js 15, Vercel | Supabase PG 16 | PGMQ 0.3 | Supabase JWT | GitHub Actions |
-| 3-4 | Stripe SDK, Resend | PG JSONB views | PGMQ + DLQ | API Keys RBAC | Vercel Analytics |
-| 5 | BullMQ, Hono Edge | PG + Redis | BullMQ Pro | JWT+SAML | Sentry + Datadog |
-
-## TIMELINE
-- MVP VENDIBLE: Sprint 1.4 - Mes 2
-- SAAS PROFESIONAL: Sprint 4.1 - Mes 9
-- ENTERPRISE READY: Sprint 5.2 - Mes 14
