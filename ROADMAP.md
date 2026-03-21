@@ -1,6 +1,19 @@
 # ROADMAP COMPLETO - 50+ TICKETS
 
+**Primer desafio (antes de implementar):** el ticket **T0.0.1** fija el **tech stack** de forma explicita. Nada de Fase 0.1 en adelante deberia asumir tecnologias distintas a las acordadas en [ADR-001](./ADR/ADR-001-stack-tecnologico.md). Lo que aparece hoy en README como stack es **hipotesis de partida**.
+
 ## FASE 0: FUNDACION (Semana 1-2)
+
+### 0.0 — Stack (primer ticket)
+
+| Ticket | Tarea | Tech | Horas | Prioridad |
+|--------|-------|------|-------|-----------|
+| **T0.0.1** | **Definicion tech stack (decision + riesgos + ADR-001)** | Doc / revision | 4-8h | **Alta** |
+
+**Alcance T0.0.1:** documentar en [ADR/ADR-001-stack-tecnologico.md](./ADR/ADR-001-stack-tecnologico.md) runtime, DB, hosting, cola/async, CI, integracion Factus y observabilidad minima; comparar 1 alternativa real por eje critico; actualizar README §10 como fuente alineada al ADR.
+
+### 0.1 — Repo y base (tras T0.0.1)
+
 | Ticket | Tarea | Tech | Horas | Prioridad |
 |--------|-------|------|-------|-----------|
 | T0.1.1 | GitHub repo setup | GitHub Actions | 1h | Alta |

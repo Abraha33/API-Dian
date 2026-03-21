@@ -2,22 +2,24 @@
 
 API SaaS **multi-tenant** para facturacion electronica **DIAN Colombia**. Middleware entre sistemas de facturacion de empresas y la DIAN via proveedor **Factus**.
 
+**Stack (hipotesis hasta cerrar ticket T0.0.1):** Next.js 15 · Supabase (PostgreSQL) · Zod · Vercel · Factus API. La **primera tarea** del roadmap es **definir y congelar** el stack en [ADR-001](./ADR/ADR-001-stack-tecnologico.md) — ver [ROADMAP.md](./ROADMAP.md) **T0.0.1**.
+
 ---
 
 ## INDICE
 
-1. [Tech stack confirmado](#1-tech-stack-confirmado)
-2. [Que es este proyecto](#2-que-es-este-proyecto)
-3. [Como leer el tablero Projects](#3-como-leer-el-tablero-projects)
-4. [Como operar el tablero dia a dia](#4-como-operar-el-tablero-dia-a-dia)
-   - [4.2 Fork vs ramas Git y flujo main / dev](#42-fork-vs-ramas-git-y-flujo-main--dev)
-   - [4.3 Roles de desarrollo](#43-roles-de-desarrollo)
-5. [Sistema de Labels](#5-sistema-de-labels)
-6. [Sistema de Milestones](#6-sistema-de-milestones)
-7. [Como leer un Issue](#7-como-leer-un-issue)
-8. [Flujo de trabajo semanal](#8-flujo-de-trabajo-semanal)
-9. [Reglas del proyecto](#9-reglas-del-proyecto)
-10. [Arquitectura del sistema](#10-arquitectura-del-sistema)
+1. [Que es este proyecto](#1-que-es-este-proyecto)
+2. [Como leer el tablero Projects](#2-como-leer-el-tablero-projects)
+3. [Como operar el tablero dia a dia](#3-como-operar-el-tablero-dia-a-dia)
+   - [3.2 Fork vs ramas Git y flujo main / dev](#32-fork-vs-ramas-git-y-flujo-main--dev)
+   - [3.3 Roles de desarrollo](#33-roles-de-desarrollo)
+4. [Sistema de Labels](#4-sistema-de-labels)
+5. [Sistema de Milestones](#5-sistema-de-milestones)
+6. [Como leer un Issue](#6-como-leer-un-issue)
+7. [Flujo de trabajo semanal](#7-flujo-de-trabajo-semanal)
+8. [Reglas del proyecto](#8-reglas-del-proyecto)
+9. [Arquitectura del sistema](#9-arquitectura-del-sistema)
+10. [Tech Stack (objetivo / ADR)](#10-tech-stack-objetivo--adr)
 11. [Decisiones tecnicas pendientes](#11-decisiones-tecnicas-pendientes)
 12. [Estrategia de construccion](#12-estrategia-de-construccion)
 13. [Estructura de carpetas](#13-estructura-de-carpetas)
@@ -27,44 +29,7 @@ API SaaS **multi-tenant** para facturacion electronica **DIAN Colombia**. Middle
 
 ---
 
-## 1. Tech stack confirmado
-
-Stack fijo para el MVP y la evolucion planificada en [ROADMAP.md](./ROADMAP.md).
-
-### 1.1 Plataforma y lenguaje
-
-| Capa | Eleccion |
-|------|----------|
-| **Framework** | Next.js 15 (App Router) |
-| **Lenguaje** | TypeScript 5.x |
-| **Validacion** | Zod |
-| **Runtime CI / local** | Node.js 20 (ver [.github/workflows/ci.yml](./.github/workflows/ci.yml)) |
-
-### 1.2 Datos, auth y hosting
-
-| Capa | Eleccion |
-|------|----------|
-| **Base de datos** | Supabase → PostgreSQL 16, **RLS** multi-tenant |
-| **Cola / async** | PGMQ + Edge Functions (Supabase / Deno) segun fases del roadmap |
-| **Hosting API / app** | Vercel |
-| **Proveedor fiscal** | Factus (envio documentos electronicos a **DIAN**) |
-
-### 1.3 Calidad, seguridad y operaciones
-
-| Capa | Eleccion |
-|------|----------|
-| **CI** | GitHub Actions |
-| **Tests** | Vitest, Playwright (segun tickets del roadmap) |
-| **HTTP cliente** | Axios (integraciones proveedor) |
-| **Secretos** | Variables en Vercel / Supabase; `.env` local (no commitear) |
-
-### 1.4 Roadmap tecnico (no bloquea MVP)
-
-Stripe, Redis / Upstash, segundo proveedor (ej. Alegra), BullMQ, observabilidad avanzada — ver [ROADMAP.md](./ROADMAP.md) fases 3–5.
-
----
-
-## 2. Que es este proyecto
+## 1. Que es este proyecto
 
 Es una **API de middleware** que conecta ERPs y sistemas de facturacion con la **DIAN** (Colombia) a traves de **Factus**.
 
@@ -88,7 +53,7 @@ Es una **API de middleware** que conecta ERPs y sistemas de facturacion con la *
 
 ---
 
-## 3. Como leer el tablero Projects
+## 2. Como leer el tablero Projects
 
 **Donde:** [github.com/Abraha33/projects](https://github.com/Abraha33/projects) — abre el Project que uses para **Factura SaaS / API-Dian** (en documentacion cruzada con ERP suele citarse el [Project 5](https://github.com/users/Abraha33/projects/5); **verifica el numero** en tu cuenta).
 
@@ -122,7 +87,7 @@ Tabla resumida en [docs/GITHUB_PROJECTS.md](./docs/GITHUB_PROJECTS.md#vistas-sug
 
 ---
 
-## 4. Como operar el tablero dia a dia
+## 3. Como operar el tablero dia a dia
 
 1. **Sprint:** De **Backlog** a **Ready** solo 5-7 tickets para ~2 semanas (no mezclar con Icebox salvo que promuevas la idea).
 2. **Trabajar:** **Una** tarjeta en **In progress** (WIP = 1).
@@ -130,13 +95,13 @@ Tabla resumida en [docs/GITHUB_PROJECTS.md](./docs/GITHUB_PROJECTS.md#vistas-sug
 4. **Cerrar:** Si pasa → **Done**; si no → vuelve a **In progress**.
 5. **Ideas** sin fecha → **Icebox**; trabajo en roadmap sin sprint → **Backlog**.
 
-### 4.1 Automatizacion CI (repo)
+### 3.1 Automatizacion CI (repo)
 
 El workflow [.github/workflows/ci.yml](./.github/workflows/ci.yml) corre en **push/PR a `main`**. Cuando el proyecto crezca, sustituye los `echo` por lint y tests reales; opcional: ampliar ramas a `dev`.
 
 *(Opcional futuro: un workflow tipo `daily-progress` que sincronice Projects con push/PR — como en ERP Satelite; aun no esta en este repo.)*
 
-### 4.2 Fork vs ramas Git y flujo main / dev
+### 3.2 Fork vs ramas Git y flujo main / dev
 
 En GitHub, **fork** es una **copia del repo** bajo otra cuenta u organizacion; **no** es una rama. Este proyecto vive en el canonico **[Abraha33/API-Dian](https://github.com/Abraha33/API-Dian)**; como solo dev **no necesitas fork** salvo experimentar aislado.
 
@@ -167,7 +132,7 @@ Tras merge, borra la rama de trabajo; al cerrar sprint/hito, integra **`dev`** �
 
 Mas detalle: [docs/git-branches.md](./docs/git-branches.md).
 
-### 4.3 Roles de desarrollo
+### 3.3 Roles de desarrollo
 
 Eres **un solo dev**; los labels **`role-*`** son *sombreros* para enfocar el dia en el tablero. **No** confundir con roles de producto en la aplicacion (admin de tenant, usuario API, etc.): eso es **RBAC en la app** y se documenta en specs / futuro `CURSOR_CONTEXT` si lo anades.
 
@@ -176,7 +141,7 @@ Eres **un solo dev**; los labels **`role-*`** son *sombreros* para enfocar el di
 1. Filtra por **un** `role-*` o abre una vista guardada ([docs/GITHUB_PROJECTS.md](./docs/GITHUB_PROJECTS.md#filtros-por-rol-vistas-por-rol)).
 2. Entre tickets **Ready** de ese rol, elige uno (prioriza P0 y dependencias).
 3. **Una** tarjeta en **In progress**.
-4. Rama desde **`dev`** (§4.2).
+4. Rama desde **`dev`** (§3.2).
 
 **Crear labels en el repo:** `python scripts/ensure_role_labels.py` (o `scripts/create-labels.ps1` en Windows). Requiere [GitHub CLI](https://cli.github.com/) y `gh auth login`.
 
@@ -184,7 +149,7 @@ Eres **un solo dev**; los labels **`role-*`** son *sombreros* para enfocar el di
 
 ---
 
-## 5. Sistema de Labels
+## 4. Sistema de Labels
 
 En **este repo** los labels usan **guion** (`role-backend`, `type-feature`). Es el mismo concepto que `role/frontend` o `tipo/feature` en el ERP; aqui se eligio guion para coincidir con las plantillas y scripts.
 
@@ -208,13 +173,13 @@ En **este repo** los labels usan **guion** (`role-backend`, `type-feature`). Es 
 
 ---
 
-## 6. Sistema de Milestones
+## 5. Sistema de Milestones
 
 Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 
 | Milestone sugerido | Contenido |
 |--------------------|-----------|
-| **Fase 0** | Fundacion (repo, Next, Supabase, CI, health). |
+| **Fase 0** | **Definicion stack (T0.0.1 + ADR-001)**, repo, Next, Supabase, CI, health. |
 | **Fase 1** | MVP funcional (auth, tenant, facturas, cola, Factus sandbox, E2E basico). |
 | **Fase 2** | Estabilidad (logs, api keys, rate limit, reintentos). |
 | **Fase 3** | Diferenciacion (multi-proveedor, circuit breaker). |
@@ -223,19 +188,20 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 
 ---
 
-## 7. Como leer un Issue
+## 6. Como leer un Issue
 
-- **Titulo:** prefijo claro (`[API]`, `[DB]`, `[Factus]`, …) o ID de ticket si unificas con ROADMAP (`T1.2.1`, etc.).
+- **Primer ticket del producto:** **T0.0.1** — definicion del tech stack y cierre de [ADR-001](./ADR/ADR-001-stack-tecnologico.md) (ver [ROADMAP](./ROADMAP.md)).
+- **Titulo:** prefijo claro (`[API]`, `[DB]`, `[Factus]`, …) o ID de ticket si unificas con ROADMAP (`T0.0.1`, `T1.2.1`, etc.).
 - **Cuerpo:** contexto, criterios de aceptacion, enlaces a PR / epic.
 - **Labels:** un **`role-*`** para triage; **`type-*`** segun corresponda.
 - **Milestone:** fase o sprint.
-- **Project:** tarjeta vinculada con **Status** coherente (ver §3).
+- **Project:** tarjeta vinculada con **Status** coherente (ver §2).
 
 *(Si mas adelante adoptas convencion estricta tipo `[T##]` / `[E##-S##-##]` como en ERP, anade un doc en `docs/` y enlazalo aqui.)*
 
 ---
 
-## 8. Flujo de trabajo semanal
+## 7. Flujo de trabajo semanal
 
 1. **Inicio de sprint:** 5-7 items de Backlog → **Ready** (cada uno con `role-*`).
 2. **Cada dia:** elige **rol** → filtra Project → **1** item en **In progress**; rama desde **`dev`**; hasta **In review** antes de coger otro.
@@ -243,7 +209,7 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 
 ---
 
-## 9. Reglas del proyecto
+## 8. Reglas del proyecto
 
 - **WIP = 1** en **In progress**.
 - **Ramas:** trabajo en **`feature/*`** desde **`dev`**; merge a **`dev`**; **`main`** solo por release o hotfix acordado.
@@ -253,7 +219,7 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 
 ---
 
-## 10. Arquitectura del sistema
+## 9. Arquitectura del sistema
 
 - **Cliente:** apps de empresas consumen REST API (API keys / JWT segun fase).
 - **App:** Next.js 15 (App Router) en Vercel; validacion Zod; middleware tenant.
@@ -263,9 +229,26 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 
 ---
 
+## 10. Tech Stack (objetivo / ADR)
+
+**Fuente de verdad:** al cerrar el ticket **T0.0.1** en [ROADMAP.md](./ROADMAP.md) debe quedar rellenado [ADR-001 — Stack tecnologico](./ADR/ADR-001-stack-tecnologico.md). Hasta entonces, la tabla siguiente es **linea base** para planificar, no un compromiso cerrado.
+
+| Capa | Hipotesis actual |
+|------|------------------|
+| Framework | Next.js 15 (App Router) |
+| Lenguaje | TypeScript |
+| Validacion | Zod |
+| Base de datos | Supabase (PostgreSQL 16, RLS) |
+| Hosting API | Vercel |
+| Proveedor fiscal | Factus (DIAN) |
+| CI | GitHub Actions (`.github/workflows/ci.yml`) |
+
+---
+
 ## 11. Decisiones tecnicas pendientes
 
-Ver tareas abiertas en [ROADMAP.md](./ROADMAP.md) (multi-proveedor, Stripe, BullMQ, etc.). Opcional: anadir `DECISIONS.md` o `ADR/` cuando cierres decisiones grandes.
+- **Prioridad 0:** cerrar stack en [ADR-001](./ADR/ADR-001-stack-tecnologico.md) (**T0.0.1**).
+- Resto: [ROADMAP.md](./ROADMAP.md) (multi-proveedor, Stripe, BullMQ, etc.). Puedes anadir mas ADRs en `ADR/` cuando cierres decisiones grandes.
 
 ---
 
@@ -273,7 +256,7 @@ Ver tareas abiertas en [ROADMAP.md](./ROADMAP.md) (multi-proveedor, Stripe, Bull
 
 | Fase | Nombre | Enfoque |
 |------|--------|---------|
-| 0 | Fundacion | Repo, stack, CI, health |
+| 0 | Fundacion | **T0.0.1 stack (ADR)**, repo, CI, health |
 | 1 | MVP | Primera factura DIAN real via Factus |
 | 2 | Estabilidad | Logs, auth dual, rate limits |
 | 3 | Diferenciacion | Segundo proveedor, resiliencia |
@@ -288,6 +271,8 @@ Estado actual del repo (crecera con el codigo de la app):
 
 ```
 API-Dian/
+├── ADR/
+│   └── ADR-001-stack-tecnologico.md   # Stack: completar con T0.0.1
 ├── .github/
 │   ├── ISSUE_TEMPLATE/     # Plantillas por rol + ticket generico
 │   └── workflows/        # ci.yml
@@ -361,6 +346,7 @@ Windows (PowerShell): `.\scripts\create-labels.ps1`
 
 ### Documentacion
 
+- [ADR/ADR-001-stack-tecnologico.md](./ADR/ADR-001-stack-tecnologico.md) — Stack (primer entregable **T0.0.1**)
 - [ROADMAP.md](./ROADMAP.md) — Tickets y fases
 - [docs/ticket-taxonomy.md](./docs/ticket-taxonomy.md) — Labels y tableros por rol
 - [docs/git-branches.md](./docs/git-branches.md) — `main`, `dev`, `feature/*`
