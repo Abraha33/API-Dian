@@ -29,10 +29,11 @@ Each **role** maps to **one board** (one GitHub Project view, or equivalent). Th
 
 ## GitHub Projects (per-role views)
 
-1. Create labels (run `scripts/create-labels.ps1` from the repo root if you use [GitHub CLI](https://cli.github.com/)).
-2. In **Projects**, create a project (or use one project with multiple views).
-3. For each role, add a **view** (or separate project) with filter: `label:role-backend`, `label:role-frontend`, etc.
-4. Columns example: **Backlog → Ready → In progress → In review → Done** (adjust to your process).
+1. Create labels: `python scripts/ensure_role_labels.py` or `scripts/create-labels.ps1` (requires [GitHub CLI](https://cli.github.com/)).
+2. Project views: [GITHUB_PROJECTS.md](./GITHUB_PROJECTS.md).
+3. In **Projects**, create a project (or use one project with multiple views).
+4. For each role, add a **view** (or separate project) with filter: `label:role-backend`, `label:role-frontend`, etc.
+5. Columns example: **Backlog → Ready → In progress → In review → Done** (adjust to your process).
 
 ## Issue templates
 
