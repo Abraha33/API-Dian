@@ -18,11 +18,13 @@ Este documento describe **cómo** se construye API-Dian: herramientas, orden de 
 
 > Hasta cerrar **ADR-001**, los nombres concretos de runtime o proveedores son **hipótesis**; el flujo de trabajo es independiente del stack.
 
+**Otras herramientas de IA** (p. ej. ChatGPT u otros asistentes) pueden usarse como **apoyo puntual**; el flujo **estándar** documentado para este proyecto es **Perplexity** (definición/investigación) + **Cursor** (implementación en repo), más CLI y backend operativo según ADR-001.
+
 ---
 
-## Flujo estándar por módulo (o por epic acotado)
+## Ocho pasos por módulo (o epic acotado)
 
-Antes de pasar a **implementar**, el trabajo debe estar **definido y comprobable**.
+Antes de pasar a **implementar**, el trabajo debe estar **definido y comprobable**. Las **decisiones de proceso** que avalan este flujo están en [ADR-002](../ADR/ADR-002-workflow-construccion.md).
 
 1. **Definir el módulo** (Perplexity + notas): alcance, qué queda fuera, dependencias con otras fases del [ROADMAP](../ROADMAP.md).
 2. **Aclarar dependencias:** qué debe existir ya (ADR, tablas, auth, etc.).

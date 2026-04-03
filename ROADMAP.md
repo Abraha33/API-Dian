@@ -14,7 +14,7 @@
 
 **Workflow y estimación:** flujo de trabajo con IA en [docs/workflow.md](./docs/workflow.md); tallas, riesgo, prueba de cierre y DoD en [docs/estimation-and-definition-of-done.md](./docs/estimation-and-definition-of-done.md). Mapa **orden de producto ↔ fases** en [docs/modules.md](./docs/modules.md).
 
----
+<a id="resumen-por-fase"></a>
 
 ## Resumen por fase: talla, tiempo, riesgo y prueba de cierre
 

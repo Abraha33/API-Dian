@@ -2,7 +2,7 @@
 
 Alinea este tablero con el mismo *mindset* que ERP Satelite: pocas columnas claras, WIP bajo, vistas guardadas por rol.
 
-**Enlace del tablero:** usa el Project donde sigues Factura SaaS / API-Dian. En el repo ERP se referencia [Project 5 · Factura SaaS](https://github.com/users/Abraha33/projects/5) como paridad visual; **comprueba el ID** en [tus projects](https://github.com/Abraha33/projects) y sustituye enlaces en el README si cambia.
+**Enlace del tablero (API-Dian):** [Project 5 — API-Dian](https://github.com/users/Abraha33/projects/5) en el repo [Abraha33/API-Dian](https://github.com/Abraha33/API-Dian). **Comprueba el ID** en [tus projects](https://github.com/Abraha33/projects) si renombraras o duplicaras el proyecto.
 
 **Workflow y definición de done:** [workflow.md](./workflow.md), [estimation-and-definition-of-done.md](./estimation-and-definition-of-done.md), [ADR-002](../ADR/ADR-002-workflow-construccion.md).
 
@@ -94,7 +94,7 @@ Alternativa con labels de GitHub: crear etiquetas `phase-f1` … `phase-f8` si n
 
 ## Paleta (referencia rapida)
 
-Alinea colores de **Status** y **Priority** con los de tu otro tablero (Factura SaaS) para reconocer estados de un vistazo. GitHub Projects permite editar colores por opcion de campo.
+Alinea colores de **Status** y **Priority** con otros tableros tuyos (p. ej. ERP) si quieres reconocer estados de un vistazo. GitHub Projects permite editar colores por opcion de campo.
 
 ---
 

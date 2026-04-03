@@ -6,7 +6,7 @@ Lista viva de **lo que aún no está cerrado**. No sustituye a los ADR: cuando u
 
 ## Stack y plataforma (hasta ADR-001)
 
-- Runtime exacto, hosting, mecanismo de cola/async y observabilidad mínima: **pendiente de [ADR-001](../ADR/ADR-001-stack-tecnologico.md)**.
+- **D-001 — Cierre del stack:** runtime, hosting, mecanismo de cola/async y observabilidad mínima **permanecen abiertos** hasta completar y aprobar [ADR-001](../ADR/ADR-001-stack-tecnologico.md) (issue de tablero habitual **T0.0.1** o equivalente). No sustituir este ADR por decisiones solo en chat.
 - CI en `dev` además de `main`: **hipótesis / evolución** según necesidad.
 
 ---
@@ -15,6 +15,12 @@ Lista viva de **lo que aún no está cerrado**. No sustituye a los ADR: cuando u
 
 - **Primer** integrador API o **motor de emisión** concreto para sandbox y producción: **elección operativa** tras ADR-001 y diligencia comercial/legal.
 - Qué artefactos devuelve el canal (XML, PDF, eventos) y qué **debemos persistir** nosotros: **parcialmente** en ADR-001; detalle por implementación.
+
+### D-002 — Segundo canal / estrategia de emisión
+
+- **Qué decidir:** si y cuándo soportar un **segundo canal de salida DIAN** (o **estrategia de emisión** alternativa), criterios de conmutación, convivencia entre tenants y coste/riesgo.
+- **Cuándo:** típicamente **F7** del [ROADMAP](../ROADMAP.md), **después** de un primer canal estable en sandbox/producción y de operación mínima (F4–F6).
+- **Sin cerrar aquí:** ningún nombre de proveedor concreto; la elección sigue siendo **hipótesis** hasta análisis y **ADR o notas de producto** cuando corresponda.
 
 ---
 

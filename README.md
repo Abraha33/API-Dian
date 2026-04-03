@@ -62,7 +62,7 @@ Es una **API de middleware** que conecta ERPs y sistemas de facturación con la 
 
 ## 2. Como leer el tablero Projects
 
-**Donde:** [github.com/Abraha33/projects](https://github.com/Abraha33/projects) — abre el Project que uses para **API-Dian** (en documentación cruzada con ERP suele citarse el [Project 5](https://github.com/users/Abraha33/projects/5); **verifica el número** en tu cuenta).
+**Donde:** tablero **[API-Dian — Project 5](https://github.com/users/Abraha33/projects/5)** (repositorio [Abraha33/API-Dian](https://github.com/Abraha33/API-Dian)). Listado general: [github.com/Abraha33/projects](https://github.com/Abraha33/projects). **Verifica el ID** del project si lo recreas en GitHub.
 
 **Asignaciones:** en la práctica todo va con **Assignees = [@Abraha33](https://github.com/Abraha33)**. Una vista *Mis items* con `assignee:@me` filtra tu cola.
 
@@ -275,7 +275,7 @@ Mapa detallado **orden de producto ↔ F1–F8:** [docs/modules.md](./docs/modul
 
 ## 12. Workflow de construccion (IA y herramientas)
 
-Resumen del pipeline acordado; el detalle vive en [docs/workflow.md](./docs/workflow.md) y en [ADR-002](./ADR/ADR-002-workflow-construccion.md).
+Resumen del pipeline acordado; el detalle y el contexto de **ocho pasos** viven en [docs/workflow.md](./docs/workflow.md). Las **decisiones de proceso** están en [ADR-002](./ADR/ADR-002-workflow-construccion.md).
 
 | Herramienta | Rol |
 |-------------|-----|
@@ -285,7 +285,18 @@ Resumen del pipeline acordado; el detalle vive en [docs/workflow.md](./docs/work
 | **Supabase** | Backend operativo cuando forme parte del stack: DB, auth, RLS, storage, validación en entorno real. |
 | **Docs del repo** | Memoria estable: README, ROADMAP, ADRs, `docs/*`. |
 
-**Flujo por módulo:** definir → aclarar dependencias → documentar decisiones → estimar → **definir prueba de cierre** → implementar → validar (CLI + Supabase) → documentar cambios.
+**Ocho pasos por módulo** (orden estándar; ver [docs/workflow.md](./docs/workflow.md)):
+
+1. Definir el módulo (Perplexity + notas) y límites frente al [ROADMAP](./ROADMAP.md).
+2. Aclarar dependencias (qué debe existir ya).
+3. Documentar decisiones (ADR u `open-questions.md` si aplica).
+4. Estimar talla, tiempo y riesgo ([estimation-and-definition-of-done.md](./docs/estimation-and-definition-of-done.md)).
+5. Definir **prueba de cierre ejecutable** (sin esto, el ticket no va a **Ready**).
+6. Implementar (Cursor + CLI; ramas desde `dev`).
+7. Validar con CLI y entorno real del stack (p. ej. Supabase si ADR-001 lo confirma).
+8. Documentar cambios en el repo si afectan a integradores u operación.
+
+Otras IAs (p. ej. ChatGPT) pueden usarse como apoyo; el flujo documentado prioriza **Perplexity + Cursor** para consistencia.
 
 ---
 
@@ -295,7 +306,9 @@ Resumen del pipeline acordado; el detalle vive en [docs/workflow.md](./docs/work
 - **Sin prueba de cierre ejecutable** → el trabajo **no** está listo para construir (no va a **Ready**).
 - **Módulo L o XL** → partir en subtareas antes de implementar.
 - Criterios completos y **definición de done:** [docs/estimation-and-definition-of-done.md](./docs/estimation-and-definition-of-done.md).
-- Por fase agregada (F1–F8): tabla en [ROADMAP.md](./ROADMAP.md) («Resumen por fase»).
+- Por **fase** (F1–F8): tabla canónica en [ROADMAP.md](./ROADMAP.md#resumen-por-fase) («Resumen por fase»).
+- Misma tabla **reproducida y ampliada** con **ejemplos ejecutables por fase** en [docs/estimation-and-definition-of-done.md](./docs/estimation-and-definition-of-done.md#ejemplos-concretos-ejecutables-por-fase).
+- Por **bloque de producto** (talla y prueba resumida): [docs/modules.md](./docs/modules.md).
 
 ---
 
