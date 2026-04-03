@@ -62,7 +62,7 @@ Es una **API de middleware** que conecta ERPs y sistemas de facturación con la 
 
 ## 2. Como leer el tablero Projects
 
-**Donde:** [github.com/Abraha33/projects](https://github.com/Abraha33/projects) — abre el Project que uses para **API-Dian** (en documentación cruzada con ERP suele citarse el [Project 5](https://github.com/users/Abraha33/projects/5); **verifica el número** en tu cuenta).
+**Donde:** [Project 5](https://github.com/users/Abraha33/projects/5) — abre el Project que uses para **API-Dian** (en documentación cruzada con ERP suele citarse el [Project 5](https://github.com/users/Abraha33/projects/5); **verifica el número** en tu cuenta).
 
 **Asignaciones:** en la práctica todo va con **Assignees = [@Abraha33](https://github.com/Abraha33)**. Una vista *Mis items* con `assignee:@me` filtra tu cola.
 
