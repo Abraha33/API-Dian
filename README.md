@@ -1,6 +1,6 @@
 # API-Dian — Factura SaaS API
 
-API SaaS **multi-tenant** para facturacion electronica **DIAN Colombia**. Middleware entre sistemas de facturacion de empresas y la DIAN via proveedor **Factus**.
+API SaaS **multi-tenant** para facturacion electronica **DIAN Colombia**. Middleware B2B: ERP cliente → nuestra API → **integrador API / canal de salida** (p. ej. Factus u otro definido en ADR) → red fiscal → respuesta y notificacion al cliente. **Factus** se trata como integrador API salvo que documentacion legal acredite otra condicion.
 
 **Stack (hipotesis hasta cerrar ticket T0.0.1):** Next.js 15 · Supabase (PostgreSQL) · Zod · Vercel · Factus API. La **primera tarea** del roadmap es **definir y congelar** el stack en [ADR-001](./ADR/ADR-001-stack-tecnologico.md) — ver [ROADMAP.md](./ROADMAP.md) **T0.0.1**.
 
@@ -31,12 +31,12 @@ API SaaS **multi-tenant** para facturacion electronica **DIAN Colombia**. Middle
 
 ## 1. Que es este proyecto
 
-Es una **API de middleware** que conecta ERPs y sistemas de facturacion con la **DIAN** (Colombia) a traves de **Factus**.
+Es una **API de middleware** que conecta ERPs y sistemas de facturacion con la **DIAN** (Colombia) a traves de **integradores API** autorizados en la cadena comercial y tecnica (no conexion directa ERP-DIAN en el MVP).
 
 ### Para que sirve
 
 - Las empresas envian facturas a nuestra API (REST).
-- Validamos, encolamos y enviamos a la DIAN via Factus.
+- Validamos, encolamos y enviamos al **canal de salida** hacia la DIAN via integrador acordado.
 - La DIAN acepta o rechaza; persistimos estados y notificamos (webhooks / futuras notificaciones).
 - **Multi-tenant:** cada empresa aislada (RLS en Supabase).
 
@@ -157,7 +157,7 @@ En **este repo** los labels usan **guion** (`role-backend`, `type-feature`). Es 
 
 | Label (ejemplos) | Uso |
 |-------------------|-----|
-| **`role-backend`** | API, reglas de negocio, colas, integracion Factus. |
+| **`role-backend`** | API, reglas de negocio, colas, adaptadores integrador DIAN. |
 | **`role-frontend`** | UI Next.js, dashboard, documentacion visible al cliente. |
 | **`role-database`** | Schema, migrations, RLS, SQL, Supabase. |
 | **`role-devops`** | CI/CD, Vercel, secrets, observabilidad. |
@@ -180,7 +180,7 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 | Milestone sugerido | Contenido |
 |--------------------|-----------|
 | **Fase 0** | **Definicion stack (T0.0.1 + ADR-001)**, repo, Next, Supabase, CI, health. |
-| **Fase 1** | MVP funcional (auth, tenant, facturas, cola, Factus sandbox, E2E basico). |
+| **Fase 1** | MVP funcional (auth, tenant, documentos, cola, integrador sandbox, callback ERP, E2E basico). |
 | **Fase 2** | Estabilidad (logs, api keys, rate limit, reintentos). |
 | **Fase 3** | Diferenciacion (multi-proveedor, circuit breaker). |
 | **Fase 4** | SaaS monetizable (Stripe, cuotas, notificaciones, OpenAPI). |
@@ -224,7 +224,7 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 - **Cliente:** apps de empresas consumen REST API (API keys / JWT segun fase).
 - **App:** Next.js 15 (App Router) en Vercel; validacion Zod; middleware tenant.
 - **Datos:** Supabase PostgreSQL con **RLS** por tenant.
-- **Asincrono:** cola (PGMQ / Edge Functions en roadmap); integracion **Factus** para DIAN.
+- **Asincrono:** cola y workers segun ADR-001; integracion **adaptador integrador** hacia DIAN.
 - Detalle de tickets y tecnologias: [ROADMAP.md](./ROADMAP.md).
 
 ---
@@ -240,7 +240,7 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 | Validacion | Zod |
 | Base de datos | Supabase (PostgreSQL 16, RLS) |
 | Hosting API | Vercel |
-| Proveedor fiscal | Factus (DIAN) |
+| Integrador / canal salida | Hipotesis: API integrador (p. ej. Factus); cerrar en ADR-001 |
 | CI | GitHub Actions (`.github/workflows/ci.yml`) |
 
 ---
@@ -257,7 +257,7 @@ Alineados con fases del [ROADMAP.md](./ROADMAP.md):
 | Fase | Nombre | Enfoque |
 |------|--------|---------|
 | 0 | Fundacion | **T0.0.1 stack (ADR)**, repo, CI, health |
-| 1 | MVP | Primera factura DIAN real via Factus |
+| 1 | MVP | Primera factura electronica valida en cadena ERP → API → integrador → DIAN |
 | 2 | Estabilidad | Logs, auth dual, rate limits |
 | 3 | Diferenciacion | Segundo proveedor, resiliencia |
 | 4 | SaaS | Billing, cuotas, notificaciones |
@@ -296,7 +296,7 @@ API-Dian/
 
 Referencia alineada al ROADMAP (ajusta fechas reales):
 
-- **~Mes 2** — MVP vendible (primera factura DIAN real).
+- **~Mes 2** — MVP vendible (primera factura valida en red fiscal via integrador).
 - **~Mes 4-5** — Estabilidad operativa.
 - **~Mes 6-8** — Diferenciacion proveedores.
 - **~Mes 9-12** — SaaS cobrable.
@@ -309,7 +309,7 @@ Referencia alineada al ROADMAP (ajusta fechas reales):
 | Termino | Significado |
 |---------|-------------|
 | **DIAN** | Direccion de Impuestos y Aduanas Nacionales (Colombia). |
-| **Factus** | Proveedor tecnologico para envio de documentos electronicos a la DIAN. |
+| **Factus** | Ejemplo de **integrador API** / canal de salida hacia la DIAN; condicion legal exacta segun contrato y normativa. |
 | **Tenant** | Empresa cliente aislada logicamente (multi-tenant SaaS). |
 | **RLS** | Row Level Security en PostgreSQL / Supabase. |
 | **PGMQ** | Cola basada en Postgres en Supabase (roadmap). |

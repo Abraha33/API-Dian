@@ -6,7 +6,7 @@
 
 ## Contexto
 
-API SaaS multi-tenant para facturacion electronica DIAN (Colombia) via Factus. Necesidad de runtime, datos, colas, despliegue y DX alineados a un solo maintainer.
+API SaaS multi-tenant para facturacion electronica DIAN (Colombia) mediante **integrador(es) API / canal de salida** (p. ej. Factus u otros elegidos; no asumir condición de “proveedor tecnológico autorizado DIAN” sin evidencia contractual/legal). Necesidad de runtime, datos, colas, despliegue y DX alineados a un solo maintainer.
 
 ## Decision (rellenar al cerrar T0.0.1)
 
@@ -18,7 +18,7 @@ API SaaS multi-tenant para facturacion electronica DIAN (Colombia) via Factus. N
 | Base de datos / auth | | ej. Supabase, RLS |
 | Hosting | | ej. Vercel |
 | Cola / async | | ej. PGMQ, Edge Functions |
-| Integracion fiscal | | Factus (sandbox/prod) |
+| Integracion fiscal | | Integrador API de referencia + sandbox/prod (nombre según contrato; ver ROADMAP) |
 | CI / calidad | | GitHub Actions, lint, tests |
 | Observabilidad (MVP) | | logs minimos |
 
