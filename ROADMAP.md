@@ -12,6 +12,27 @@
 
 **Forma de este documento:** el roadmap está organizado en **fases globales de construcción**, **módulos del sistema** y **maduración interna** (definir → modelar → MVP → endurecer/operar → expandir). **Los tickets de trabajo se definirán aparte** y se colgarán de estos módulos.
 
+**Workflow y estimación:** flujo de trabajo con IA en [docs/workflow.md](./docs/workflow.md); tallas, riesgo, prueba de cierre y DoD en [docs/estimation-and-definition-of-done.md](./docs/estimation-and-definition-of-done.md). Mapa **orden de producto ↔ fases** en [docs/modules.md](./docs/modules.md).
+
+---
+
+## Resumen por fase: talla, tiempo, riesgo y prueba de cierre
+
+Valores **tentativos** para **1 desarrollador con apoyo de IA**; refinar al planificar cada sprint. La **prueba de cierre** es a nivel fase (los issues deben acotar pruebas más pequeñas).
+
+| Fase | Talla | Tiempo tentativo | Riesgo | Prueba de cierre (ejecutable, resumen) |
+|------|-------|------------------|--------|----------------------------------------|
+| **F1** | S | 2–5 días | Medio | [ADR-001](./ADR/ADR-001-stack-tecnologico.md) completo según sus criterios internos; README sin presentar stack como cerrado hasta entonces; plantilla de impacto DIAN lista. |
+| **F2** | M | 1–2 semanas | Medio | Aplicación ejecutable según ADR; DB conectada; health check OK; un flujo asíncrono mínimo demostrado; CI verde con lint/tests acordados. |
+| **F3** | M | 1–2 semanas | Alto | Tenant resuelto en requests; usuario consola operativo; CRUD empresa y tercero; **evidencia de aislamiento** entre tenants. |
+| **F4** | L | 3–6 semanas | Alto | E2E en **sandbox** del primer **canal de salida**: camino feliz + al menos un rechazo; identificadores/artefactos persistidos según ADR; callback entrante del canal si aplica. |
+| **F5** | M | 1–2 semanas | Medio | Consulta de estado estable para integrador; **webhook saliente** con reintentos y **registro de entregas**; o cliente de prueba documentado que valide el contrato. |
+| **F6** | L | 2–4 semanas | Medio | DLQ + **replay manual** operativo; panel interno mínimo; logging estructurado con correlación; **suite de regresión normativa** iniciada (casos reproducibles). |
+| **F7** | L–XL | 4–10 semanas | Alto | Nuevo tipo documental **o** segundo canal con trazabilidad de intentos; regresión ampliada sin romper F4–F6. |
+| **F8** | M | 2–6 semanas | Medio | Planes y contadores coherentes con uso real; pasarela de cobro en entorno de prueba **o** documentación explícita si se pospone; OpenAPI publicado para integradores. |
+
+**Regla:** fase **L** o **XL** → partir en issues enlazados antes de abordarla en un solo bloque.
+
 ---
 
 ## Módulo transversal: Cumplimiento y adaptación DIAN
@@ -293,4 +314,4 @@ flowchart LR
 
 ---
 
-*Documento vivo. Los identificadores de tickets de trabajo se añadirán en una capa posterior, colgando de los módulos y entregables aquí descritos.*
+*Documento vivo. Los identificadores de tickets de trabajo se añadirán en una capa posterior, colgando de los módulos y entregables aquí descritos. El cierre del stack (**ADR-001**) se rastrea en el tablero como trabajo fundacional (p. ej. issue vinculado a «T0.0.1» si mantienes esa etiqueta).*

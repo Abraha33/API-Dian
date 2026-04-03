@@ -4,6 +4,8 @@ Alinea este tablero con el mismo *mindset* que ERP Satelite: pocas columnas clar
 
 **Enlace del tablero:** usa el Project donde sigues Factura SaaS / API-Dian. En el repo ERP se referencia [Project 5 · Factura SaaS](https://github.com/users/Abraha33/projects/5) como paridad visual; **comprueba el ID** en [tus projects](https://github.com/Abraha33/projects) y sustituye enlaces en el README si cambia.
 
+**Workflow y definición de done:** [workflow.md](./workflow.md), [estimation-and-definition-of-done.md](./estimation-and-definition-of-done.md), [ADR-002](../ADR/ADR-002-workflow-construccion.md).
+
 ---
 
 ## Asignaciones
@@ -71,6 +73,22 @@ Crea una vista guardada por cada label principal:
 ## Prioridad
 
 Si usas campo **Priority** en el Project: P0 urgente, P1 sprint, P2 media, P3 baja. Puedes combinar con labels `type-*` en issues ([ticket-taxonomy.md](./ticket-taxonomy.md)).
+
+---
+
+## Campos personalizados (alineados al ROADMAP)
+
+Opcionales pero recomendados para ligar cada tarjeta a [ROADMAP.md](../ROADMAP.md) y a [estimation-and-definition-of-done.md](./estimation-and-definition-of-done.md). Los **nombres** pueden adaptarse a tu Project; la intención es la que importa.
+
+| Campo (ejemplo) | Tipo | Uso |
+|-----------------|------|-----|
+| **Fase** | Single select | `F1` … `F8` según la fase global del roadmap. |
+| **Talla** | Single select | `XS`, `S`, `M`, `L`, `XL`. |
+| **Riesgo** | Single select | `Bajo`, `Medio`, `Alto`. |
+| **Prueba de cierre** | Texto | Una frase o checklist ejecutable; obligatorio antes de poner el ticket en **Ready**. |
+| **Size** (numérico) | Number | Opcional; puntos o horas si prefieres además de la talla. |
+
+Alternativa con labels de GitHub: crear etiquetas `phase-f1` … `phase-f8` si no quieres duplicar campo **Fase** (mantener **un** criterio principal para filtrar).
 
 ---
 

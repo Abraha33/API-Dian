@@ -6,7 +6,7 @@
 
 ## Contexto
 
-API SaaS multi-tenant para facturacion electronica DIAN (Colombia) mediante **integrador(es) API / canal de salida** (p. ej. Factus u otros elegidos; no asumir condición de “proveedor tecnológico autorizado DIAN” sin evidencia contractual/legal). Necesidad de runtime, datos, colas, despliegue y DX alineados a un solo maintainer.
+API SaaS multi-tenant para facturacion electronica DIAN (Colombia) mediante **integrador(es) API / canal de salida**. **Factus** (u otros nombres comerciales) debe entenderse como **integrador API** / **canal de salida** en la cadena técnica; **no** como sinónimo de **proveedor tecnológico autorizado por la DIAN** en sentido jurídico salvo evidencia contractual y normativa explícita. Necesidad de runtime, datos, colas, despliegue y DX alineados a un solo maintainer.
 
 ## Decision (rellenar al cerrar T0.0.1)
 
