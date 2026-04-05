@@ -5,3 +5,7 @@ __pycache__/
 *.pyc
 .DS_Store
 .snapshots/
+
+# Supabase CLI (local: supabase start / branches)
+supabase/.branches
+supabase/.temp

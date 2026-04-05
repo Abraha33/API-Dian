@@ -1,0 +1,13 @@
+---
+description: API-Dian — contexto fijo y flujo de trabajo del repo
+alwaysApply: true
+---
+
+# API-Dian (Cursor)
+
+- **Qué es:** API SaaS multi-tenant para facturación electrónica DIAN (Colombia); middleware ERP → nuestra API → integrador API / canal de salida. Ver `README.md` y `ROADMAP.md`.
+- **Stack:** Hasta cerrar **T0.0.1**, el stack es **hipótesis**. Fuente de verdad futura: `ADR/ADR-001-stack-tecnologico.md`. No asumir decisiones no escritas ahí o en el README.
+- **Git:** Ramas largas solo `main` y `dev`. Trabajo en `feature/...` desde `dev` → PR a `dev`. Detalle: `docs/git-branches.md`.
+- **Base de datos:** Cuando exista Supabase, el esquema versionado vive en `supabase/migrations/` (canónico). No duplicar esquema “a mano” fuera de migraciones sin acuerdo explícito.
+- **Alcance:** Cambios acotados al ticket o tarea; no refactors colaterales ni archivos no pedidos.
+- **Idioma:** Documentación nueva en `docs/` en español claro; código y nombres técnicos según convención del repo.
