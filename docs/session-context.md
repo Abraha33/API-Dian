@@ -9,6 +9,10 @@ Copia o resume esto al **inicio** de una sesión si el chat está largo o cambia
 - **Objetivo de hoy (1 frase):**
 - **Bloqueos:**
 
+## Plantillas (copiar / pegar)
+
+- `docs/examples/` — issue, migración, cierre con pruebas
+
 ## Documentos de verdad (no contradecir sin actualizarlos)
 
 - `README.md` — flujo Git, tablero, reglas generales
