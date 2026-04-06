@@ -77,7 +77,9 @@ git commit -m "tipo(scope): descripción corta"
 
 ## Paso 5 · Migraciones (Supabase CLI)
 
-Solo si el issue toca la base de datos:
+Solo si el issue toca la base de datos.
+
+**Guía operativa completa:** [`docs/supabase-workflow.md`](./supabase-workflow.md) (comandos, convenciones de nombres, introspección, qué hacer si falla una migración; alineado con F0-WKF-04).
 
 ```bash
 # Crear migración
@@ -96,9 +98,7 @@ Reglas:
 - Nunca modificar el esquema directamente en el dashboard de Supabase.
 - Todo cambio de esquema pasa por una migración versionada.
 - Actualizar `scripts/introspection/current-public-schema.sql`
-  si hay cambios de esquema.
-
-Flujo detallado en `docs/supabase-workflow.md` (ver F0-WKF-04).
+  si hay cambios de esquema (detalle en `supabase-workflow.md`).
 
 ## Paso 6 · Evidencia
 
@@ -144,4 +144,5 @@ añadir nota de impacto y plan de rollback.
 5. Si hay BD: Supabase CLI, migraciones versionadas, introspección; detalle en `docs/supabase-workflow.md`.
 6. Evidencia en el issue; `docs/templates/checklist-template.md`.
 7. PR a `dev`, `Closes #N`, CI verde; nota de impacto/rollback si es sensible.
-8. Cerrar issue, registrar tiempo real en calibración; `dev` → `main` solo en hitos estables.
+8. Antes de cerrar el issue, revisar la sección “DoD por tipo de módulo” en docs/estimation-and-definition-of-done.md y confirmar que el módulo principal cumple todos los criterios.
+9. Cerrar issue, registrar tiempo real en calibración; `dev` → `main` solo en hitos estables.

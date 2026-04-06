@@ -49,32 +49,38 @@ Un issue está **Done** cuando cumple TODO lo siguiente:
 
 ## DoD por tipo de módulo
 
+Criterios mínimos cuando el issue encaja en uno de estos perfiles (además del DoD general).
+
 ### docs
-- [ ] El doc es legible y tiene estructura clara (títulos, listas, tablas).
-- [ ] Está referenciado desde `docs/workflow.md`, `README.md` o ADR
-      según corresponda.
-- [ ] Sin typos graves ni secciones vacías sin justificación.
+
+- [ ] El doc es legible, con títulos, listas o tablas donde aplique.
+- [ ] Está enlazado desde `README.md`, `docs/workflow.md` o el doc padre correspondiente.
+- [ ] No tiene secciones "TODO" ni typos graves.
 
 ### database
+
 - [ ] Migración versionada en `supabase/migrations/<timestamp>_nombre.sql`.
-- [ ] Aplicada con `supabase db push` en local sin errores.
+- [ ] `supabase db push` ejecutado sin errores en local (evidencia en el issue).
 - [ ] `scripts/introspection/current-public-schema.sql` actualizado.
-- [ ] Evidencia (snippet SQL o output) adjunta en el issue.
+- [ ] Tabla o cambios visibles en Supabase Studio / introspección.
 
 ### backend
-- [ ] Endpoint funcional y probado manualmente (o con test mínimo).
-- [ ] Logging básico presente (entrada, salida, errores).
-- [ ] Contrato documentado (ruta, método, body, respuesta esperada).
+
+- [ ] Endpoint (o lógica) probada al menos manualmente con ejemplo real.
+- [ ] Logging básico en puntos clave (entrada, salida, error).
+- [ ] Contrato documentado (ruta, método, body, respuesta) en doc o comentario del issue.
 
 ### devops
+
 - [ ] CI verde en el PR.
-- [ ] Sin secrets expuestos en código o logs.
-- [ ] Decisión documentada en ADR si introduce cambio de infraestructura.
+- [ ] No hay secrets en código, config ni logs.
+- [ ] Si cambia infraestructura, hay ADR o nota en el doc adecuado.
 
 ### qa
-- [ ] Prueba de cierre ejecutada paso a paso.
-- [ ] Resultado real de cada paso adjunto en el issue.
-- [ ] Casos de error básicos considerados y documentados.
+
+- [ ] Prueba de cierre ejecutada siguiendo el bloque del issue.
+- [ ] Resultado real anotado (OK / fallo y cómo se resolvió).
+- [ ] Casos básicos de error cubiertos y documentados.
 
 ---
 
