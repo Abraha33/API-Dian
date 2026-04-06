@@ -1,138 +1,156 @@
 # Roadmap API-DIAN
 
-Este roadmap describe las fases principales del proyecto API-DIAN. El objetivo final es ofrecer una API que cubra los servicios fiscales DIAN (factura electrónica, notas crédito/débito, documento soporte, nómina, etc.) sobre una plataforma multi-tenant.
+Fases de construcción del proyecto API-DIAN.
+Objetivo final: plataforma multi-tenant que cubra todos los servicios
+fiscales DIAN (factura electrónica, notas crédito/débito, documento
+soporte, nómina, etc.) sobre una arquitectura modular y escalable.
+
+---
 
 ## F0 — Workflow, foundations y método de trabajo
+**Estado: 🚧 En progreso**
 
-Fase previa a la construcción funcional. Se centra en cómo se trabaja, no en el dominio fiscal.
+Fase previa a cualquier construcción funcional.
+Define cómo se trabaja, no el dominio fiscal.
 
-Objetivo:
-- Definir el workflow de construcción.
-- Alinear el uso de herramientas IA (Perplexity, Cursor).
-- Establecer políticas de contexto y documentación persistente.
-- Definir criterios de cierre y calidad por módulo.
+Entregables:
+- `docs/workflow.md` — flujo de trabajo en 8 pasos.
+- `docs/estimation-and-definition-of-done.md` — tallas, DoD y calibración.
+- `docs/templates/` — plantillas de sesión, módulo y checklist.
+- `docs/context-policy.md` — política de contexto mínimo para IA.
+- `docs/supabase-workflow.md` — flujo de validación con Supabase CLI.
 
-Paquetes dentro de F0:
+Paquetes de trabajo (issues):
 
-- **F0-WKF-01 — Workflow de construcción y herramientas IA**
-  - Definir el flujo idea → issue → estimación → diseño (IA) → implementación → migración → evidencia → cierre.
-  - Documentar el flujo en `docs/workflow.md`.
+| Código | Título | Talla | Estado |
+|--------|--------|-------|--------|
+| F0-WKF-01 | Definir workflow y herramientas IA | S | ⏳ Pendiente |
+| F0-WKF-02 | Crear plantillas sesión/módulo/checklist | S | ⏳ Pendiente |
+| F0-WKF-03 | Política de contexto mínimo y docs persistentes | S | ⏳ Pendiente |
+| F0-WKF-04 | Flujo de validación CLI + Supabase | M | ⏳ Pendiente |
+| F0-WKF-05 | Criterios de cierre por módulo | S | ⏳ Pendiente |
 
-- **F0-WKF-02 — Plantillas de sesión, módulo y checklist**
-  - Plantillas de issues (body, prueba de cierre).
-  - Plantillas de sesiones con Perplexity/Cursor.
-  - Checklists reutilizables por tipo de tarea.
-
-- **F0-WKF-03 — Política de contexto mínimo y docs persistentes**
-  - Definir qué contexto se debe aportar mínimo a cada sesión con IA.
-  - Documentar qué vive en `docs/`, qué vive en ADR y qué va en comentarios de issues.
-
-- **F0-WKF-04 — Flujo de validación con CLI + Supabase**
-  - Estándar para crear/aplicar migraciones con Supabase CLI.
-  - Script(s) de introspección y verificación de esquema.
-
-- **F0-WKF-05 — Criterios de cierre por módulo**
-  - Definition of Done por tipo de módulo (API, DB, docs, etc.).
-  - Integrado en `docs/estimation-and-definition-of-done.md`.
+---
 
 ## F1 — Arquitectura y decisiones iniciales
+**Estado: ⏸ No iniciado**
 
-Fase donde se define la arquitectura base de la plataforma que soportará todos los servicios fiscales DIAN.
+Define la arquitectura base de la plataforma que soportará
+todos los servicios fiscales DIAN.
 
-Objetivo:
-- Estructura de carpetas, capas y módulos.
-- Primeros ADR de arquitectura (stack tecnológico, patrones clave).
-- Decisiones sobre cómo se representarán tenants, documentos y flujos internos a alto nivel.
-
-Ejemplos de temas:
-- Estructura base de la API y servicios internos.
-- Organización de módulos (Plataforma/Tenants, Integrador/API, Documentos fiscales, Emisión DIAN, etc.).
+Temas principales:
+- Estructura de capas y módulos del sistema.
+- Decisiones de stack tecnológico (ADRs).
+- Organización de servicios internos.
 - Primeros endpoints de salud y verificación.
+- Modelo conceptual de documentos fiscales y flujos.
+
+---
 
 ## F2 — Núcleo de plataforma (app base, colas, health)
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Tener una app base ejecutándose con:
-  - Health checks.
-  - Logging básico.
-  - Colas iniciales para procesamiento interno.
+Temas principales:
+- App base ejecutándose con estructura de módulos definida.
+- Health checks para integradores y monitoreo interno.
+- Infraestructura de colas para procesamiento de documentos.
+- Logging básico y trazabilidad inicial.
+- Estándares de configuración por entorno (dev, staging, prod).
 
-Ejemplos de temas:
-- Infraestructura de colas (simple) para procesar documentos.
-- Health endpoints para integradores y para monitoreo interno.
-- Estándares de logging y trazabilidad inicial.
+---
 
 ## F3 — Tenant, identidad y maestros
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Soportar multi-empresa (tenants).
-- Identidad básica (usuarios, roles, permisos).
-- Maestros de configuración necesarios para emitir documentos.
+Temas principales:
+- Modelo de tenant/empresa (multi-tenant desde el día 1).
+- Usuarios, roles y permisos asociados al tenant.
+- RLS (Row Level Security) por tenant en Supabase.
+- Maestros de configuración fiscal:
+  resoluciones, numeraciones, datos del emisor.
 
-Ejemplos de temas:
-- Modelo de tenant/empresa.
-- Usuarios y roles asociados al tenant.
-- Maestros relevantes (resoluciones, numeraciones, etc. a nivel base).
+---
 
 ## F4 — Documento fiscal, emisión DIAN y primer canal
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Modelar documentos fiscales (factura, notas, etc.).
-- Implementar el motor de emisión.
-- Integrar con el primer canal DIAN en sandbox.
+Temas principales:
+- Modelo de documentos fiscales y estados internos:
+  recibido → encolado → enviado → aceptado/rechazado → notificado.
+- Motor de generación XML/UBL.
+- Adaptador para primer canal DIAN (sandbox).
+- Manejo de respuesta DIAN y persistencia de estados.
+- Primer flujo completo: integrador → DIAN → adquiriente.
 
-Ejemplos de temas:
-- Tabla de documentos fiscales y estados internos (recibido, encolado, enviado, aceptado, rechazado, notificado).
-- Motor de emisión que toma documentos y los pasa a XML/UBL.
-- Adaptador para el primer canal DIAN sandbox (envío + manejo de respuesta).
+---
 
 ## F5 — Retorno al ERP (consultas y webhooks)
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Permitir que los ERPs/integradores consulten estados.
-- Notificar de cambios vía webhooks.
+Temas principales:
+- Endpoints de consulta de documentos para integradores/ERPs.
+- Webhooks de salida con estados relevantes.
+- Reintentos y manejo de fallos de notificación.
+- Sincronización de estados entre API-DIAN y ERP.
 
-Ejemplos de temas:
-- Endpoints de consulta de documentos para integradores.
-- Webhooks de salida hacia el ERP con los estados relevantes.
-- Manejo de reintentos y fallos de notificación.
+---
 
 ## F6 — Operación, confiabilidad y gobierno DIAN
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Hacer operable la plataforma en día a día.
+Temas principales:
+- Observabilidad: logs estructurados, métricas, dashboards básicos.
+- Auditoría y trazabilidad de operaciones fiscales.
+- Panel mínimo de soporte interno.
+- DLQ (Dead Letter Queue), replay manual de documentos fallidos.
+- Gestión de cambios normativos DIAN (versionado de esquemas).
 
-Ejemplos de temas:
-- Observabilidad: logs, métricas, dashboards básicos.
-- Auditoría y trazabilidad de operaciones.
-- Soporte interno: panel mínimo de operación.
+---
 
-## F7 — Cobertura fiscal ampliada y multi‑canal
+## F7 — Cobertura fiscal ampliada y multi-canal
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Extender la API para cubrir más tipos de documento y canales.
+Temas principales:
+- Notas crédito y débito electrónicas.
+- Documento soporte de adquisiciones.
+- Nómina electrónica.
+- Soporte para múltiples canales de emisión DIAN.
+- Compatibilidad con cambios normativos.
 
-Ejemplos de temas:
-- Soporte para notas crédito/débito, documento soporte, nómina, etc.
-- Integraciones adicionales con otros canales DIAN o partners.
-- Manejo de compatibilidad y cambios normativos.
+---
 
 ## F8 — SaaS comercial y escala
+**Estado: ⏸ No iniciado**
 
-Objetivo:
-- Convertir la plataforma en un SaaS comercializable.
+Temas principales:
+- Planes y límites por tenant.
+- Contadores de uso y métricas de negocio.
+- Hardening de seguridad para producción.
+- Performance y escalabilidad horizontal.
+- Documentación pública para integradores.
 
-Ejemplos de temas:
-- Planes, límites, multi-tenant a escala.
-- Métricas de negocio, uso y facturación.
-- Endurecer seguridad y performance para producción.
+---
 
-***
+## Módulos del dominio
 
-## Convenciones de uso con issues
+| Módulo | Descripción | Fases principales |
+|--------|-------------|-------------------|
+| plataforma-tenants | Multi-tenant, usuarios, permisos | F1–F3 |
+| integrador-api | Contrato JSON de entrada, autenticación | F1–F2 |
+| documentos-fiscales | Modelo y ciclo de documentos | F4 |
+| emision-dian | Generación XML/UBL, envío, respuesta | F4 |
+| procesamiento-interno | Colas, workers, DLQ, replay | F2, F6 |
+| notificacion-adquiriente | Email con XML/PDF | F4 |
+| observabilidad-gobierno | Logs, métricas, auditoría | F6 |
+| cumplimiento-dian | Normativa, versiones, pruebas | F4–F7 |
 
-- Cada issue se asocia a **un milestone** F0–F8.
-- Dentro del título y/o labels:
-  - Se puede usar un prefijo tipo `[F0-WKF-01]` para referirse a paquetes de F0.
-  - Se usan labels `module-*` para indicar el módulo principal (plataforma, integrador, emisión DIAN, etc.).
-- El detalle de estimación y Definition of Done se encuentra en `docs/estimation-and-definition-of-done.md`.
+---
+
+## Convenciones
+
+- Cada issue se asocia a un milestone F0–F8.
+- Títulos de issue: `[F<n>-<CÓDIGO>] Descripción`
+- Labels: `role-*`, `type-*`, `size-*`, `priority-*`, `module-*`
+- Ramas: `feature/<rol>/<issue-n>-slug` desde `dev`
+- Detalle de workflow en `docs/workflow.md`
+- Detalle de estimación y DoD en `docs/estimation-and-definition-of-done.md`
