@@ -1,12 +1,14 @@
 # API-DIAN
 
-API fiscal intermediaria entre ERPs/integradores y la DIAN (Colombia), con notificación automática al adquiriente.
+API fiscal intermediaria entre ERPs/integradores y la DIAN (Colombia),
+con notificación automática al adquiriente.
+Objetivo final: cubrir todos los servicios fiscales DIAN
+(factura electrónica, notas crédito/débito, documento soporte, nómina, etc.)
+sobre una plataforma multi-tenant.
 
 ## Estado actual
 
-Fase inicial de arquitectura · En exploración · No apto para producción
-
-Sin código de negocio definitivo todavía. Fases, tickets y stack (hipótesis hasta **T0.0.1**): [ROADMAP.md](./ROADMAP.md) · [ADR/ADR-001-stack-tecnologico.md](./ADR/ADR-001-stack-tecnologico.md)
+Fase F0 — Workflow y foundations · En construcción · No apto para producción
 
 ## Flujo de alto nivel
 
@@ -17,37 +19,83 @@ Integrador ──JSON──▶ [API-DIAN] ──XML UBL──▶ DIAN
                          └──XML/PDF por email──▶ Adquiriente
 ```
 
-## Requisitos y setup local
+## Requisitos previos
 
-- **Git** para clonar y trabajar con ramas.
-- **Opcional:** [Supabase CLI](https://supabase.com/docs/guides/cli) si usas la carpeta `supabase/` (p. ej. `config.toml`).
+- Node.js 20+
+- Supabase CLI instalado globalmente
+- Docker (para `supabase start`)
+- GitHub CLI (`gh`) instalado y autenticado
+
+## Setup local
 
 ```bash
 git clone https://github.com/Abraha33/API-Dian.git
 cd API-Dian
 git checkout dev
-git pull origin dev
+supabase start          # levanta Postgres local con Docker
+supabase db push        # aplica migraciones de supabase/migrations/
 ```
 
-Cuando exista la aplicación (`package.json`, runtime, etc.), el setup concreto se documentará aquí o en `docs/` según el ADR.
+## Estructura del repositorio
 
-## Resumen del workflow
+```
+API-Dian/
+├── .cursor/             ← Reglas de Cursor
+├── .github/             ← Issue templates y CI
+├── ADR/                 ← Decisiones de arquitectura
+├── docs/                ← Workflow, agentes, plantillas y ejemplos
+├── scripts/             ← Labels, introspección SQL, utilidades
+└── supabase/            ← Configuración y migraciones de Supabase
+```
 
-- Ramas largas: **`main`** (estable) y **`dev`** (integración).
-- Trabajo: **`feature/...`** desde **`dev`** → PR a **`dev`**; **`main`** en releases u hitos acordados.
-- Issues y tablero: [docs/GITHUB_PROJECTS.md](./docs/GITHUB_PROJECTS.md) · [docs/ticket-taxonomy.md](./docs/ticket-taxonomy.md).
-- **Milestones en GitHub:** no por ahora; la priorización está en el roadmap y el Project.
+## Roadmap
 
-Más detalle Git: [docs/git-branches.md](./docs/git-branches.md).
+El proyecto se organiza en fases F0–F8:
 
-## Cómo contribuir
+| Fase | Descripción |
+|------|-------------|
+| F0 | Workflow, foundations y método de trabajo ← estamos aquí |
+| F1 | Arquitectura y decisiones iniciales |
+| F2 | Núcleo de plataforma (app base, colas, health) |
+| F3 | Tenant, identidad y maestros |
+| F4 | Documento fiscal, emisión DIAN y primer canal |
+| F5 | Retorno al ERP (consultas y webhooks) |
+| F6 | Operación, confiabilidad y gobierno DIAN |
+| F7 | Cobertura fiscal ampliada y multi-canal |
+| F8 | SaaS comercial y escala |
 
-1. Abre o elige un issue alineado al roadmap; conviene una tarea en curso a la vez.
-2. Crea `feature/<tema>` desde `dev`, commits claros y un PR pequeño hacia `dev`.
-3. No subas secretos (`.env`, claves). Revisa CI: [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
-4. Cambios de base de datos: migraciones en `supabase/migrations/` cuando existan; no duplicar esquema a mano sin acuerdo.
+Detalle completo en [`ROADMAP.md`](./ROADMAP.md).
 
-## Más en el repo
+## Flujo de trabajo
 
-- [docs/examples/](./docs/examples/) — plantillas (issue, migración, cierre).
-- Labels opcionales: `python scripts/ensure_role_labels.py` o `scripts/create-labels.ps1` (con [GitHub CLI](https://cli.github.com/) autenticado).
+El flujo completo está en [`docs/workflow.md`](./docs/workflow.md).
+Resumen en 8 pasos:
+
+1. Idea → Issue en GitHub con labels `role-*`, `type-*`, talla y riesgo.
+2. Estimación de talla (XS–XL) y riesgo (Bajo/Medio/Alto).
+3. Diseño con Perplexity usando los prompts de `docs/agents/`.
+4. Implementación en rama `feature/<rol>/<issue-n>-slug` con Cursor.
+5. Migraciones de base de datos con Supabase CLI (si aplica).
+6. Evidencia documentada en el issue.
+7. PR hacia `dev` con CI verde.
+8. Merge a `dev` y cierre del issue.
+
+## Contribuir
+
+1. Crear un issue con:
+   - Labels `role-*`, `type-*`, `size-*`, `priority-*`
+   - Talla (XS–XL) y riesgo (Bajo/Medio/Alto)
+   - Prueba de cierre al final del body
+2. Crear rama `feature/<rol>/<issue-n>-slug` desde `dev`.
+3. Implementar cambios usando Cursor.
+4. Si hay cambios de base de datos, usar Supabase CLI.
+5. Abrir PR hacia `dev` con prueba de cierre completada.
+
+## Herramientas y agentes
+
+| Herramienta | Uso principal |
+|-------------|---------------|
+| Perplexity | Diseño, estimación, modelado SQL, debug |
+| Cursor | Implementación en ramas `feature/...` |
+| Supabase CLI | Migraciones en `supabase/migrations/` |
+| GitHub | Issues, Projects, PRs, Milestones |
