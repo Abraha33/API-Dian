@@ -1,106 +1,147 @@
 # Workflow del proyecto (v0.1)
 
-Este documento describe el flujo de trabajo estándar para cualquier issue del proyecto API-DIAN.
+Flujo estándar para cualquier issue del proyecto API-DIAN,
+desde la idea hasta el cierre.
 
 ## Paso 1 · Idea → Issue
 
-Toda idea entra como issue en GitHub.
+Toda idea entra como issue en GitHub con:
 
-Cada issue debe incluir:
-- Título: `[FASE] Descripción concisa`
-- Labels:
-  - `role-*` (ej. `role-backend`, `role-database`, `role-frontend`)
-  - `type-*` (ej. `type-feature`, `type-bug`, `type-docs`, `type-chore`)
-- Campos en el body:
-  - Talla (XS–XL)
-  - Riesgo (Bajo/Medio/Alto)
+- Título: `[F<n>-<CÓDIGO>] Descripción concisa`
+- Labels obligatorios:
+  - `role-*` (quién lo hace: backend, database, frontend, devops, docs, qa)
+  - `type-*` (qué es: feature, bug, chore, docs, migration, refactor, test)
+  - `size-*` (talla: XS, S, M, L, XL)
+  - `priority-*` (prioridad: high, medium, low)
+- Labels opcionales:
+  - `module-*` (módulo del dominio que toca)
+  - `track-*` (paquete de trabajo dentro de F0)
+  - `blocked` / `needs-discussion`
+- Body obligatorio:
+  - Contexto, Objetivo, Alcance (checklist)
+  - Fuera de alcance
+  - Talla, Riesgo, Rama de trabajo
   - Prueba de cierre (checklist al final)
+- Milestone: F0–F8 según la fase correspondiente.
 
-El campo milestone (F1–F8) es opcional por ahora y se terminará de definir cuando el roadmap esté más estable.
+Plantilla de issue disponible en `docs/templates/` (ver F0-WKF-02).
 
 ## Paso 2 · Estimación
 
-Antes de empezar a trabajar:
-- Elegir talla XS–XL usando la tabla de `docs/estimation-and-definition-of-done.md`.
-- Evaluar riesgo (Bajo/Medio/Alto).
-- Registrar ambos en el body del issue.
-
-Si la tarea parece XL, se debe trocear en varios issues más pequeños.
+Antes de empezar:
+- Elegir talla XS–XL usando la tabla de
+  `docs/estimation-and-definition-of-done.md`.
+- Evaluar riesgo (Bajo / Medio / Alto).
+- Registrar ambos en el body del issue antes de crear la rama.
+- Si la tarea parece XL, trocear en issues más pequeños.
 
 ## Paso 3 · Diseño (Perplexity)
 
-Para diseño funcional y técnico:
-- Usar Perplexity con el prompt de `docs/agents/perplexity-prompt.md`.
-- Cargar el contexto mínimo recomendado en `docs/session-context.md` (estructura del repo, decisiones previas, etc.).
-- Usar Perplexity para:
+Usar Perplexity para diseño técnico y funcional:
+- Cargar contexto mínimo según `docs/context-policy.md`.
+- Usar el prompt de `docs/agents/perplexity-prompt.md`.
+- Aplicar para:
   - Diseñar modelos de datos.
   - Especificar contratos de API.
   - Afinar queries SQL y migraciones.
-  - Analizar impacto de cambios en módulos (integrador, emisión DIAN, notificación, etc.).
+  - Analizar impacto en módulos existentes.
 
-Cualquier decisión de arquitectura relevante se documenta en `ADR/` como un nuevo ADR.
+Si la decisión es relevante a largo plazo → crear ADR en `ADR/`.
 
 ## Paso 4 · Implementación (Cursor)
 
-Para implementación:
-- Crear rama desde `dev`: `feature/<rol>/<issue-n>-slug`.
-  - Ejemplo: `feature/database/12-test-migration`
-  - Ejemplo: `feature/backend/15-health-endpoint`
+Crear rama desde `dev`:
+
+```bash
+git checkout dev
+git pull
+git checkout -b feature/<rol>/<issue-n>-slug
+```
+
+Ejemplos de nombre de rama:
+
+- `feature/docs/1-workflow-foundations`
+- `feature/database/4-flujo-validacion-supabase`
+- `feature/backend/15-health-endpoint`
+
+Luego:
+
 - Usar Cursor con las reglas de `.cursor/rules/project.mdc`.
+- Usar la plantilla de sesión de `docs/templates/session-template.md`.
 - Tocar solo los archivos que el issue describe.
-- Mantener commits pequeños, con mensajes claros.
+- Commits pequeños y descriptivos:
+
+```bash
+git commit -m "tipo(scope): descripción corta"
+```
 
 ## Paso 5 · Migraciones (Supabase CLI)
 
-Si el issue implica cambios en la base de datos:
+Solo si el issue toca la base de datos:
 
 ```bash
-supabase migration new <nombre-descriptivo>   # crea archivo SQL en supabase/migrations/
-# editar el SQL generado con el cambio necesario
-supabase db push                               # aplica migraciones en local
+# Crear migración
+supabase migration new <nombre-descriptivo>
+
+# Editar el SQL generado en supabase/migrations/
+
+# Aplicar en local
+supabase db push
+
+# Verificar
+supabase db diff
 ```
 
 Reglas:
-- No modificar el esquema directamente en el dashboard de Supabase.
-- Todo cambio de esquema debe pasar por una migración versionada.
-- Los scripts de introspección en `scripts/introspection/` se pueden actualizar para reflejar el estado actual.
+- Nunca modificar el esquema directamente en el dashboard de Supabase.
+- Todo cambio de esquema pasa por una migración versionada.
+- Actualizar `scripts/introspection/current-public-schema.sql`
+  si hay cambios de esquema.
+
+Flujo detallado en `docs/supabase-workflow.md` (ver F0-WKF-04).
 
 ## Paso 6 · Evidencia
 
-Antes de abrir un PR:
-- Añadir un comentario en el issue con:
-  - Comandos ejecutados (copiados literalmente).
-  - Resultado obtenido (OK o error, y cómo se resolvió).
-  - Snippet SQL o descripción de la inspección de la base de datos, si hubo cambios de esquema.
-  - Captura o breve descripción de cualquier output relevante (logs, respuestas HTTP, etc.).
+Antes de abrir el PR, añadir un comentario en el issue con:
+- Comandos ejecutados (copiados literalmente).
+- Resultado obtenido (OK o error + cómo se resolvió).
+- Snippet SQL o descripción de introspección (si hubo cambios de BD).
+- Output relevante (logs, respuestas HTTP, etc.).
 
-La prueba de cierre del issue debe poder marcarse usando esta evidencia.
+Usar la plantilla de `docs/templates/checklist-template.md`.
 
 ## Paso 7 · PR + Revisión
 
-Flujo de PR:
-- Abrir PR de `feature/...` hacia `dev`.
-- Título del PR: `[#issue-n] Descripción`.
-- Body del PR:
-  - Referencia al issue (`Closes #n` cuando aplique).
-  - Checklist de la prueba de cierre, marcando lo que se ha validado.
-- CI debe pasar antes de hacer merge.
+```bash
+git push origin feature/<rol>/<issue-n>-slug
+# Abrir PR en GitHub hacia dev
+```
 
-Si el cambio es sensible (base de datos, flujo de emisión, notificación al adquiriente), añadir una nota breve de impacto y rollback.
+PR debe tener:
+- Título: `[#N] Descripción`
+- Body:
+  - `Closes #N`
+  - Checklist de prueba de cierre marcada con resultado real.
+- CI verde antes de merge.
 
-## Paso 8 · Cierre y promoción
+Si el cambio toca BD, flujo de emisión o notificación al adquiriente:
+añadir nota de impacto y plan de rollback.
 
-- Al mergear a `dev`, el issue correspondiente debe quedar cerrado.
-- La rama `dev` acumula trabajo listo pero no necesariamente para producción.
-- Los merges de `dev` → `main` se harán cuando exista un recorte estable (por ejemplo, cierre de un milestone F4), y se documentarán aparte (no automatizar por ahora).
+## Paso 8 · Cierre
+
+- Al mergear a `dev`, cerrar el issue asociado.
+- Registrar tiempo real en la tabla de calibración de
+  `docs/estimation-and-definition-of-done.md`.
+- `dev` → `main` solo cuando haya un recorte estable
+  (cierre de milestone), no se automatiza por ahora.
 
 ## Resumen rápido
 
-1. Idea → Issue con labels, talla, riesgo y prueba de cierre.
-2. Estimación usando `docs/estimation-and-definition-of-done.md`.
-3. Diseño con Perplexity + ADR si aplica.
-4. Implementación en rama `feature/...` con Cursor.
-5. Migraciones de base de datos con Supabase CLI (si aplica).
-6. Evidencia documentada en el issue.
-7. PR a `dev` con CI verde.
-8. Cierre del issue y, más adelante, promoción controlada de `dev` a `main`.
+1. Issue en GitHub: título, labels obligatorios (role, type, size, priority), body completo, milestone F0–F8; opcionales module, track, blocked/needs-discussion.
+2. Estimar talla y riesgo con `docs/estimation-and-definition-of-done.md`; trocear si XL.
+3. Diseño con Perplexity (`docs/context-policy.md`, `docs/agents/perplexity-prompt.md`); ADR si aplica.
+4. Rama `feature/<rol>/<issue-n>-slug` desde `dev`, Cursor, `docs/templates/session-template.md`, commits pequeños.
+5. Si hay BD: Supabase CLI, migraciones versionadas, introspección; detalle en `docs/supabase-workflow.md`.
+6. Evidencia en el issue; `docs/templates/checklist-template.md`.
+7. PR a `dev`, `Closes #N`, CI verde; nota de impacto/rollback si es sensible.
+8. Cerrar issue, registrar tiempo real en calibración; `dev` → `main` solo en hitos estables.

@@ -1,6 +1,6 @@
 # Ramas Git en este repo
 
-Solo hay **dos ramas permanentes** en el remoto: **`main`** y **`dev`**. El resto son ramas de trabajo **tuyas**, creadas cuando las necesites (contexto breve en [README.md](../README.md#resumen-del-workflow)).
+Solo hay **dos ramas permanentes** en el remoto: **`main`** y **`dev`**. El resto son ramas de trabajo **tuyas**, creadas cuando las necesites (contexto breve en [README.md](../README.md)).
 
 | Rama | Quien la usa | Proposito |
 |------|----------------|-----------|
