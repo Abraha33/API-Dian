@@ -1,52 +1,24 @@
-# Checklist diario (API-DIAN)
+# Checklist diario (API-Dian)
 
-Marca en el Project o en el issue lo que aplique. Para el flujo completo, ver [`docs/workflow.md`](./workflow.md).
+Marca mentalmente o en el Project lo que aplique.
 
-### Checklist F1 (dev solo)
+## Antes de codificar
 
-#### 1. Antes de empezar
+- [ ] Una tarjeta en progreso (WIP = 1), alineada al roadmap
+- [ ] Rama desde `dev`: `feature/...` (ver `docs/git-branches.md`)
+- [ ] Contexto corto listo: `docs/session-context.md` o resumen en el chat
 
-- [ ] Issue con título correcto y body completo (Contexto, Objetivo, Alcance, Fuera de alcance).
-- [ ] Labels: `role-*`, `type-*`, `size-*`, `priority-*`, `module-*` (si aplica).
-- [ ] Talla y riesgo definidos usando [`docs/estimation-and-definition-of-done.md`](./estimation-and-definition-of-done.md).
-- [ ] Issue en el Project board (Backlog).
+## Base de datos (cuando usemos Supabase)
 
-#### 2. Preparar trabajo
+- [ ] Cambios de esquema solo como migraciones en `supabase/migrations/`
+- [ ] Revisar que local/remoto coincidan con lo documentado en el ticket
 
-- [ ] `git checkout dev` + `git pull`.
-- [ ] Rama creada: `feature/<rol>/<issue-n>-slug`.
-- [ ] Tarjeta movida a **In Progress**.
+## Antes del PR
 
-#### 3. Diseño rápido con IA (Perplexity)
+- [ ] CI verde (o justificar fallo conocido)
+- [ ] Sin secretos en el diff (`.env` no va al repo)
 
-- [ ] Session-template rellenado (en corto) para esta sesión.
-- [ ] En Perplexity: issue + contexto mínimo pegado, objetivo claro.
-- [ ] Decisiones importantes anotadas (issue o ADR si son de arquitectura).
+## Cierre
 
-#### 4. Implementación (Cursor)
-
-- [ ] Archivos relevantes abiertos en Cursor.
-- [ ] Chat de Cursor con: enlace al issue + resumen de decisiones.
-- [ ] Cambios limitados al alcance del issue.
-- [ ] Commits pequeños y descriptivos.
-
-#### 5. BD (solo si toca database)
-
-- [ ] Migración creada en `supabase/migrations/`.
-- [ ] SQL editado y probado según [`docs/supabase-workflow.md`](./supabase-workflow.md).
-- [ ] `supabase db push` sin errores, evidencia guardada en el issue.
-- [ ] Introspección actualizada (`scripts/introspection/...`).
-
-#### 6. Evidencia
-
-- [ ] Comentario en el issue con comandos, outputs y pruebas realizadas.
-- [ ] Checklist de prueba de cierre del issue marcada con resultado real.
-- [ ] Criterios de DoD del módulo cumplidos ([`docs/estimation-and-definition-of-done.md`](./estimation-and-definition-of-done.md), sección DoD por módulo).
-
-#### 7. PR y cierre
-
-- [ ] PR a `dev` desde la rama del issue con `Closes #N`.
-- [ ] CI verde.
-- [ ] PR aprobado y mergeado.
-- [ ] Tarjeta movida a **Done** y issue cerrado.
-- [ ] Horas reales registradas en la tabla de calibración.
+- [ ] Project: mover tarjeta; **Status update** si hubo bloqueo
+- [ ] Si cambió una decisión de arquitectura: actualizar ADR o README, no solo el chat
