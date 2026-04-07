@@ -57,6 +57,7 @@ Un issue está **Done** solo si se cumple **todo** lo siguiente:
 
 ## DoD por tipo de módulo
 
+<<<<<<< HEAD
 Usar como **refuerzo** al DoD general cuando el issue encaje en uno de estos perfiles.
 
 ### docs
@@ -77,10 +78,33 @@ Usar como **refuerzo** al DoD general cuando el issue encaje en uno de estos per
 - [ ] Comportamiento probado (manual o test mínimo).
 - [ ] Logging básico (entrada/salida/errores donde aplique).
 - [ ] Contrato descrito: ruta, método, body, respuestas esperadas.
+=======
+Criterios mínimos cuando el issue encaja en uno de estos perfiles (además del DoD general).
+
+### docs
+
+- [ ] El doc es legible, con títulos, listas o tablas donde aplique.
+- [ ] Está enlazado desde `README.md`, `docs/workflow.md` o el doc padre correspondiente.
+- [ ] No tiene secciones "TODO" ni typos graves.
+
+### database
+
+- [ ] Migración versionada en `supabase/migrations/<timestamp>_nombre.sql`.
+- [ ] `supabase db push` ejecutado sin errores en local (evidencia en el issue).
+- [ ] `scripts/introspection/current-public-schema.sql` actualizado.
+- [ ] Tabla o cambios visibles en Supabase Studio / introspección.
+
+### backend
+
+- [ ] Endpoint (o lógica) probada al menos manualmente con ejemplo real.
+- [ ] Logging básico en puntos clave (entrada, salida, error).
+- [ ] Contrato documentado (ruta, método, body, respuesta) en doc o comentario del issue.
+>>>>>>> feature/docs/5-criterios-cierre-modulo
 
 ### devops
 
 - [ ] CI verde en el PR.
+<<<<<<< HEAD
 - [ ] Sin secretos en código ni en logs compartidos.
 - [ ] Cambio de infra documentado en ADR si introduce decisión nueva.
 
@@ -89,6 +113,16 @@ Usar como **refuerzo** al DoD general cuando el issue encaje en uno de estos per
 - [ ] Prueba de cierre recorrida paso a paso.
 - [ ] Resultado de cada paso reflejado en el issue.
 - [ ] Al menos errores básicos considerados y anotados.
+=======
+- [ ] No hay secrets en código, config ni logs.
+- [ ] Si cambia infraestructura, hay ADR o nota en el doc adecuado.
+
+### qa
+
+- [ ] Prueba de cierre ejecutada siguiendo el bloque del issue.
+- [ ] Resultado real anotado (OK / fallo y cómo se resolvió).
+- [ ] Casos básicos de error cubiertos y documentados.
+>>>>>>> feature/docs/5-criterios-cierre-modulo
 
 ---
 

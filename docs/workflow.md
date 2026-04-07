@@ -73,7 +73,13 @@ Ejemplos: `feature/docs/1-workflow-foundations`, `feature/database/4-flujo-valid
 
 ## Paso 5 · Migraciones (Supabase CLI)
 
+<<<<<<< HEAD
 **Herramienta principal:** **Supabase CLI** (solo si el issue toca base de datos).
+=======
+Solo si el issue toca la base de datos.
+
+**Guía operativa completa:** [`docs/supabase-workflow.md`](./supabase-workflow.md) (comandos, convenciones de nombres, introspección, qué hacer si falla una migración; alineado con F0-WKF-04).
+>>>>>>> feature/docs/5-criterios-cierre-modulo
 
 ```bash
 supabase migration new <nombre-descriptivo>
@@ -82,11 +88,19 @@ supabase db push
 supabase db diff   # opcional: comprobar diferencias respecto al estado esperado
 ```
 
+<<<<<<< HEAD
 - **No** aplicar cambios de esquema solo desde el dashboard de Supabase; todo va en migraciones versionadas.
 - Tras cambios de esquema, actualizar al menos [`scripts/introspection/current-public-schema.sql`](../scripts/introspection/current-public-schema.sql) cuando el equipo lo exija en el issue.
 - Detalle operativo: [`docs/supabase-workflow.md`](./supabase-workflow.md) (F0-WKF-04).
 
 ---
+=======
+Reglas:
+- Nunca modificar el esquema directamente en el dashboard de Supabase.
+- Todo cambio de esquema pasa por una migración versionada.
+- Actualizar `scripts/introspection/current-public-schema.sql`
+  si hay cambios de esquema (detalle en `supabase-workflow.md`).
+>>>>>>> feature/docs/5-criterios-cierre-modulo
 
 ## Paso 6 · Evidencia
 
@@ -146,6 +160,7 @@ git push origin feature/<rol>/<issue-n>-slug
 
 ## Resumen rápido
 
+<<<<<<< HEAD
 | # | Paso | Herramienta principal |
 |---|------|------------------------|
 | 1 | Issue con título, labels, body, milestone F0–F8 | GitHub |
@@ -158,3 +173,14 @@ git push origin feature/<rol>/<issue-n>-slug
 | 8 | Cerrar issue; tabla de calibración; `dev`→`main` manual en hitos | GitHub + doc |
 
 Pasos en una línea: **GitHub** (issue) → **estimación** (doc) → **Perplexity** (diseño) → **Cursor** (código) → **Supabase CLI** (si BD) → **GitHub** (evidencia + PR) → **cierre** (GitHub + calibración).
+=======
+1. Issue en GitHub: título, labels obligatorios (role, type, size, priority), body completo, milestone F0–F8; opcionales module, track, blocked/needs-discussion.
+2. Estimar talla y riesgo con `docs/estimation-and-definition-of-done.md`; trocear si XL.
+3. Diseño con Perplexity (`docs/context-policy.md`, `docs/agents/perplexity-prompt.md`); ADR si aplica.
+4. Rama `feature/<rol>/<issue-n>-slug` desde `dev`, Cursor, `docs/templates/session-template.md`, commits pequeños.
+5. Si hay BD: Supabase CLI, migraciones versionadas, introspección; detalle en `docs/supabase-workflow.md`.
+6. Evidencia en el issue; `docs/templates/checklist-template.md`.
+7. PR a `dev`, `Closes #N`, CI verde; nota de impacto/rollback si es sensible.
+8. Antes de cerrar el issue, revisar la sección “DoD por tipo de módulo” en docs/estimation-and-definition-of-done.md y confirmar que el módulo principal cumple todos los criterios.
+9. Cerrar issue, registrar tiempo real en calibración; `dev` → `main` solo en hitos estables.
+>>>>>>> feature/docs/5-criterios-cierre-modulo
