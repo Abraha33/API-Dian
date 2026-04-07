@@ -95,6 +95,22 @@ Temas principales:
 
 ---
 
+## F5.5 — Integraciones comerciales y e-commerce
+**Estado: ⏸ No iniciado**
+
+Fase puente entre F5 y F6: define cómo el producto encaja en los flujos donde viven pedidos y ventas (e-commerce, marketplaces, ERPs/POS) en Colombia.
+
+Temas principales:
+- Priorización de canales conectables (Shopify, Mercado Libre, WooCommerce, Odoo/ERP, etc.).
+- Definición del modelo de adaptadores (nativo vs partners vs capa genérica).
+- Contrato interno `commerce-order -> fiscal-document`.
+- Normalización de eventos (entrada/salida) y webhooks.
+- Criterios de prioridad comercial por canal (scoring) y backlog inicial.
+
+Milestone GitHub: **F5.5 — Integraciones comerciales y e-commerce**.
+
+---
+
 ## F6 — Operación, confiabilidad y gobierno DIAN
 **Estado: ⏸ No iniciado**
 

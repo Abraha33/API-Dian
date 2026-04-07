@@ -1,6 +1,7 @@
 .env
 .env.*
 node_modules/
+apps/api/dist/
 __pycache__/
 *.pyc
 .DS_Store

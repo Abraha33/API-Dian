@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat openssl
+
+COPY apps/api/package*.json ./
+RUN npm ci
+
+COPY apps/api/ ./
+
+ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/api_dian
+RUN npx prisma generate
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:dev"]

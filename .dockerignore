@@ -1,0 +1,12 @@
+.git
+.github
+.cursor
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+*.md
+!apps/api/README.md
+coverage
+supabase/.branches
+supabase/.temp

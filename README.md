@@ -8,7 +8,8 @@ sobre una plataforma multi-tenant.
 
 ## Estado actual
 
-Fase F0 — Workflow y foundations · En construcción · No apto para producción
+- **F0** — Workflow y foundations (docs, plantillas, validación Supabase CLI).
+- **F1** — Arquitectura inicial: app **NestJS + Fastify** en `apps/api/` según [ADR-001](./ADR/ADR-001-stack-tecnologico.md) y [ADR-002](./ADR/ADR-002-estructura-modulos.md). No apto para producción.
 
 ## Flujo de alto nivel
 
@@ -23,16 +24,40 @@ Integrador ──JSON──▶ [API-DIAN] ──XML UBL──▶ DIAN
 
 - Node.js 20+
 - Supabase CLI instalado globalmente
-- Docker (para `supabase start`)
+- Docker y Docker Compose (Supabase CLI y/o `docker-compose.dev.yml`)
 - GitHub CLI (`gh`) instalado y autenticado
 
 ## Setup local
+
+### API NestJS (`apps/api`)
 
 ```bash
 git clone https://github.com/Abraha33/API-Dian.git
 cd API-Dian
 git checkout dev
-supabase start          # levanta Postgres local con Docker
+cd apps/api
+cp .env.example .env   # completar valores locales
+npm ci
+npm run build
+npm run start:dev
+```
+
+Comprueba: `GET http://localhost:3000/health` y `GET http://localhost:3000/ready`.
+
+### Docker Compose (Postgres + Redis + MinIO + app)
+
+En la raíz del repo:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+La app en contenedor usa variables inyectadas en el compose (ver `docker-compose.dev.yml`). Para desarrollo en máquina host suele ser más cómodo levantar solo **supabase-db**, **redis** y **minio** y ejecutar `npm run start:dev` en `apps/api` con un `.env` alineado a `apps/api/.env.example`.
+
+### Supabase (esquema versionado del repo)
+
+```bash
+supabase start
 supabase db push        # aplica migraciones de supabase/migrations/
 ```
 
@@ -40,6 +65,8 @@ supabase db push        # aplica migraciones de supabase/migrations/
 
 ```
 API-Dian/
+├── apps/
+│   └── api/             ← Aplicación NestJS + Fastify (F1+)
 ├── .cursor/             ← Reglas de Cursor
 ├── .github/             ← Issue templates y CI
 ├── ADR/                 ← Decisiones de arquitectura
@@ -54,8 +81,8 @@ El proyecto se organiza en fases F0–F8:
 
 | Fase | Descripción |
 |------|-------------|
-| F0 | Workflow, foundations y método de trabajo ← estamos aquí |
-| F1 | Arquitectura y decisiones iniciales |
+| F0 | Workflow, foundations y método de trabajo |
+| F1 | Arquitectura y decisiones iniciales ← app base en `apps/api/` |
 | F2 | Núcleo de plataforma (app base, colas, health) |
 | F3 | Tenant, identidad y maestros |
 | F4 | Documento fiscal, emisión DIAN y primer canal |
