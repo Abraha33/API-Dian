@@ -1,25 +1,27 @@
 name: CI Pipeline
+
 on:
   push:
-    branches: [ main ]
+    branches: [ dev, main ]
   pull_request:
-    branches: [ main ]
+    branches: [ dev, main ]
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: npm
-        cache-dependency-path: apps/api/package-lock.json
-    - name: Install, build and e2e (apps/api)
-      working-directory: apps/api
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci
-      run: |
-        npm ci
-        npm run build
-        npm run lint
-        npm run test:e2e
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+      - name: Install, build and e2e (apps/api)
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci
+        run: |
+          npm ci
+          npm run build
+          npm run lint
+          npm run test:e2e
