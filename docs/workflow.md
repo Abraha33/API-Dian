@@ -2,6 +2,32 @@
 
 Flujo estándar para cualquier issue del proyecto API-DIAN, desde la idea hasta el cierre en `dev`, con evidencia y trazabilidad.
 
+## Corrección estratégica F0
+
+Durante F0, el workflow no debe llevar directamente de issue a construcción técnica DIAN.
+
+El flujo correcto es:
+
+```text
+documentación completa
+↓
+idea consolidada
+↓
+hipótesis claras
+↓
+construcción mínima solo para probar
+↓
+prueba de fogueo de mercado
+↓
+diagnóstico de viabilidad
+↓
+decisión sobre qué construir realmente
+```
+
+Codex/Cursor puede ejecutar cambios, pero no debe convertir una idea no validada en módulos fiscales reales.
+
+---
+
 ## Introducción
 
 **Propósito:** Ordenar el trabajo en issues, ramas, migraciones, PRs y cierre sin perder contexto ni duplicar decisiones.

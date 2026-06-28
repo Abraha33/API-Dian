@@ -1,172 +1,151 @@
 # Roadmap API-DIAN
 
-Fases de construcción del proyecto API-DIAN.
-Objetivo final: plataforma multi-tenant que cubra todos los servicios
-fiscales DIAN (factura electrónica, notas crédito/débito, documento
-soporte, nómina, etc.) sobre una arquitectura modular y escalable.
+Fases corregidas del proyecto API-DIAN.
+
+El objetivo de esta versión del roadmap no es empujar construcción DIAN prematura.
+El objetivo es ordenar el aprendizaje: primero modelo, mercado y viabilidad; después MVP real.
+
+## Pregunta central
+
+```text
+¿Puede una sola persona construir, vender, operar y mantener una API DIAN rentable,
+con servicios limitados, en el mercado actual?
+```
+
+Pregunta secundaria:
+
+```text
+¿Qué habría que cambiar en el modelo para que eso sí sea posible?
+```
 
 ---
 
-## F0 — Workflow, foundations y método de trabajo
+## Orden estratégico corregido
+
+```text
+F0  — Consolidación documental del modelo
+F0.5 — Diseño de prueba de fogueo de mercado
+F1  — Prototipo mínimo para prueba de mercado
+F2  — Ejecución de prueba con Meta Ads / Facebook Ads / landing / WhatsApp
+F3  — Diagnóstico de viabilidad para una sola persona
+F4  — Decisión del MVP real
+F5  — Construcción técnica del MVP validado
+```
+
+La construcción inicial no es el producto final.
+La construcción inicial es una herramienta para aprender del mercado.
+
+---
+
+## F0 — Consolidación documental del modelo
+
 **Estado: 🚧 En progreso**
 
-Fase previa a cualquier construcción funcional.
-Define cómo se trabaja, no el dominio fiscal.
+Fase previa a cualquier construcción funcional DIAN.
 
-Entregables:
-- `docs/workflow.md` — flujo de trabajo en 8 pasos.
-- `docs/estimation-and-definition-of-done.md` — tallas, DoD y calibración.
-- `docs/templates/` — plantillas de sesión, módulo y checklist.
-- `docs/context-policy.md` — política de contexto mínimo para IA.
-- `docs/supabase-workflow.md` — flujo de validación con Supabase CLI.
+Objetivo:
 
-Paquetes de trabajo (issues):
+- Consolidar la idea.
+- Separar visión larga de alcance inmediato.
+- Definir hipótesis de mercado.
+- Definir servicios DIAN potencialmente manejables por una sola persona.
+- Descartar servicios demasiado riesgosos para el inicio.
+- Documentar riesgos, costos, paquetes hipotéticos y criterios de viabilidad.
 
-| Código | Título | Talla | Estado |
-|--------|--------|-------|--------|
-| F0-WKF-01 | Definir workflow y herramientas IA | S | ⏳ Pendiente |
-| F0-WKF-02 | Crear plantillas sesión/módulo/checklist | S | ⏳ Pendiente |
-| F0-WKF-03 | Política de contexto mínimo y docs persistentes | S | ⏳ Pendiente |
-| F0-WKF-04 | Flujo de validación CLI + Supabase | M | ⏳ Pendiente |
-| F0-WKF-05 | Criterios de cierre por módulo | S | ⏳ Pendiente |
+Issues relacionados:
+
+- #44 — Entorno diario.
+- #42 — Modelo experimental y viabilidad para una sola persona.
 
 ---
 
-## F1 — Arquitectura y decisiones iniciales
+## F0.5 — Diseño de prueba de fogueo de mercado
+
 **Estado: ⏸ No iniciado**
 
-Define la arquitectura base de la plataforma que soportará
-todos los servicios fiscales DIAN.
+Objetivo:
 
-Temas principales:
-- Estructura de capas y módulos del sistema.
-- Decisiones de stack tecnológico (ADRs).
-- Organización de servicios internos.
-- Primeros endpoints de salud y verificación.
-- Modelo conceptual de documentos fiscales y flujos.
+Diseñar una prueba de mercado antes de construir el producto completo.
+
+Canales previstos:
+
+- Meta Ads.
+- Facebook Ads.
+- Landing page.
+- WhatsApp.
+- Publicaciones orgánicas.
+- Contacto con contadores.
+- Contacto con negocios pequeños.
+- Contacto con integradores/POS.
+
+Issue relacionado:
+
+- #43 — Prueba de fogueo del mercado.
 
 ---
 
-## F2 — Núcleo de plataforma (app base, colas, health)
+## F1 — Prototipo mínimo para prueba de mercado
+
 **Estado: ⏸ No iniciado**
 
-Temas principales:
-- App base ejecutándose con estructura de módulos definida.
-- Health checks para integradores y monitoreo interno.
-- Infraestructura de colas para procesamiento de documentos.
-- Logging básico y trazabilidad inicial.
-- Estándares de configuración por entorno (dev, staging, prod).
+Objetivo:
+
+Construir solo lo mínimo necesario para probar recepción real.
+
+No es el MVP final.
+No debe incluir todavía XML DIAN, firma digital, envío DIAN, CUFE/CUDE, validaciones UBL, PDF ni lógica fiscal de producción.
 
 ---
 
-## F3 — Tenant, identidad y maestros
+## F2 — Ejecución de prueba con Meta Ads / Facebook Ads / landing / WhatsApp
+
 **Estado: ⏸ No iniciado**
 
-Temas principales:
-- Modelo de tenant/empresa (multi-tenant desde el día 1).
-- Usuarios, roles y permisos asociados al tenant.
-- RLS (Row Level Security) por tenant en Supabase.
-- Maestros de configuración fiscal:
-  resoluciones, numeraciones, datos del emisor.
+Objetivo:
+
+Medir recepción real, costo por lead, objeciones, precio aceptado, confianza, tipo de cliente y soporte requerido.
 
 ---
 
-## F4 — Documento fiscal, emisión DIAN y primer canal
+## F3 — Diagnóstico de viabilidad para una sola persona
+
 **Estado: ⏸ No iniciado**
 
-Temas principales:
-- Modelo de documentos fiscales y estados internos:
-  recibido → encolado → enviado → aceptado/rechazado → notificado.
-- Motor de generación XML/UBL.
-- Adaptador para primer canal DIAN (sandbox).
-- Manejo de respuesta DIAN y persistencia de estados.
-- Primer flujo completo: integrador → DIAN → adquiriente.
+Objetivo:
+
+Responder con evidencia si el modelo puede ser rentable y mantenible por una sola persona.
+
+Resultados posibles:
+
+- Viable.
+- No viable.
+- Viable solo si cambia el paquete.
+- Viable solo con otro cliente objetivo.
+- Viable solo con automatización.
+- No viable para una sola persona.
 
 ---
 
-## F5 — Retorno al ERP (consultas y webhooks)
+## F4 — Decisión del MVP real
+
 **Estado: ⏸ No iniciado**
 
-Temas principales:
-- Endpoints de consulta de documentos para integradores/ERPs.
-- Webhooks de salida con estados relevantes.
-- Reintentos y manejo de fallos de notificación.
-- Sincronización de estados entre API-DIAN y ERP.
+Objetivo:
+
+Decidir qué servicios DIAN conviene construir primero según evidencia de mercado y riesgo operativo.
 
 ---
 
-## F5.5 — Integraciones comerciales y e-commerce
+## F5 — Construcción técnica del MVP validado
+
 **Estado: ⏸ No iniciado**
 
-Fase puente entre F5 y F6: define cómo el producto encaja en los flujos donde viven pedidos y ventas (e-commerce, marketplaces, ERPs/POS) en Colombia.
+Objetivo:
 
-Temas principales:
-- Priorización de canales conectables (Shopify, Mercado Libre, WooCommerce, Odoo/ERP, etc.).
-- Definición del modelo de adaptadores (nativo vs partners vs capa genérica).
-- Contrato interno `commerce-order -> fiscal-document`.
-- Normalización de eventos (entrada/salida) y webhooks.
-- Criterios de prioridad comercial por canal (scoring) y backlog inicial.
+Construir técnicamente solo lo que la prueba y el diagnóstico hayan justificado.
 
-Milestone GitHub: **F5.5 — Integraciones comerciales y e-commerce**.
+Regla:
 
----
-
-## F6 — Operación, confiabilidad y gobierno DIAN
-**Estado: ⏸ No iniciado**
-
-Temas principales:
-- Observabilidad: logs estructurados, métricas, dashboards básicos.
-- Auditoría y trazabilidad de operaciones fiscales.
-- Panel mínimo de soporte interno.
-- DLQ (Dead Letter Queue), replay manual de documentos fallidos.
-- Gestión de cambios normativos DIAN (versionado de esquemas).
-
----
-
-## F7 — Cobertura fiscal ampliada y multi-canal
-**Estado: ⏸ No iniciado**
-
-Temas principales:
-- Notas crédito y débito electrónicas.
-- Documento soporte de adquisiciones.
-- Nómina electrónica.
-- Soporte para múltiples canales de emisión DIAN.
-- Compatibilidad con cambios normativos.
-
----
-
-## F8 — SaaS comercial y escala
-**Estado: ⏸ No iniciado**
-
-Temas principales:
-- Planes y límites por tenant.
-- Contadores de uso y métricas de negocio.
-- Hardening de seguridad para producción.
-- Performance y escalabilidad horizontal.
-- Documentación pública para integradores.
-
----
-
-## Módulos del dominio
-
-| Módulo | Descripción | Fases principales |
-|--------|-------------|-------------------|
-| plataforma-tenants | Multi-tenant, usuarios, permisos | F1–F3 |
-| integrador-api | Contrato JSON de entrada, autenticación | F1–F2 |
-| documentos-fiscales | Modelo y ciclo de documentos | F4 |
-| emision-dian | Generación XML/UBL, envío, respuesta | F4 |
-| procesamiento-interno | Colas, workers, DLQ, replay | F2, F6 |
-| notificacion-adquiriente | Email con XML/PDF | F4 |
-| observabilidad-gobierno | Logs, métricas, auditoría | F6 |
-| cumplimiento-dian | Normativa, versiones, pruebas | F4–F7 |
-
----
-
-## Convenciones
-
-- Cada issue se asocia a un milestone F0–F8.
-- Títulos de issue: `[F<n>-<CÓDIGO>] Descripción`
-- Labels: `role-*`, `type-*`, `size-*`, `priority-*`, `module-*`
-- Ramas: `feature/<rol>/<issue-n>-slug` desde `dev`
-- Detalle de workflow en `docs/workflow.md`
-- Detalle de estimación y DoD en `docs/estimation-and-definition-of-done.md`
+```text
+No se construye el MVP real hasta tener evidencia mínima del mercado.
+```

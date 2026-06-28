@@ -6,10 +6,42 @@ API-Dian está en fase de **modelo experimental**.
 
 El objetivo inmediato no es construir todavía toda la plataforma fiscal completa, sino validar el modelo de trabajo, la arquitectura inicial, los agentes, el manejo de errores, los paquetes, la operación mínima y la forma en que el mercado recibe la propuesta.
 
+## Enfoque actual corregido
+
+API-Dian está en **F0: consolidación del modelo experimental**.
+
+El objetivo inmediato **no** es construir la API DIAN completa.
+
+El objetivo inmediato es:
+
+1. Consolidar la documentación del modelo.
+2. Definir hipótesis de mercado.
+3. Diseñar una prueba de fogueo usando canales como Meta Ads, Facebook Ads, landing page, WhatsApp y entrevistas.
+4. Construir solo lo mínimo necesario para probar recepción real.
+5. Diagnosticar si el modelo puede ser rentable y mantenible por una sola persona.
+6. Decidir qué servicios DIAN conviene construir primero.
+
+La construcción inicial no es el producto final.
+La construcción inicial es una herramienta para aprender del mercado.
+
+### Pregunta central del proyecto
+
+```text
+¿Puede una sola persona construir, vender, operar y mantener una API DIAN rentable,
+con servicios limitados, en el mercado actual?
+```
+
+Pregunta secundaria:
+
+```text
+¿Qué habría que cambiar en el modelo para que eso sí sea posible?
+```
+
 Documentos clave de esta fase:
 
 - [`docs/modelo-experimental.md`](./docs/modelo-experimental.md) — define qué significa “modelo” en este proyecto y cómo se trabaja.
 - [`docs/prueba-fogueo-mercado.md`](./docs/prueba-fogueo-mercado.md) — define cómo probar la recepción del mercado antes de escalar construcción.
+- [`docs/f0-correccion-enfoque-mercado.md`](./docs/f0-correccion-enfoque-mercado.md) — registra la corrección estratégica: primero mercado y viabilidad, luego MVP real.
 
 ---
 
@@ -22,11 +54,17 @@ sobre una plataforma multi-tenant.
 
 ## Estado actual
 
-- **F0** — Workflow, foundations y consolidación del modelo experimental.
-- **F0.5** — Prueba de fogueo del mercado: recepción, objeciones, precio, soporte, contador y mensajes comerciales.
-- **F1** — Arquitectura inicial: app **NestJS + Fastify** en `apps/api/` según [ADR-001](./ADR/ADR-001-stack-tecnologico.md) y [ADR-002](./ADR/ADR-002-estructura-modulos.md). No apto para producción.
+- **F0** — Consolidación documental del modelo experimental.
+- **F0.5** — Diseño de prueba de fogueo de mercado.
+- **F1** — Prototipo mínimo solo para probar recepción real, no producto final.
+- **F2** — Ejecución de prueba con Meta Ads / Facebook Ads / landing / WhatsApp.
+- **F3** — Diagnóstico de viabilidad para una sola persona.
+- **F4** — Decisión del MVP real.
+- **F5** — Construcción técnica del MVP validado.
 
 ## Flujo de alto nivel
+
+> El flujo técnico siguiente representa la visión larga. No es el siguiente paso de F0. Antes se debe validar mercado y viabilidad unipersonal.
 
 ```
 Integrador ──JSON──▶ [API-DIAN] ──XML UBL──▶ DIAN
