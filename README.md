@@ -8,6 +8,7 @@ El objetivo inmediato no es construir todavía toda la plataforma fiscal complet
 
 Documentos clave de esta fase:
 
+- [`docs/entorno-diario.md`](./docs/entorno-diario.md) - define el entorno diario de trabajo entre Obsidian, GitHub Issues, GitHub Project, Codex/Cursor y ChatGPT.
 - [`docs/modelo-experimental.md`](./docs/modelo-experimental.md) — define qué significa “modelo” en este proyecto y cómo se trabaja.
 - [`docs/prueba-fogueo-mercado.md`](./docs/prueba-fogueo-mercado.md) — define cómo probar la recepción del mercado antes de escalar construcción.
 
