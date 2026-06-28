@@ -1,14 +1,29 @@
 # API-DIAN
 
+## Estado del proyecto
+
+API-Dian está en fase de **modelo experimental**.
+
+El objetivo inmediato no es construir todavía toda la plataforma fiscal completa, sino validar el modelo de trabajo, la arquitectura inicial, los agentes, el manejo de errores, los paquetes, la operación mínima y la forma en que el mercado recibe la propuesta.
+
+Documentos clave de esta fase:
+
+- [`docs/modelo-experimental.md`](./docs/modelo-experimental.md) — define qué significa “modelo” en este proyecto y cómo se trabaja.
+- [`docs/prueba-fogueo-mercado.md`](./docs/prueba-fogueo-mercado.md) — define cómo probar la recepción del mercado antes de escalar construcción.
+
+---
+
 API fiscal intermediaria entre ERPs/integradores y la DIAN (Colombia),
 con notificación automática al adquiriente.
-Objetivo final: cubrir todos los servicios fiscales DIAN
+
+Visión larga: cubrir servicios fiscales DIAN
 (factura electrónica, notas crédito/débito, documento soporte, nómina, etc.)
 sobre una plataforma multi-tenant.
 
 ## Estado actual
 
-- **F0** — Workflow y foundations (docs, plantillas, validación Supabase CLI).
+- **F0** — Workflow, foundations y consolidación del modelo experimental.
+- **F0.5** — Prueba de fogueo del mercado: recepción, objeciones, precio, soporte, contador y mensajes comerciales.
 - **F1** — Arquitectura inicial: app **NestJS + Fastify** en `apps/api/` según [ADR-001](./ADR/ADR-001-stack-tecnologico.md) y [ADR-002](./ADR/ADR-002-estructura-modulos.md). No apto para producción.
 
 ## Flujo de alto nivel
@@ -81,7 +96,8 @@ El proyecto se organiza en fases F0–F8:
 
 | Fase | Descripción |
 |------|-------------|
-| F0 | Workflow, foundations y método de trabajo |
+| F0 | Workflow, foundations y consolidación del modelo experimental |
+| F0.5 | Prueba de fogueo del mercado y recepción de la propuesta |
 | F1 | Arquitectura y decisiones iniciales ← app base en `apps/api/` |
 | F2 | Núcleo de plataforma (app base, colas, health) |
 | F3 | Tenant, identidad y maestros |
@@ -122,7 +138,10 @@ Resumen en 8 pasos:
 
 | Herramienta | Uso principal |
 |-------------|---------------|
+| ChatGPT | Arquitecto/revisor senior del modelo experimental |
+| Obsidian | Cerebro del modelo: ideas, decisiones, hipótesis, riesgos y aprendizaje |
+| GitHub Project | Tablero diario de trabajo |
+| GitHub Issues | Tareas accionables y trazables |
+| Codex / Cursor | Ejecución controlada por tickets |
 | Perplexity | Diseño, estimación, modelado SQL, debug |
-| Cursor | Implementación en ramas `feature/...` |
 | Supabase CLI | Migraciones en `supabase/migrations/` |
-| GitHub | Issues, Projects, PRs, Milestones |
