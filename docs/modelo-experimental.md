@@ -8,6 +8,32 @@ El objetivo inmediato no es construir todavía toda la plataforma fiscal complet
 
 Este repositorio funciona como laboratorio controlado para convertir ideas en documentación, tickets, pruebas, código y evidencia.
 
+La construcción inicial no es el producto final. La construcción inicial es una herramienta para probar recepción real del mercado y diagnosticar viabilidad.
+
+---
+
+## Pregunta central del modelo
+
+```text
+¿Puede una sola persona construir, vender, operar y mantener una API DIAN rentable,
+con servicios limitados, en el mercado actual?
+```
+
+Pregunta secundaria:
+
+```text
+¿Qué habría que cambiar en el modelo para que eso sí sea posible?
+```
+
+El modelo debe responder:
+
+- ¿Es viable construir y mantener esto con una sola persona?
+- ¿Qué servicios DIAN sí son manejables por una sola persona?
+- ¿Qué servicios deben descartarse al inicio?
+- ¿Qué partes requieren automatización?
+- ¿Qué partes exigirían contratar personal?
+- ¿Qué precio/paquete parece viable?
+
 ---
 
 ## Qué significa “modelo” en este proyecto
@@ -51,6 +77,9 @@ El modelo busca probar:
 - Cómo se manejan errores DIAN.
 - Cómo se empaquetan servicios para una operación de una sola persona.
 - Cómo reacciona el mercado ante la propuesta.
+- Qué servicios DIAN puede mantener una sola persona sin saturarse.
+- Qué servicios requieren automatización, soporte adicional o contratación.
+- Qué precio o paquete parece viable según evidencia.
 
 ---
 

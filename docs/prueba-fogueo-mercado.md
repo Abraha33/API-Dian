@@ -30,6 +30,8 @@ Estamos preguntando:
 
 ## Objetivo
 
+Medir recepción real del mercado antes de construir el producto completo.
+
 Medir la recepción real de pequeños negocios frente a una propuesta de:
 
 ```text
@@ -43,6 +45,19 @@ alertas de numeración/certificado
 +
 acompañamiento por WhatsApp
 ```
+
+---
+
+## Canales iniciales
+
+- Meta Ads.
+- Facebook Ads.
+- Landing page.
+- WhatsApp.
+- Publicaciones orgánicas.
+- Contacto con contadores.
+- Contacto con negocios pequeños.
+- Contacto con integradores/POS.
 
 ---
 
@@ -114,6 +129,18 @@ Preguntas:
 - ¿El contador maneja la facturación o solo la revisa?
 - ¿El contador recomendaría o bloquearía un cambio?
 - ¿Le gustaría que el sistema también ayude al contador?
+
+---
+
+## Hipótesis a validar
+
+- Existe interés real.
+- El cliente entiende la propuesta.
+- El cliente pagaría.
+- El soporte requerido no supera la capacidad de una sola persona.
+- Los servicios DIAN iniciales pueden mantenerse con bajo riesgo.
+- El mensaje comercial genera leads.
+- El precio hipotético no espanta al mercado.
 
 ---
 
@@ -231,6 +258,21 @@ Si nadie entiende “API”:
 - No aceptar personalizaciones complejas.
 - No construir más software antes de escuchar señales reales.
 - No interpretar “me parece interesante” como intención de pago.
+
+---
+
+## Métricas
+
+- Costo por lead.
+- Cantidad de leads.
+- Calidad de leads.
+- Preguntas frecuentes.
+- Objeciones.
+- Precio aceptado.
+- Tipo de cliente interesado.
+- Urgencia del problema.
+- Nivel de soporte solicitado.
+- Confianza/desconfianza frente a una solución nueva.
 
 ---
 

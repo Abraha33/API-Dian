@@ -2,6 +2,23 @@
 
 Copia o resume esto al **inicio** de una sesión si el chat está largo o cambias de máquina. Mantenlo corto; el análisis profundo va a Perplexity u otro agente largo.
 
+## Enfoque F0 corregido
+
+Antes de pedir código, confirmar que el trabajo actual sigue este orden:
+
+```text
+documentación → modelo → hipótesis → prueba de mercado → diagnóstico → decisión de MVP
+```
+
+Pregunta central:
+
+```text
+¿Puede una sola persona construir, vender, operar y mantener una API DIAN rentable,
+con servicios limitados, en el mercado actual?
+```
+
+No avanzar a XML, firma, envío DIAN ni lógica fiscal real sin evidencia mínima del mercado.
+
 ## Estado actual (rellenar)
 
 - **Rama:** `dev` / `feature/...`

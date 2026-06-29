@@ -2,6 +2,13 @@
 
 Marca mentalmente o en el Project lo que aplique.
 
+## Antes de construir algo técnico
+
+- [ ] Confirmar si la tarea pertenece a documentación, hipótesis, prueba de mercado o diagnóstico.
+- [ ] Confirmar que no se está saltando directo a XML, firma, envío DIAN o lógica fiscal real.
+- [ ] Confirmar qué aprendizaje de mercado busca producir la tarea.
+- [ ] Si se construye algo, debe ser mínimo y orientado a probar recepción real, no el producto final.
+
 ## Antes de codificar
 
 - [ ] Una tarjeta en progreso (WIP = 1), alineada al roadmap
