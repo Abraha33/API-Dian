@@ -44,6 +44,8 @@ Integrador ──JSON──▶ [API-DIAN] ──XML UBL──▶ DIAN
 
 ## Setup local
 
+> Fase actual: **F0 / modelo experimental**. Este setup permite levantar y validar la app base. No significa que el sistema ya facture, genere XML UBL, firme documentos o env?e informaci?n a la DIAN.
+
 ### API NestJS (`apps/api`)
 
 ```bash
@@ -51,23 +53,57 @@ git clone https://github.com/Abraha33/API-Dian.git
 cd API-Dian
 git checkout dev
 cd apps/api
-cp .env.example .env   # completar valores locales
+cp .env.example .env
 npm ci
+```
+
+El archivo `apps/api/.env.example` contiene valores seguros de desarrollo. No reemplaza secretos reales ni configuraci?n productiva.
+
+### Build
+
+Desde `apps/api`:
+
+```bash
 npm run build
+```
+
+### App en modo desarrollo
+
+Desde `apps/api`:
+
+```bash
 npm run start:dev
 ```
 
-Comprueba: `GET http://localhost:3000/health` y `GET http://localhost:3000/ready`.
+Con la app levantada, verifica:
+
+```bash
+curl http://localhost:3000/health
+curl http://localhost:3000/ready
+```
+
+Tambi?n se puede abrir en navegador:
+
+- `GET http://localhost:3000/health`
+- `GET http://localhost:3000/ready`
+
+### Pruebas e2e
+
+Desde `apps/api`:
+
+```bash
+npm run test:e2e
+```
 
 ### Docker Compose (Postgres + Redis + MinIO + app)
 
-En la raíz del repo:
+En la ra?z del repo:
 
 ```bash
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-La app en contenedor usa variables inyectadas en el compose (ver `docker-compose.dev.yml`). Para desarrollo en máquina host suele ser más cómodo levantar solo **supabase-db**, **redis** y **minio** y ejecutar `npm run start:dev` en `apps/api` con un `.env` alineado a `apps/api/.env.example`.
+La app en contenedor usa variables inyectadas en el compose (ver `docker-compose.dev.yml`). Para desarrollo en m?quina host suele ser m?s c?modo levantar solo **supabase-db**, **redis** y **minio** y ejecutar `npm run start:dev` en `apps/api` con un `.env` alineado a `apps/api/.env.example`.
 
 ### Supabase (esquema versionado del repo)
 

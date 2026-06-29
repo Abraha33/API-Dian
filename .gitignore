@@ -1,5 +1,7 @@
 .env
 .env.*
+!.env.example
+!**/.env.example
 node_modules/
 apps/api/dist/
 __pycache__/
