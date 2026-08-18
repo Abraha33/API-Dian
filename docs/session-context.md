@@ -1,74 +1,84 @@
-# Contexto de sesión (Cursor)
+# Contexto de sesión — API-DIAN
 
-Copia o resume esto al **inicio** de una sesión si el chat está largo o cambias de máquina. Mantenlo corto; el análisis profundo va a investigación separada.
+Usar este archivo para reanudar trabajo sin reconstruir decisiones cerradas.
 
-## Fuente maestra actual
+## Fuentes maestras actuales
 
-- `docs/f0-producto-v1-validado-2026-08-18.md` — baseline de producto validado y handoff principal.
+1. `docs/f0-producto-v1-validado-2026-08-18.md` — autoridad de producto.
+2. `docs/v1-requisitos.md` — requisitos e invariantes V1.
+3. `docs/f0-reconciliacion-roadmap-adr-2026-08-18.md` — resolución de contradicciones históricas.
+4. `ROADMAP.md` — secuencia vigente.
 
-No reconstruir la definición del producto desde cero ni reabrir decisiones cerradas salvo evidencia nueva fuerte.
+No reabrir definición del producto salvo evidencia nueva fuerte.
 
-## Estado actual
+## Estado
 
-- **Rama base:** `dev`
-- **Fase:** definición y validación de producto cerradas; pendiente reconciliar roadmap y cerrar requisitos V1.
-- **Producto:** API fiscal interna para comercio colombiano.
-- **Primer consumidor:** POS propio de venta rápida.
-- **Flujo:** `POS → API propia → 1 PT habilitado → DIAN`.
-- **Operación:** una sola persona inicialmente.
-- **API pública externa:** fuera de V1; solo evaluar después de evidencia de demanda pagada.
+- **Rama:** `dev`.
+- **F0 baseline/producto:** cerrado.
+- **F1 requisitos V1:** cerrado para arquitectura.
+- **Siguiente fase:** F2 — arquitectura formal y ADR.
+- **Operación inicial:** una sola persona.
 
-## V1 fiscal congelada
+## Producto V1
+
+```text
+POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
+```
+
+La API es infraestructura estratégica del POS, no un producto API público en V1.
+
+## Alcance fiscal congelado
 
 - FEV.
 - Nota Crédito.
 - Nota Débito.
 - DEE POS.
 - Nota de ajuste DEE POS.
-- Contingencias necesarias de FEV/DEE POS.
-- Estados.
+- contingencias necesarias FEV/DEE POS.
+- estado/seguimiento.
 - XML validado.
-- PDF/representación gráfica entregada por el PT.
+- PDF/representación entregada por el PT.
 
-El núcleo incluye idempotencia, auditoría, trazabilidad, reconciliación básica, multiempresa, observabilidad y una interfaz interna mínima `FiscalProvider` con un solo PT.
+## Invariantes que gobiernan arquitectura
+
+- `DESCONOCIDO != REEMITIR`.
+- persistir intent/idempotencia antes del side effect remoto;
+- misma idempotency key no puede crear duplicado lógico;
+- aislamiento multiempresa con defensa en profundidad;
+- conservar evidencia/respuestas crudas PT;
+- reconciliación automática básica;
+- una sola fuente transaccional interna;
+- observabilidad y recuperación desde el inicio;
+- un solo `FiscalProvider` / un solo PT;
+- sin custodia propia de certificados en V1 si puede delegarse de forma segura.
 
 ## Fuera de V1
 
-- Documento Soporte.
-- recepción/eventos.
-- nómina.
-- RADIAN.
-- salud/RIPS.
-- transporte/RNDC.
-- API/SDK/webhooks públicos.
-- segundo PT/failover.
-- DIAN directa.
-- custodia propia de certificados.
-- PDF propio.
-- ERP/contabilidad/CRM.
-- forks/personalizaciones por cliente.
+- API/SDK/webhooks públicos;
+- Documento Soporte;
+- recepción/eventos;
+- nómina/RADIAN/RIPS/RNDC;
+- segundo PT/failover;
+- DIAN directa;
+- PDF propio;
+- ERP/contabilidad/CRM;
+- forks por cliente.
 
-## Próximo proceso
+## Estado de ADR históricos
 
-```text
-1. Reconciliar ROADMAP.md y ADR existentes con el baseline validado
-2. Cerrar requisitos V1
-3. Arquitectura formal / ADR
-4. Modelo de datos
-5. Seguridad / amenazas
-6. Contratos internos/API
-7. Selección del PT inicial
-8. Plan de pruebas y contingencia
-9. Implementación incremental
-```
+- `ADR-001-stack-tecnologico.md`: **requiere revalidación**.
+- `ADR-002-estructura-modulos.md`: **requiere revalidación**.
 
-## Documentos de verdad
+No eliminar código por reflejo. En F2, cada pieza existente se conserva o retira por coste total, riesgo y requisito satisfecho.
 
-- `docs/f0-producto-v1-validado-2026-08-18.md` — autoridad de producto actual.
-- `README.md` — flujo Git y reglas generales.
-- `ROADMAP.md` — roadmap previo; debe reconciliarse con el nuevo baseline antes de seguir construcción.
-- `ADR/` — decisiones arquitectónicas vigentes/borradores; revisar contradicciones antes de modificar.
+## Próximo trabajo — F2
 
-## Última decisión relevante
+1. derivar arquitectura mínima desde `docs/v1-requisitos.md`;
+2. definir módulos/límites del monolito modular;
+3. fijar estrategia transaccional de idempotencia + side effects;
+4. decidir async mínimo y si Redis/BullMQ sigue justificándose;
+5. decidir persistencia/storage/observabilidad;
+6. producir ADR nuevos o reemplazos explícitos;
+7. mantener PT detrás de `FiscalProvider` sin diseñar multi-PT.
 
-- **2026-08-18** — cerrada la definición del Producto V1 después de cinco rondas de validación independientes: producto/mercado, adversarial, jurídica, comercial y técnica/operativa. La API nace como infraestructura interna del POS y no como producto API externo abierto.
+Después: modelo de datos + threat model, contratos internos, selección del PT, pruebas/contingencia e implementación incremental.

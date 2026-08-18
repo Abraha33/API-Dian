@@ -1,44 +1,58 @@
-# ADR-001: Stack tecnológico — API-Dian
+# ADR-001: Stack tecnológico — API-DIAN
 
-- **Estado:** Aprobado
-- **Fecha:** 2026-04-07
-- **Contexto:** API SaaS multi-tenant para facturación electrónica DIAN (Colombia), con integradores JSON/XML y canales de salida. Este ADR fija el stack de implementación acordado para F1 en adelante.
+- **Estado:** Requiere revalidación en F2
+- **Fecha original:** 2026-04-07
+- **Reconciliado:** 2026-08-18
+- **Autoridad superior de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
-## Contexto
+## Motivo de la revalidación
 
-Se necesita un stack homogéneo (runtime, datos, colas, observabilidad, despliegue) alineado a Node/TypeScript, PostgreSQL con RLS en Supabase, y operación con contenedores en local y CI en GitHub Actions.
+Este ADR fue aprobado bajo un contexto anterior: API SaaS para integradores, con construcción de capacidades públicas y una secuencia de fases distinta. El baseline validado del 18 de agosto cambió el producto V1 a:
 
-## Decisión
+```text
+POS propio → API fiscal propia → 1 PT habilitado → DIAN
+```
 
-| Capa | Decisión | Alternativa descartada | Razón breve |
-|------|----------|------------------------|-------------|
-| Framework HTTP | NestJS + adaptador **Fastify** | Express (default Nest), Koa, Hono | Rendimiento y modelo plugin de Fastify; Nest da estructura modular y DI madura. |
-| Runtime / lenguaje | **Node.js 20 LTS** + **TypeScript estricto** | Node 18, Deno, Bun | LTS estable, ecosistema maduro para librerías fiscales y tooling. |
-| Base de datos | **PostgreSQL** vía **Supabase** + **RLS**; ORM **Prisma** | TypeORM, Drizzle, SQL crudo | Prisma + migraciones versionadas encajan con el flujo del repo; RLS en Supabase para multi-tenant. |
-| Colas / async | **Redis** + **BullMQ** | PGMQ solo, RabbitMQ, SQS temprano | BullMQ es idiomático en Node; Redis ya cubre rate limiting/caché ligera más adelante. |
-| Auth integradores | **API Key** + **Secret** (hash almacenado) | Solo JWT de larga duración | Patrón simple para integraciones servidor-servidor; rotación por clave. |
-| Auth panel interno | **JWT RS256** | JWT HS256 global | Mejor separación de firmas y rotación de claves en despliegues multi-instancia. |
-| Validación DTO | **class-validator** + **class-transformer** | Zod-only | Alineado con ecosistema Nest (pipes) y validación de `ConfigModule`. |
-| Storage documentos | **Cloudflare R2** (S3-compatible); local **MinIO** | S3 directo, GCS | Coste y simplicidad para adjuntos/XML/PDF; MinIO paridad local. |
-| Logging | **Pino** (JSON prod, **pino-pretty** en dev) | Winston, consola | Bajo overhead y formato JSON estándar para agregadores. |
-| Documentación API | **OpenAPI 3.1** + **Scalar** | Swagger UI solo | Scalar mejora DX sobre OpenAPI generado desde Nest. |
-| Infra local | **Docker Compose** (Postgres + Redis + MinIO; alineado a Supabase/CLI según fase) | Solo `supabase start` | Compose explícito para servicios que la app Nest consume directamente en F1/F2. |
-| CI/CD | **GitHub Actions** | GitLab CI, Circle | Repositorio ya en GitHub; integración nativa. |
-| Integración fiscal | Integrador API / canal DIAN según **ROADMAP** (sandbox → prod) | Acoplamiento duro a un solo proveedor sin contrato | El conector concreto se fija por contrato y entorno; el core permanece agnóstico donde sea posible. |
+Por tanto, las decisiones de este ADR no se eliminan, pero tampoco pueden usarse por sí solas para justificar complejidad operativa o capacidades que ya quedaron fuera de V1.
 
-## Alternativas consideradas (resumen)
+## Disposición de las decisiones históricas
 
-- **Express vs Fastify:** Express es más familiar pero Fastify ofrece mejor rendimiento y tipado con plugins; Nest soporta ambos de primera clase.
-- **Prisma vs Drizzle:** Drizzle es ligero; Prisma prioriza DX y cliente tipado ya adoptado en el plan de trabajo.
-- **Colas solo en Postgres (PGMQ):** reduce operaciones pero limita patrones de workers y reintentos ya previstos para F2.
+| Capa | Decisión histórica | Disposición V1 |
+|---|---|---|
+| Framework HTTP | NestJS + Fastify | **Candidato vigente.** Ya existe base implementada; revalidar coste/beneficio en F2 antes de expandir. |
+| Runtime | Node.js 20 + TypeScript estricto | **TypeScript estricto vigente como candidato.** La versión exacta de Node debe fijarse en una versión LTS soportada al iniciar F2; no congelar una versión antigua por este ADR. |
+| Base de datos | PostgreSQL/Supabase + RLS + Prisma | **Candidato fuerte.** PostgreSQL administrado y aislamiento multiempresa son coherentes con el baseline; ORM y uso exacto de Supabase/RLS se revalidan en F2/F3. |
+| Async | Redis + BullMQ | **No aprobado automáticamente para V1.** Solo se conserva si un requisito demuestra que una cola transaccional/worker más simple no basta. La reducción de componentes operados pesa más que flexibilidad futura. |
+| Auth integradores | API Key + Secret | **Supersedido para V1 como requisito de integradores externos.** V1 necesita autenticación POS→API y aislamiento por empresa; el mecanismo exacto se decide con el threat model. |
+| Auth panel | JWT RS256 | **Sin requisito V1 que obligue a un panel.** Diferido hasta que exista actor/UI que lo necesite. |
+| Validación DTO | class-validator + class-transformer | **Candidato vigente** si se mantiene NestJS. No es una decisión de producto. |
+| Storage | Cloudflare R2 / MinIO | **Candidato.** V1 sí requiere conservar/recuperar artefactos y evidencia; la tecnología final se decide por durabilidad, coste y operación. |
+| Logging | Pino | **Candidato vigente.** Logs estructurados sí son requisito V1. |
+| OpenAPI / Scalar | OpenAPI 3.1 + Scalar | **OpenAPI interno útil; Scalar opcional.** No existe requisito de portal público de desarrolladores. |
+| Infra local | Docker Compose | **Vigente como herramienta de desarrollo**, sin implicar la topología de producción. |
+| CI/CD | GitHub Actions | **Vigente como candidato** por repositorio y flujo actuales. |
+| Integración fiscal | canal/integrador según roadmap | **Reemplazado conceptualmente:** un único `FiscalProvider` y un solo adaptador a un PT habilitado. Sin integración directa con DIAN en V1. |
 
-## Consecuencias
+## Restricciones que gobiernan F2
 
-- **Positivas:** Stack coherente con Nest; logs y validación homogéneos; despliegue y local reproducible con Compose.
-- **Negativas / deuda:** Mantener Prisma + Supabase RLS requiere disciplina en migraciones y políticas; OpenAPI/Scalar hay que versionar con el API.
+La arquitectura formal deberá demostrar que:
 
-## Criterios de aceptación (F1)
+- una sola persona puede operar el sistema;
+- el número de servicios administrados y piezas móviles es mínimo;
+- no se introduce Redis, broker, panel, gateway o servicio separado sin un requisito verificable;
+- la persistencia del intento fiscal y la idempotencia ocurren antes de side effects remotos;
+- un timeout ambiguo nunca conduce a reemisión ciega;
+- el PT concreto queda aislado detrás de una interfaz mínima, no de un framework multi-PT;
+- observabilidad, backup y recuperación son parte del núcleo, no una fase tardía.
 
-- [x] Tabla anterior completa (sin celdas vacías en capas críticas).
-- [x] Al menos una alternativa descartada por capa crítica (DB, runtime/framework).
-- [x] README enlaza a este ADR como fuente de verdad del stack.
+## Consecuencia sobre el código existente
+
+La revalidación **no ordena borrar** NestJS, Prisma, Redis/BullMQ u otras piezas ya presentes. Evitar churn es también una restricción. F2 debe comparar el coste de mantener cada pieza contra el coste y riesgo de retirarla.
+
+## Decisión vigente hasta F2
+
+Este ADR se conserva como registro histórico y lista de candidatos. La arquitectura V1 final deberá producir uno o más ADR nuevos que:
+
+1. confirmen explícitamente las decisiones que sobreviven;
+2. reemplacen las decisiones incompatibles;
+3. documenten por qué cada componente merece su coste operacional.
