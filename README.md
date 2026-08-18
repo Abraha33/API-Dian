@@ -8,17 +8,19 @@ API fiscal interna para comercio colombiano.
 
 - Baseline de producto: **cerrado**.
 - Requisitos V1: **cerrados para arquitectura**.
-- Siguiente fase: **F2 — arquitectura formal y ADR**.
-- Rama de trabajo: `dev`.
+- Arquitectura F2: **cerrada para F3**.
+- Siguiente fase: **F3 — modelo de datos + seguridad/amenazas**.
+- Rama: `dev`.
 
 Fuentes maestras:
 
 - [`docs/f0-producto-v1-validado-2026-08-18.md`](./docs/f0-producto-v1-validado-2026-08-18.md)
 - [`docs/v1-requisitos.md`](./docs/v1-requisitos.md)
-- [`docs/f0-reconciliacion-roadmap-adr-2026-08-18.md`](./docs/f0-reconciliacion-roadmap-adr-2026-08-18.md)
+- [`ADR/ADR-003-arquitectura-v1-monolito-postgres.md`](./ADR/ADR-003-arquitectura-v1-monolito-postgres.md)
+- [`ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md`](./ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md)
 - [`ROADMAP.md`](./ROADMAP.md)
 
-Los documentos anteriores sobre “modelo experimental” y “fogueo de mercado” se conservan como evidencia histórica; no gobiernan ya el alcance V1.
+Los documentos anteriores sobre “modelo experimental” y “fogueo de mercado” son evidencia histórica; no gobiernan V1.
 
 ## Producto V1
 
@@ -26,17 +28,7 @@ Los documentos anteriores sobre “modelo experimental” y “fogueo de mercado
 POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
-La API debe ser reutilizable e independiente del POS, pero **no será una API pública comercial en V1**.
-
-Principios:
-
-- una sola persona desarrolla, mantiene y opera inicialmente;
-- un solo PT habilitado;
-- sin integración directa con DIAN;
-- sin segundo PT/failover;
-- sin custodia propia de certificados si el PT permite delegarla contractual y seguramente;
-- idempotencia, evidencia, reconciliación, aislamiento y observabilidad son núcleo, no extras;
-- no personalizaciones/forks por cliente.
+La API es reutilizable e independiente del POS, pero no es una API pública comercial en V1.
 
 Regla crítica:
 
@@ -44,48 +36,77 @@ Regla crítica:
 DESCONOCIDO != REEMITIR
 ```
 
+## Arquitectura V1
+
+```text
+POS
+ ↓
+API — rol HTTP del monolito
+ ↓
+PostgreSQL administrado — autoridad transaccional
+ ↑
+Worker — mismo código/artefacto
+ ↓
+FiscalProvider → 1 PT habilitado
+
+Object storage → XML/PDF/evidencia binaria; nunca estado de workflow
+```
+
+Decisiones F2:
+
+- monolito modular;
+- TypeScript/NestJS/Fastify;
+- Node.js 24 LTS como runtime al implementar;
+- PostgreSQL como única autoridad de estado;
+- trabajo async durable en PostgreSQL;
+- sin Redis/BullMQ productivo en V1;
+- sin microservicios/Kubernetes/broker;
+- solo el worker puede ejecutar mutaciones del PT;
+- API HTTP persiste y devuelve identidad/estado de operación;
+- timeout ambiguo → `UNKNOWN` → reconciliación;
+- object storage y observabilidad administrados/minimalistas.
+
+Detalles: ADR-003 y ADR-004.
+
 ## Alcance fiscal V1
 
-- Factura Electrónica de Venta.
-- Nota Crédito.
-- Nota Débito.
-- Documento Equivalente Electrónico POS.
-- Nota de ajuste DEE POS.
-- contingencias necesarias de FEV y DEE POS.
-- consulta/seguimiento de estado.
-- recuperación de XML validado.
-- recuperación de PDF/representación gráfica entregada por el PT.
+- Factura Electrónica de Venta;
+- Nota Crédito;
+- Nota Débito;
+- Documento Equivalente Electrónico POS;
+- nota de ajuste DEE POS;
+- contingencias necesarias FEV/DEE POS;
+- estado/seguimiento;
+- XML validado;
+- PDF/representación del PT.
 
-Fuera de V1: API/SDK/webhooks públicos, Documento Soporte, recepción/eventos, nómina, RADIAN, RIPS, RNDC, otros DEE sectoriales, multi-PT, DIAN directa, PDF propio, ERP, contabilidad, CRM y forks.
+Fuera: API/SDK/webhooks públicos, Documento Soporte, recepción/eventos, nómina, RADIAN, RIPS, RNDC, multi-PT, DIAN directa, PDF propio, ERP/CRM/contabilidad y forks.
 
-## Roadmap vigente
+## Roadmap
 
 | Fase | Estado | Objetivo |
 |---|---|---|
-| F0 | ✅ | Baseline de producto y validación |
+| F0 | ✅ | Producto/validación |
 | F1 | ✅ | Requisitos V1 |
-| F2 | ▶ | Arquitectura formal y ADR |
-| F3 | ⏸ | Modelo de datos + seguridad/amenazas |
-| F4 | ⏸ | Contratos internos + selección PT |
-| F5 | ⏸ | Pruebas, contingencia y operación |
+| F2 | ✅ | Arquitectura formal/ADR |
+| F3 | ▶ | Datos + seguridad/threat model |
+| F4 | ⏸ | Contratos + selección PT |
+| F5 | ⏸ | Pruebas/contingencia/operación |
 | F6 | ⏸ | Implementación incremental |
-| F7 | ⏸ | Readiness + piloto controlado con POS |
-| F8 | ⏸ | Estabilización + decisión V1.1 |
+| F7 | ⏸ | Readiness/piloto POS |
+| F8 | ⏸ | Estabilización/V1.1 |
 
 Detalle: [`ROADMAP.md`](./ROADMAP.md).
 
-## ADR existentes
+## ADR
 
-Los ADR de abril se mantienen como registro histórico y candidatos técnicos, pero deben revalidarse contra los requisitos V1 antes de expandir la implementación:
-
-- [`ADR/ADR-001-stack-tecnologico.md`](./ADR/ADR-001-stack-tecnologico.md)
-- [`ADR/ADR-002-estructura-modulos.md`](./ADR/ADR-002-estructura-modulos.md)
-
-En particular, Redis/BullMQ, auth para integradores, panel y la estructura histórica de `emission/webhooks` **no quedan aprobados por inercia**.
+- ADR-001 y ADR-002: históricos/supersedidos para V1.
+- ADR-003: arquitectura/topología autoritativa.
+- ADR-004: idempotencia, side effect y reconciliación autoritativos.
 
 ## Setup local existente
 
-La aplicación base vive en `apps/api/` y usa actualmente NestJS/Fastify. La existencia de una dependencia en el repositorio no significa que haya sido ratificada para la arquitectura V1 final.
+La base actual vive en `apps/api/`. La infraestructura histórica del compose puede contener Redis/MinIO; su existencia no significa que formen parte de producción V1.
 
 ```bash
 git clone https://github.com/Abraha33/API-Dian.git
@@ -98,33 +119,21 @@ npm run build
 npm run start:dev
 ```
 
-Health/readiness esperados en desarrollo:
+Health:
 
 ```bash
 curl http://localhost:3000/health
 curl http://localhost:3000/ready
 ```
 
-Pruebas e2e:
+Pruebas:
 
 ```bash
 npm run test:e2e
 ```
 
-Infra local histórica:
+## Criterio de construcción
 
-```bash
-docker compose -f docker-compose.dev.yml up -d
-```
+Toda pieza de infraestructura debe trazarse a `docs/v1-requisitos.md` y a un ADR vigente.
 
-No usar el compose actual como evidencia de la topología productiva final; esa decisión corresponde a F2.
-
-## Flujo de trabajo
-
-El flujo general permanece en [`docs/workflow.md`](./docs/workflow.md): issue trazable, rama de trabajo cuando corresponda, cambio acotado, pruebas/evidencia, PR y merge a `dev`.
-
-## Criterio de arquitectura
-
-Toda pieza de infraestructura debe trazarse a un requisito de [`docs/v1-requisitos.md`](./docs/v1-requisitos.md).
-
-Para V1 se favorece una arquitectura austera y administrada, con una fuente transaccional clara y mínima carga operativa. Microservicios, brokers complejos, multi-PT y capas públicas no se introducen como preparación especulativa para un futuro que todavía no existe.
+No construir lógica fiscal real contra un PT antes de cerrar F3 y F4. En un sistema fiscal operado por una sola persona, menos componentes y estados explícitos valen más que flexibilidad futura especulativa.
