@@ -2,83 +2,103 @@
 
 Usar este archivo para reanudar trabajo sin reconstruir decisiones cerradas.
 
-## Fuentes maestras actuales
+## Fuentes maestras
 
-1. `docs/f0-producto-v1-validado-2026-08-18.md` — autoridad de producto.
-2. `docs/v1-requisitos.md` — requisitos e invariantes V1.
-3. `docs/f0-reconciliacion-roadmap-adr-2026-08-18.md` — resolución de contradicciones históricas.
-4. `ROADMAP.md` — secuencia vigente.
+1. `docs/f0-producto-v1-validado-2026-08-18.md` — producto.
+2. `docs/v1-requisitos.md` — requisitos/invariantes.
+3. `ADR/ADR-003-arquitectura-v1-monolito-postgres.md` — arquitectura/topología V1.
+4. `ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md` — protocolo de mutación fiscal.
+5. `ROADMAP.md` — secuencia vigente.
 
-No reabrir definición del producto salvo evidencia nueva fuerte.
+No reabrir producto ni F2 salvo evidencia nueva fuerte.
 
 ## Estado
 
 - **Rama:** `dev`.
-- **F0 baseline/producto:** cerrado.
-- **F1 requisitos V1:** cerrado para arquitectura.
-- **Siguiente fase:** F2 — arquitectura formal y ADR.
+- **F0 producto:** cerrado.
+- **F1 requisitos:** cerrado para arquitectura.
+- **F2 arquitectura:** cerrado para F3.
+- **Siguiente:** F3 — modelo de datos + seguridad/threat model.
 - **Operación inicial:** una sola persona.
 
 ## Producto V1
 
 ```text
-POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
+POS propio → API fiscal propia → 1 PT habilitado → DIAN
 ```
 
-La API es infraestructura estratégica del POS, no un producto API público en V1.
+API interna del POS en V1; no API pública comercial.
 
-## Alcance fiscal congelado
+## Arquitectura congelada en F2
 
-- FEV.
-- Nota Crédito.
-- Nota Débito.
-- DEE POS.
-- Nota de ajuste DEE POS.
-- contingencias necesarias FEV/DEE POS.
-- estado/seguimiento.
-- XML validado.
-- PDF/representación entregada por el PT.
+```text
+POS
+ ↓
+API (monolito, rol api)
+ ↓
+PostgreSQL administrado ← autoridad transaccional
+ ↑
+Worker (mismo código, rol worker)
+ ↓
+FiscalProvider → 1 PT
 
-## Invariantes que gobiernan arquitectura
+Object storage: solo artefactos
+```
 
-- `DESCONOCIDO != REEMITIR`.
-- persistir intent/idempotencia antes del side effect remoto;
-- misma idempotency key no puede crear duplicado lógico;
-- aislamiento multiempresa con defensa en profundidad;
-- conservar evidencia/respuestas crudas PT;
-- reconciliación automática básica;
-- una sola fuente transaccional interna;
-- observabilidad y recuperación desde el inicio;
-- un solo `FiscalProvider` / un solo PT;
-- sin custodia propia de certificados en V1 si puede delegarse de forma segura.
+Decisiones:
 
-## Fuera de V1
+- monolito modular;
+- TypeScript + NestJS + Fastify;
+- Node 24 LTS al implementar;
+- PostgreSQL como fuente de verdad;
+- trabajo durable/retries en PostgreSQL;
+- sin Redis/BullMQ en producción V1;
+- sin microservicios/Kubernetes/broker;
+- el HTTP nunca ejecuta mutaciones fiscales del PT;
+- solo worker muta PT;
+- estado final se consulta por operación;
+- object storage no controla workflow;
+- observabilidad administrada/minimalista.
 
-- API/SDK/webhooks públicos;
-- Documento Soporte;
-- recepción/eventos;
-- nómina/RADIAN/RIPS/RNDC;
-- segundo PT/failover;
-- DIAN directa;
-- PDF propio;
-- ERP/contabilidad/CRM;
-- forks por cliente.
+## Protocolo fiscal no negociable
 
-## Estado de ADR históricos
+```text
+persistir operación/idempotencia/job
+→ worker reclama
+→ persistir provider_attempt
+→ llamada PT
+→ resultado definitivo O UNKNOWN
+→ reconciliar antes de repetir
+```
 
-- `ADR-001-stack-tecnologico.md`: **requiere revalidación**.
-- `ADR-002-estructura-modulos.md`: **requiere revalidación**.
+- `DESCONOCIDO != REEMITIR`;
+- sin retry HTTP genérico de mutaciones;
+- un crash de `SUBMITTING` se recupera como ambigüedad, no como “no enviado”;
+- un nuevo intento mutante solo se permite si se demuestra que el anterior no produjo side effect y la semántica del PT lo permite;
+- recuperar XML/PDF nunca habilita reemisión.
 
-No eliminar código por reflejo. En F2, cada pieza existente se conserva o retira por coste total, riesgo y requisito satisfecho.
+Estados semánticos mínimos: `PERSISTED`, `READY`, `SUBMITTING`, `ACCEPTED`, `REJECTED_LOCAL`, `REJECTED_REMOTE`, `UNKNOWN`, `RECONCILING`, `NEEDS_ATTENTION`.
 
-## Próximo trabajo — F2
+## ADR históricos
 
-1. derivar arquitectura mínima desde `docs/v1-requisitos.md`;
-2. definir módulos/límites del monolito modular;
-3. fijar estrategia transaccional de idempotencia + side effects;
-4. decidir async mínimo y si Redis/BullMQ sigue justificándose;
-5. decidir persistencia/storage/observabilidad;
-6. producir ADR nuevos o reemplazos explícitos;
-7. mantener PT detrás de `FiscalProvider` sin diseñar multi-PT.
+- ADR-001: supersedido para V1 por ADR-003/004.
+- ADR-002: supersedido para V1 por ADR-003.
 
-Después: modelo de datos + threat model, contratos internos, selección del PT, pruebas/contingencia e implementación incremental.
+No borrar infraestructura histórica por reflejo; limpiarla de forma trazada cuando se implemente.
+
+## Próximo trabajo — F3
+
+1. diseñar entidades/tablas y ownership;
+2. fijar claves/UUID, tenant_id y constraints;
+3. idempotency unique + fingerprint;
+4. provider_attempts y trabajo durable con leases;
+5. máquina de estados/concurrencia;
+6. RLS/defensa multi-tenant;
+7. auditoría/evidencia;
+8. threat model;
+9. auth POS→API;
+10. secretos PT;
+11. backup/PITR + restore test;
+12. documentar ADR/DDL antes de lógica fiscal real.
+
+F4 después: contratos internos y selección PT. Un PT sin reconciliación suficiente no es compatible con V1.
