@@ -2,25 +2,31 @@
 
 API fiscal interna para comercio colombiano.
 
-## Estado del proyecto
+## Estado
 
-**Fecha de corte:** 2026-08-18
+**Corte:** 2026-08-18
 
-- Baseline de producto: **cerrado**.
-- Requisitos V1: **cerrados para arquitectura**.
-- Arquitectura F2: **cerrada para F3**.
-- Siguiente fase: **F3 — modelo de datos + seguridad/amenazas**.
-- Rama: `dev`.
+| Fase | Estado |
+|---|---|
+| F0 producto | ✅ |
+| F1 requisitos | ✅ |
+| F2 arquitectura | ✅ |
+| F3 datos + seguridad | ✅ |
+| F4 contratos + selección PT | ▶ siguiente |
 
-Fuentes maestras:
+Rama: `dev`.
+
+Fuentes autoritativas:
 
 - [`docs/f0-producto-v1-validado-2026-08-18.md`](./docs/f0-producto-v1-validado-2026-08-18.md)
 - [`docs/v1-requisitos.md`](./docs/v1-requisitos.md)
 - [`ADR/ADR-003-arquitectura-v1-monolito-postgres.md`](./ADR/ADR-003-arquitectura-v1-monolito-postgres.md)
 - [`ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md`](./ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md)
+- [`ADR/ADR-005-modelo-datos-tenancy-v1.md`](./ADR/ADR-005-modelo-datos-tenancy-v1.md)
+- [`ADR/ADR-006-seguridad-auth-threat-model-v1.md`](./ADR/ADR-006-seguridad-auth-threat-model-v1.md)
+- [`docs/f3-modelo-datos-v1.md`](./docs/f3-modelo-datos-v1.md)
+- [`docs/f3-threat-model-v1.md`](./docs/f3-threat-model-v1.md)
 - [`ROADMAP.md`](./ROADMAP.md)
-
-Los documentos anteriores sobre “modelo experimental” y “fogueo de mercado” son evidencia histórica; no gobiernan V1.
 
 ## Producto V1
 
@@ -28,90 +34,57 @@ Los documentos anteriores sobre “modelo experimental” y “fogueo de mercado
 POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
-La API es reutilizable e independiente del POS, pero no es una API pública comercial en V1.
+No es API pública comercial V1.
 
-Regla crítica:
+## Regla crítica
 
 ```text
 DESCONOCIDO != REEMITIR
 ```
 
-## Arquitectura V1
+La garantía no es distributed exactly-once. Es idempotencia persistida, un solo camino de mutación, evidencia por intento y reconciliación antes de repetir.
+
+## Arquitectura resumida
 
 ```text
 POS
  ↓
-API — rol HTTP del monolito
- ↓
-PostgreSQL administrado — autoridad transaccional
- ↑
-Worker — mismo código/artefacto
- ↓
-FiscalProvider → 1 PT habilitado
-
-Object storage → XML/PDF/evidencia binaria; nunca estado de workflow
+API role ──▶ PostgreSQL administrado ◀── Worker role ──▶ PT
+                         │
+                         └──── metadata ──▶ Object storage privado
 ```
 
-Decisiones F2:
-
 - monolito modular;
-- TypeScript/NestJS/Fastify;
-- Node.js 24 LTS como runtime al implementar;
-- PostgreSQL como única autoridad de estado;
-- trabajo async durable en PostgreSQL;
-- sin Redis/BullMQ productivo en V1;
-- sin microservicios/Kubernetes/broker;
-- solo el worker puede ejecutar mutaciones del PT;
-- API HTTP persiste y devuelve identidad/estado de operación;
-- timeout ambiguo → `UNKNOWN` → reconciliación;
-- object storage y observabilidad administrados/minimalistas.
+- Node 24 LTS + TypeScript/NestJS/Fastify al implementar;
+- PostgreSQL autoridad;
+- trabajo durable en PostgreSQL;
+- sin Redis/BullMQ productivo;
+- solo worker muta PT;
+- tenant context + RLS;
+- DB roles separados api/worker/migrator;
+- object storage no es autoridad de workflow.
 
-Detalles: ADR-003 y ADR-004.
+## Modelo de datos núcleo
 
-## Alcance fiscal V1
+`tenants`, `api_credentials`, `fiscal_operations`, `provider_attempts`, `work_items`, `evidence_records`, `artifacts`, `audit_events`.
 
-- Factura Electrónica de Venta;
-- Nota Crédito;
-- Nota Débito;
-- Documento Equivalente Electrónico POS;
-- nota de ajuste DEE POS;
-- contingencias necesarias FEV/DEE POS;
-- estado/seguimiento;
-- XML validado;
-- PDF/representación del PT.
+Payload original + idempotency + semantic hash son inmutables. Evidencia/audit son append-only. Referencias usan tenant-safe FKs.
 
-Fuera: API/SDK/webhooks públicos, Documento Soporte, recepción/eventos, nómina, RADIAN, RIPS, RNDC, multi-PT, DIAN directa, PDF propio, ERP/CRM/contabilidad y forks.
+## Seguridad
 
-## Roadmap
+Credencial propia por instalación POS, scoped a un tenant; tenant nunca se toma del body. Runtime normal no usa superuser/service-role/BYPASSRLS. PT secret solo existe en worker. Buckets privados y logs minimizados.
 
-| Fase | Estado | Objetivo |
-|---|---|---|
-| F0 | ✅ | Producto/validación |
-| F1 | ✅ | Requisitos V1 |
-| F2 | ✅ | Arquitectura formal/ADR |
-| F3 | ▶ | Datos + seguridad/threat model |
-| F4 | ⏸ | Contratos + selección PT |
-| F5 | ⏸ | Pruebas/contingencia/operación |
-| F6 | ⏸ | Implementación incremental |
-| F7 | ⏸ | Readiness/piloto POS |
-| F8 | ⏸ | Estabilización/V1.1 |
+## Siguiente: F4
 
-Detalle: [`ROADMAP.md`](./ROADMAP.md).
+Definir contrato interno y `FiscalProvider`, después investigar y probar PTs habilitados vigentes. La capacidad de correlacionar/reconciliar un timeout ambiguo es gate de selección, no feature opcional.
 
-## ADR
-
-- ADR-001 y ADR-002: históricos/supersedidos para V1.
-- ADR-003: arquitectura/topología autoritativa.
-- ADR-004: idempotencia, side effect y reconciliación autoritativos.
+No construir lógica fiscal productiva contra un PT antes de cerrar F4.
 
 ## Setup local existente
 
-La base actual vive en `apps/api/`. La infraestructura histórica del compose puede contener Redis/MinIO; su existencia no significa que formen parte de producción V1.
+La app base está en `apps/api/`. El compose histórico puede contener Redis/MinIO; no representa producción V1.
 
 ```bash
-git clone https://github.com/Abraha33/API-Dian.git
-cd API-Dian
-git checkout dev
 cd apps/api
 cp .env.example .env
 npm ci
@@ -125,15 +98,3 @@ Health:
 curl http://localhost:3000/health
 curl http://localhost:3000/ready
 ```
-
-Pruebas:
-
-```bash
-npm run test:e2e
-```
-
-## Criterio de construcción
-
-Toda pieza de infraestructura debe trazarse a `docs/v1-requisitos.md` y a un ADR vigente.
-
-No construir lógica fiscal real contra un PT antes de cerrar F3 y F4. En un sistema fiscal operado por una sola persona, menos componentes y estados explícitos valen más que flexibilidad futura especulativa.

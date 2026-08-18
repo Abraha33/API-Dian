@@ -17,149 +17,106 @@ Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin
 F0  Baseline de producto y validación        ✅ Cerrado
 F1  Requisitos V1                            ✅ Cerrado para arquitectura
 F2  Arquitectura formal y ADR                ✅ Cerrado para F3
-F3  Modelo de datos + seguridad/amenazas     ▶ Siguiente
-F4  Contratos internos + selección del PT    ⏸ Pendiente
+F3  Modelo de datos + seguridad/amenazas     ✅ Cerrado para F4
+F4  Contratos internos + selección del PT    ▶ Siguiente
 F5  Pruebas, contingencia y operación        ⏸ Pendiente
 F6  Implementación incremental               ⏸ Pendiente
 F7  Readiness + piloto controlado con POS     ⏸ Pendiente
 F8  Estabilización + decisión V1.1            ⏸ Pendiente
 ```
 
-## F0 — Baseline de producto y validación
-
-**Estado: ✅ Cerrado**
+## F0 — Producto
 
 Salida: `docs/f0-producto-v1-validado-2026-08-18.md`.
 
-Los documentos anteriores de “modelo experimental” y “fogueo de mercado” son evidencia histórica, no autoridad V1.
-
-## F1 — Requisitos V1
-
-**Estado: ✅ Cerrado para arquitectura**
+## F1 — Requisitos
 
 Salida: `docs/v1-requisitos.md`.
 
-Alcance, invariantes, out-of-scope y gates productivos quedaron fijados sin confundir requisitos con tecnologías.
+## F2 — Arquitectura
 
-## F2 — Arquitectura formal y ADR
-
-**Estado: ✅ Cerrado para F3**
-
-Salidas autoritativas:
+Salidas:
 
 - `ADR/ADR-003-arquitectura-v1-monolito-postgres.md`;
 - `ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md`.
 
-Decisiones cerradas:
+Decisiones: monolito modular; PostgreSQL autoridad; trabajo durable en DB; roles `api/worker`; sin Redis/BullMQ productivo; solo worker muta PT; `UNKNOWN` reconcilia antes de repetir.
 
-- monolito modular;
-- TypeScript/NestJS/Fastify conservados;
-- Node.js 24 LTS como línea de runtime al implementar;
-- un PostgreSQL administrado como autoridad transaccional;
-- trabajo async durable en PostgreSQL;
-- Redis/BullMQ fuera de arquitectura productiva V1;
-- roles `api` y `worker` desde el mismo código/artefacto;
-- solo `worker` puede ejecutar mutaciones fiscales del PT;
-- object storage solo para artefactos, nunca como autoridad de workflow;
-- servicios administrados y sin Kubernetes/microservicios;
-- `UNKNOWN` obliga reconciliación antes de repetir una mutación.
+## F3 — Datos + seguridad/amenazas
 
-ADR-001 y ADR-002 quedan supersedidos para V1, aunque se preservan como registro histórico.
+**Estado: ✅ Cerrado para F4**
 
-Las elecciones físicas que dependen del modelo de datos/threat model —RLS exacto, auth, constraints, leases SQL, backup/restore, secretos— se cierran en F3. El proveedor PT y su semántica concreta siguen siendo F4.
+Salidas:
 
-## F3 — Modelo de datos + seguridad y amenazas
+- `ADR/ADR-005-modelo-datos-tenancy-v1.md`;
+- `ADR/ADR-006-seguridad-auth-threat-model-v1.md`;
+- `docs/f3-modelo-datos-v1.md`;
+- `docs/f3-threat-model-v1.md`.
+
+Decisiones:
+
+- schema `app` no expuesto directamente al POS;
+- UUID aleatorio interno;
+- `tenant_id NOT NULL` y FK compuestas tenant-safe;
+- RLS + runtime no-owner/no-BYPASSRLS;
+- roles DB separados `api`, `worker`, `migrator`;
+- tenant derivado de credencial POS, no del body;
+- credential opaca por instalación, scoped a un tenant;
+- unique `(tenant_id, idempotency_key)` + semantic hash;
+- snapshot de comando inmutable;
+- attempts/jobs/evidence/artifacts/audit separados;
+- evidencia/audit append-only;
+- PT secret solo worker;
+- object storage privado;
+- restore implica reconciliar la ventana posterior al restore.
+
+El DDL productivo/migraciones se implementa en F6 después de contratos F4; F3 define el modelo e invariantes que ese DDL debe materializar.
+
+## F4 — Contratos internos + evaluación y selección del PT
 
 **Estado: ▶ Siguiente**
 
 Objetivo:
 
-- esquema transaccional de operación fiscal, intentos y trabajo durable;
-- idempotencia + fingerprint semántico;
-- máquina de estados y transiciones válidas;
-- constraints de concurrencia que hagan cumplir ADR-004;
-- aislamiento multiempresa y estrategia RLS;
-- auditoría/evidencia append-only donde corresponda;
-- referencias/checksums de respuestas crudas y XML/PDF;
-- threat model;
-- auth POS→API;
-- secretos/credenciales del PT y mínimo privilegio;
-- backup/PITR y restauración real;
-- estrategia de migraciones para evidencia fiscal.
+1. definir contrato versionado POS→API para FEV/NC/ND/DEE;
+2. definir canonicalización/fingerprint semántico;
+3. definir estados/errores públicos internos;
+4. definir puerto mínimo `FiscalProvider`;
+5. evaluar PTs habilitados actuales con evidencia oficial/contractual;
+6. confirmar firma/certificados, multiempresa, correlación/reconciliación y contingencias;
+7. seleccionar un PT o declarar que ninguno satisface gates;
+8. completar campos fiscales del modelo F3 que dependan del contrato/PT.
 
-Regla F3:
-
-```text
-Los invariantes críticos deben hacerse cumplir en la capa más baja razonable.
-No depender de que todos los futuros programadores recuerden poner un WHERE tenant_id o un if de estado.
-```
-
-## F4 — Contratos internos + evaluación y selección del PT
-
-**Estado: ⏸ Pendiente**
-
-Objetivo:
-
-- contrato interno POS→API;
-- interfaz mínima `FiscalProvider`;
-- estados/errores normalizados;
-- recuperación XML/PDF;
-- matriz y selección del PT;
-- validar sandbox, multiempresa/NIT, firma/certificados, reconciliación, contingencias, SLA, rate limits, precio, soporte y tratamiento de datos.
-
-Un PT que no permita resolver suficientemente un resultado ambiguo es incompatible con ADR-004.
+**No seleccionar un PT por precio antes de demostrar que puede resolver resultados ambiguos.**
 
 ## F5 — Pruebas, contingencia y operación
 
-**Estado: ⏸ Pendiente**
-
-Objetivo:
-
-- pruebas funcionales/adversariales;
-- timeouts ambiguos, duplicación, crashes y respuestas tardías;
-- contingencias FEV/DEE POS por causa;
-- reconciliación;
-- runbooks;
-- restauración real;
-- alertas accionables.
+Pruebas adversariales, contingencias reales, reconciliación, runbooks, observabilidad, restauración y kill switch.
 
 ## F6 — Implementación incremental
 
-**Estado: ⏸ Pendiente**
-
 Orden:
 
-1. tenant/auth + modelo de operación/idempotencia;
-2. trabajo durable y worker;
-3. `FiscalProvider` fake + fault injection;
-4. vertical FEV sandbox;
-5. notas;
-6. DEE POS/ajuste;
-7. estado/XML/PDF;
-8. contingencias/reconciliación;
-9. hardening.
+1. migraciones/roles/RLS;
+2. auth tenant;
+3. operación/idempotencia;
+4. work queue/worker;
+5. `FiscalProvider` fake + fault injection;
+6. FEV sandbox;
+7. notas;
+8. DEE;
+9. artefactos/estado;
+10. contingencia/reconciliación;
+11. hardening.
 
-No activar familias fiscales en paralelo si una sola persona no puede diagnosticar la anterior.
+## F7 — Readiness/piloto
 
-## F7 — Readiness + piloto controlado
+Ejecutar todos los gates, limitar empresas/volumen y demostrar operación unipersonal sostenible.
 
-**Estado: ⏸ Pendiente**
+## F8 — Estabilización/V1.1
 
-Ejecutar los gates de `docs/v1-requisitos.md`, limitar empresas/volumen y demostrar que la operación cotidiana no requiere intervención manual permanente.
-
-## F8 — Estabilización y decisión V1.1
-
-**Estado: ⏸ Pendiente**
-
-Solo después de estabilidad real se decide expansión: observabilidad/panel, onboarding, Documento Soporte, recepción/eventos, SDK, e-commerce, apertura a terceros o segundo PT según evidencia.
+Expandir solo por evidencia real.
 
 ## Regla de control de alcance
 
-Una tarea entra en V1 solo si:
-
-1. es necesaria para un documento fiscal V1;
-2. evita pérdida, duplicación o ambigüedad fiscal;
-3. es necesaria para aislamiento, seguridad, auditoría, recuperación u operación unipersonal; o
-4. es requisito contractual/técnico indispensable del PT.
-
-Si no cumple una, se difiere.
+Una tarea entra V1 solo si soporta documento V1, evita pérdida/duplicación/ambigüedad, protege seguridad/auditoría/recuperación o es requisito indispensable del PT.
