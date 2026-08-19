@@ -5,77 +5,56 @@
 
 ## 1. Autoridades vigentes
 
-### Producto — FROZEN
+```text
+docs/PRODUCT-DEFINITION-V1-FINAL.md   ✅ FROZEN — qué se construye
+docs/SYSTEM-ARCHITECTURE-V1.md        ✅ FROZEN — cómo se construye
+docs/BUILD-PLAN-V1.md                 ✅ FROZEN — en qué orden se construye
+```
 
-- `docs/PRODUCT-DEFINITION-V1-FINAL.md`
-
-Define **qué** se construye.
-
-### Arquitectura — FROZEN
-
-- `docs/SYSTEM-ARCHITECTURE-V1.md`
-
-Define **cómo** se construye V1.
-
-Si una implementación existente contradice estos documentos, la implementación se revisa. Si arquitectura y producto chocan, prevalece el producto.
+Si existe conflicto: producto > arquitectura > build plan > implementación existente.
 
 ## 2. Estado de planificación
 
 ```text
-PRODUCT-DEFINITION-V1-FINAL.md   ✅ FROZEN
-SYSTEM-ARCHITECTURE-V1.md        ✅ FROZEN
-BUILD-PLAN-V1.md                 ▶ SIGUIENTE
-Backlog detallado                ⏸
+Producto                         ✅
+Arquitectura                     ✅
+Build Plan                       ✅
+Backlog detallado                ▶ SIGUIENTE
 Mapa de dependencias             ⏸
 Definition of Done               ⏸
 Plan diario                      ⏸
+Auditoría del código existente   ⏸
 Nueva implementación             ⏸
 ```
 
-Regla vigente:
+Orden oficial:
 
 ```text
 producto
 → arquitectura
 → build plan
-→ backlog + dependencias + DoD
+→ backlog
+→ dependencias + DoD
 → plan diario
 → auditoría del código existente
 → implementación controlada
 ```
 
-No continuar agregando runtime por inercia antes de completar esta secuencia.
+No agregar runtime por inercia antes de completar esta secuencia.
 
 ## 3. Producto V1
 
 ```text
-POS propio
-→ API-DIAN
-→ 1 Proveedor Tecnológico habilitado
-→ DIAN
+POS propio → API-DIAN → 1 PT habilitado → DIAN
 ```
 
 - mercado inicial: comercios colombianos;
-- consumidor técnico inicial: POS propio;
-- no API pública V1;
+- V1 no es API pública;
 - multiempresa;
 - un solo PT;
 - no DIAN directa;
 - no ser PT inicialmente;
-- no forks por cliente.
-
-Alcance fiscal:
-
-- FEV;
-- Nota Crédito;
-- Nota Débito;
-- DEE POS;
-- Nota de ajuste DEE POS;
-- contingencias indispensables;
-- estado;
-- XML;
-- PDF/representación del PT;
-- trazabilidad y protección contra duplicados.
+- FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado, XML/PDF, trazabilidad.
 
 Invariante superior:
 
@@ -83,118 +62,84 @@ Invariante superior:
 DESCONOCIDO != REEMITIR
 ```
 
-## 4. Arquitectura V1 congelada
+## 4. Arquitectura V1
 
 ```text
 POS
  ↓
 API runtime
  ↓
-PostgreSQL administrado  ← autoridad transaccional
+PostgreSQL administrado  ← autoridad
  ↑
-Worker runtime ─────────────▶ 1 PT
+Worker runtime ───────────▶ 1 PT
  │
- └──────────────────────────▶ Object storage privado
+ └────────────────────────▶ Object storage privado
 ```
 
-Decisiones:
+Decisiones principales:
 
 - monolito modular;
 - mismo artefacto con roles `api` y `worker`;
-- Node.js 24 LTS + TypeScript estricto + NestJS/Fastify;
-- PostgreSQL como única autoridad interna;
-- `pg`/SQL parametrizado explícito en camino fiscal crítico;
-- trabajo durable PostgreSQL; sin Redis/BullMQ productivo;
-- solo worker inicia mutaciones PT;
-- `provider_attempt` persistido antes del side effect;
-- `UNKNOWN → reconcile`; no retry ciego;
-- tenant derivado de credential + tenant-safe FK + RLS;
-- roles DB separados y least privilege;
-- API sin secreto PT;
+- Node 24 + TypeScript + NestJS/Fastify;
+- PostgreSQL autoridad y trabajo durable;
+- `pg`/SQL explícito en camino crítico;
+- sin Redis/BullMQ productivo;
+- tenant credential + tenant-safe FK + RLS;
+- perfil fiscal versionado por tenant;
+- `provider_attempt` antes del side effect;
+- solo worker muta PT;
+- `UNKNOWN → reconcile`;
 - evidencia/auditoría append-only;
-- object storage privado solo para artefactos/evidencia grande;
-- kill switches persistidos/auditables;
-- observabilidad administrada y pocas alertas accionables;
-- no microservicios/Kubernetes/brokers/multi-región/multi-PT V1.
+- API sin secreto PT;
+- kill switches;
+- observabilidad administrada;
+- proveedor cloud exacto todavía no congelado.
 
-Aclaración nueva de arquitectura:
+## 5. Build Plan V1
 
-**perfil/configuración fiscal versionada por tenant**. Cada operación debe poder reconstruir qué configuración fiscal/emisor/provider binding utilizó históricamente; cambiar configuración futura no reinterpreta operaciones anteriores.
-
-Proveedor cloud productivo exacto **no está congelado**. Se escogerá por seguridad, restore, coste y operación.
-
-## 5. Contrato interno V1
-
-Superficie mínima:
+Secuencia congelada:
 
 ```text
-POST /v1/fiscal-operations
-GET  /v1/fiscal-operations/{operation_id}
-GET  /v1/fiscal-operations/{operation_id}/artifacts/xml
-GET  /v1/fiscal-operations/{operation_id}/artifacts/pdf
+B1  baseline ejecutable + gates
+B2  multiempresa + auth + perfil fiscal versionado
+B3  contrato fiscal + validación + decimales exactos
+B4  idempotencia + persistencia + máquina de estados
+B5  trabajo durable + worker + side-effect protocol
+B6  reconcile + FakeFiscalProvider + fault injection
+B7  evidencia + auditoría + XML/PDF + operación segura
+B8  gate externo: seleccionar/probar 1 PT real
+B9  adapter PT real + mapeos + contingencias
+B10 plataforma productiva + backup/restore + observabilidad
+B11 integración POS → API-DIAN
+B12 pruebas adversariales E2E
+B13 piloto controlado
+B14 cierre V1
 ```
 
-Mutaciones requieren `Idempotency-Key`.
+Mientras avanzan B1–B7 puede adelantarse administrativamente B8 (sandbox, documentación, contrato y precio), pero **B9 no se construye con comportamiento inventado del PT**.
 
-Tipos:
+## 6. Regla de ejecución
+
+Cada unidad futura seguirá:
 
 ```text
-FEV
-CREDIT_NOTE
-DEBIT_NOTE
-ELECTRONIC_POS
-POS_ADJUSTMENT
+capacidad pequeña
+→ prueba normal
+→ prueba de fallo
+→ integración
+→ gates verdes
+→ cerrar
 ```
 
-`FiscalProvider` mínimo:
-
-```text
-submit()
-reconcile()
-getStatus()
-fetchXml()
-fetchPdf()
-```
-
-No existe `resend()`.
-
-## 6. Protocolo fiscal crítico
-
-```text
-persist intent
-→ durable work
-→ prepare provider_attempt
-→ COMMIT
-→ remote side effect
-→ definitive? persist result
-→ ambiguous? UNKNOWN
-→ reconcile
-```
-
-No existe transición automática:
-
-```text
-UNKNOWN → SUBMITTING
-```
-
-Solo evidencia concluyente de que no ocurrió side effect puede permitir evaluar otro intento.
+No se pedirá a Codex “construir toda la API”. Se trabajará por piezas pequeñas, verificables y con contexto mínimo para controlar calidad y coste de tokens.
 
 ## 7. Código existente
 
-Existe implementación adelantada con:
+Existe trabajo adelantado relevante: SQL core, auth/RLS, idempotencia, worker/leases, FakeFiscalProvider, UNKNOWN/reconcile, kill switches, observabilidad, concurrencia y contract-test harness.
 
-- core SQL;
-- auth/tenancy/RLS;
-- idempotencia;
-- worker/leases;
-- FakeFiscalProvider;
-- UNKNOWN/reconcile;
-- kill switches;
-- observabilidad;
-- concurrencia;
-- contract-test harness PT.
+No se elimina automáticamente y tampoco se considera terminado por existir.
 
-**No es autoridad.** En la fase de build plan/auditoría cada pieza se clasificará:
+Después del plan diario, cada pieza se clasificará:
 
 ```text
 CONSERVAR
@@ -203,11 +148,11 @@ REHACER
 ELIMINAR
 ```
 
-La arquitectura ya anticipa que buena parte del núcleo probablemente se conservará, pero no se declara “terminado” hasta mapearlo contra el plan de construcción definitivo.
+Una pieza solo cuenta como avance cuando pasa el gate de la fase correspondiente del Build Plan.
 
-## 8. Gate PT posterior
+## 8. Gate PT
 
-Orden de prueba actualmente documentado:
+Orden de prueba documentado actualmente:
 
 ```text
 1. HKA
@@ -217,50 +162,33 @@ Orden de prueba actualmente documentado:
 
 No es selección final.
 
-El adapter real exige sandbox/contrato y evidencia de:
+El PT debe demostrar sandbox real, alcance documental V1, correlación, timeout ambiguo, reconciliación, duplicados, criterio seguro de inexistencia, XML/PDF, firma/certificado, seguridad/datos, SLA/soporte/rate limits y modelo/coste multiempresa.
 
-- FEV + POS + notas/ajuste;
-- auth/correlación;
-- timeout ambiguo;
-- reconcile;
-- duplicados;
-- criterio seguro de inexistencia;
-- XML/PDF;
-- firma/certificado;
-- seguridad/datos;
-- SLA/soporte/rate limits;
-- coste/modelo multiempresa.
+Un 404 o un texto “no enviado” no autorizan por sí mismos una reemisión.
 
-Un 404 o un estado llamado “no enviado” no equivale por sí mismo a prueba segura para reemitir.
+## 9. Fuentes de detalle bajo demanda
 
-## 9. Fuentes técnicas de detalle
-
-Consultar solo cuando la tarea lo requiera:
+Consultar solo si la tarea lo necesita:
 
 - `docs/v1-requisitos.md`;
-- `ADR/ADR-003-arquitectura-v1-monolito-postgres.md`;
-- `ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md`;
-- `ADR/ADR-005-modelo-datos-tenancy-v1.md`;
-- `ADR/ADR-006-seguridad-auth-threat-model-v1.md`;
-- `ADR/ADR-007-contratos-internos-idempotencia-v1.md`;
-- `ADR/ADR-008-seleccion-pt-gates-v1.md`;
-- `ADR/ADR-009-pruebas-fault-injection-kill-switch-v1.md`;
+- ADR-003..009;
 - `docs/f3-modelo-datos-v1.md`;
 - `docs/f3-threat-model-v1.md`;
 - `docs/f4-contrato-pos-api-v1.md`;
 - `docs/f4-prueba-ambiguedad-pt-v1.md`;
 - `docs/f6-provider-contract-harness.md`.
 
-No cargar todos estos documentos automáticamente: `session-context.md` + el entregable de la fase actual deben ser suficientes para empezar, y se profundiza solo bajo necesidad. Esto reduce contexto y coste de agentes.
+Para agentes/Codex, empezar normalmente con `docs/session-context.md` + el documento de la fase actual. No cargar todo el repositorio sin necesidad.
 
 ## 10. Siguiente avance oficial
 
-Crear:
+Crear el backlog completo derivado de `BUILD-PLAN-V1.md`:
 
 ```text
-docs/BUILD-PLAN-V1.md
+fase
+→ épica
+→ historia/capacidad
+→ tarea pequeña verificable
 ```
 
-Debe convertir producto + arquitectura en fases de construcción ordenadas por dependencias, sin programar todavía.
-
-Después se generarán backlog, dependencias, DoD y plan diario antes de reanudar código.
+Después: mapa de dependencias, Definition of Done y plan diario.
