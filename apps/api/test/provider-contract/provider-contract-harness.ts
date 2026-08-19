@@ -94,7 +94,9 @@ function assertEvidence(fixture: ProviderContractFixture): void {
   assertNonEmpty(fixture.document_kind, 'document_kind');
 
   if (fixture.evidence.length === 0) {
-    throw new Error(`${fixture.case_id}: at least one evidence reference is required`);
+    throw new Error(
+      `${fixture.case_id}: at least one evidence reference is required`,
+    );
   }
 
   const ids = new Set<string>();
@@ -102,12 +104,16 @@ function assertEvidence(fixture: ProviderContractFixture): void {
     assertNonEmpty(reference.id, 'evidence.id');
     assertNonEmpty(reference.locator, 'evidence.locator');
     if (ids.has(reference.id)) {
-      throw new Error(`${fixture.case_id}: duplicate evidence id ${reference.id}`);
+      throw new Error(
+        `${fixture.case_id}: duplicate evidence id ${reference.id}`,
+      );
     }
     ids.add(reference.id);
 
     if (reference.sanitized !== true) {
-      throw new Error(`${fixture.case_id}: evidence must be sanitized before commit`);
+      throw new Error(
+        `${fixture.case_id}: evidence must be sanitized before commit`,
+      );
     }
     if (Number.isNaN(Date.parse(reference.observed_at))) {
       throw new Error(`${fixture.case_id}: invalid evidence observed_at`);
@@ -122,7 +128,9 @@ function assertEvidence(fixture: ProviderContractFixture): void {
     }
     for (const refId of proof.evidence_ref_ids) {
       if (!ids.has(refId)) {
-        throw new Error(`${fixture.case_id}: ${label} references unknown evidence ${refId}`);
+        throw new Error(
+          `${fixture.case_id}: ${label} references unknown evidence ${refId}`,
+        );
       }
     }
   };
