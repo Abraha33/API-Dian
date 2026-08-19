@@ -18,7 +18,7 @@ F2   Arquitectura                              ✅
 F3   Datos + seguridad                         ✅
 F4A  Contratos internos                        ✅
 F4B  Shortlist/evidencia pública PT            ✅
-F4C  Sandbox + contrato + selección PT         ▶ Bloqueante externo
+F4C  Sandbox + contrato + selección PT         ▶ Activo / bloqueo externo
 F5A  Pruebas adversariales genéricas/runbooks  ✅
 F5B  Contingencias + contract tests PT         ⏸ depende F4C
 F6A  Core SQL + c14n + fake provider           ✅
@@ -31,7 +31,7 @@ F8   Estabilización + V1.1                      ⏸
 
 `F6H` es una etiqueta de seguimiento del hardening posterior a F6B; no cambia el alcance funcional V1.
 
-## Salidas cerradas F0–F6B
+## Fuentes de continuidad
 
 - baseline: `docs/f0-producto-v1-validado-2026-08-18.md`;
 - requisitos: `docs/v1-requisitos.md`;
@@ -42,7 +42,9 @@ F8   Estabilización + V1.1                      ⏸
 - core persistencia: `docs/f6-checkpoint-01-core-persistence.md`;
 - vertical slice fake: `docs/f6-checkpoint-02-fake-vertical-slice.md`;
 - operación: `docs/runbook-fiscal-worker-v1.md`;
-- harness abstracto del futuro adapter: `docs/f6-provider-contract-harness.md`.
+- harness abstracto del futuro adapter: `docs/f6-provider-contract-harness.md`;
+- evidencia pública F4C actual: `docs/f4c-evidencia-publica-2026-08-19.md`;
+- cuestionario/sandbox: `docs/f4c-cuestionario-solicitud-sandbox-pt.md`.
 
 ## F6A — Core independiente del PT
 
@@ -92,60 +94,92 @@ No existe adapter PT real.
 Completado después de F6B:
 
 - telemetría estructurada del worker sin payloads/credenciales;
-- `app_ops` cross-tenant read-only con columnas operativas limitadas;
-- `app_ops_control` separado para kill switches;
+- roles `app_ops` y `app_ops_control` separados;
 - historial append-only de cambios de `runtime_controls`;
 - reporte SQL operativo + runbook de incidentes;
-- gates de concurrencia permanentes:
-  - 32 requests simultáneas con misma idempotency key → una sola operación lógica;
-  - carrera semántica misma key → un 202 y un 409;
-  - 40 operaciones distintas simultáneas sin pérdida/duplicado;
-  - 42 claims paralelos `SKIP LOCKED` sin doble claim;
+- gates de concurrencia permanentes;
 - infraestructura local reducida a PostgreSQL 15;
-- retirados Redis/MinIO y el antiguo runtime local con superusuario;
-- bootstrap Windows aplica migraciones y crea logins separados API/worker/ops;
-- CI valida compose, sintaxis PowerShell, provisioning y aislamiento de membresías;
+- retirados Redis/MinIO y runtime local con superusuario;
+- bootstrap Windows con logins separados API/worker/ops;
 - harness de contract tests del futuro adapter basado únicamente en evidencia sanitizada;
-- el harness rechaza fixtures sin evidencia y exige prueba explícita para clasificar `TRANSPORT_PROVEN_NOT_SENT` o `NOT_FOUND_CONCLUSIVE`;
+- fixtures sin evidencia se rechazan;
+- `TRANSPORT_PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba explícita referenciada;
 - el harness no contiene URLs, auth, códigos, tiempos, wire formats ni semántica específica de ningún PT.
 
-Evidencia reciente:
+Evidencia final reciente:
 
-- limpieza local: PR #60, árbol final validado en CI run #71;
-- harness abstracto PT: PR #61, self-tests + pipeline completo PASS en CI run #75 antes del cierre documental final.
+- concurrencia: CI #66;
+- limpieza local: PR #60, CI #71, consolidado como `99bd26383a299c24604c3a345ad0f7d573be682e`;
+- harness abstracto PT: PR #61, árbol final CI #77, consolidado como `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d`.
 
-## Siguiente trabajo interno sin PT
+## F4C — Gate externo activo
 
-El trabajo funcional y de hardening **independiente del proveedor** está sustancialmente agotado. No conviene seguir agregando capas especulativas para aparentar avance.
+La investigación oficial actualizada al 2026-08-19 mantiene los tres candidatos en el listado público vigente de PT de la DIAN y cambia el grado de evidencia disponible.
 
-Solo queda como trabajo opcional:
+Orden operativo provisional para probar:
 
-- packaging/deployment mínimo del API/worker si puede hacerse sin elegir infraestructura productiva nueva ni asumir comportamiento del PT;
-- mantenimiento de CI/documentación.
+1. **The Factory HKA Colombia** — primero;
+2. **DATAICO** — segundo / alternativa inmediata;
+3. **Facture / ESTELA** — reserva hasta obtener paquete técnico privado suficiente.
 
-El siguiente avance funcional significativo requiere F4C.
+Razón del orden:
+
+- HKA publica documentación explícita de intermitencia/timeouts, estados intermedios, reconstrucción y reconsulta, además del proceso para obtener ambiente DEMO, credenciales y acompañamiento técnico;
+- DATAICO publica API, estados pendientes/sincronización y reenvío de documentos existentes, pero todavía falta evidencia pública suficiente para mapear con seguridad una ausencia o `DIAN_NO_ENVIADO` a nuestras clasificaciones peligrosas;
+- Facture continúa habilitado y opera dentro de ESTELA, con FEV/POS visibles comercialmente, pero la documentación técnica pública encontrada es insuficiente para validar el protocolo de ambigüedad.
+
+Fuentes y pendientes: `docs/f4c-evidencia-publica-2026-08-19.md`.
+
+Cuestionario común para obtener evidencia comparable: `docs/f4c-cuestionario-solicitud-sandbox-pt.md`.
+
+### Orden de ejecución
+
+1. solicitar a HKA acuerdo/acceso DEMO, credenciales, docs FEV + POS, contacto técnico, contrato/SLA/precio;
+2. solicitar DATAICO en paralelo administrativo para no perder tiempo si HKA falla un gate;
+3. solicitar a Facture/ESTELA paquete técnico/API/sandbox, manteniéndolo como reserva;
+4. ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` primero con HKA;
+5. llenar `docs/f4-matriz-seleccion-pt-v1.md` solo con evidencia real;
+6. convertir casos PASS en fixtures del harness de `docs/f6-provider-contract-harness.md`;
+7. si un criterio crítico queda FAIL/INCONCLUSIVE, no construir F6C con ese proveedor.
+
+F4C no se cierra porque un PT “tenga API”. Debe demostrar:
+
+```text
+sandbox real
++ FEV
++ POS electrónico
++ auth
++ correlación durable
++ timeout controlado
++ reconcile
++ prueba de duplicidad
++ criterio seguro de inexistencia
++ XML/PDF
++ SLA/soporte
++ contrato/precio
++ responsabilidad certificado
+```
+
+Un 404 aislado nunca equivale automáticamente a `NOT_FOUND_CONCLUSIVE`; un estado llamado `NO_ENVIADO` tampoco equivale por nombre a `TRANSPORT_PROVEN_NOT_SENT`.
+
+## Siguiente trabajo
+
+El trabajo funcional interno independiente del proveedor está sustancialmente agotado. El siguiente avance significativo requiere **obtener acceso real F4C**.
+
+Packaging/deployment productivo se mantiene deliberadamente pospuesto: hoy solo existe `Dockerfile.dev`, y crear un worker “productivo” con `FakeFiscalProvider` produciría una falsa sensación de readiness antes de F6C.
 
 No construir respuestas, códigos, reintentos, XML/PDF ni rate limits específicos de un PT sin sandbox/contrato real.
 
-## F4C / F5B / F6C — Gate externo PT
+## F5B / F6C — después de F4C
 
-Shortlist actual:
-
-1. The Factory HKA;
-2. DATAICO;
-3. Facture como reserva.
-
-No hay selección definitiva hasta ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` y confirmar contrato/sandbox real. Un 404 aislado nunca equivale automáticamente a `NOT_FOUND_CONCLUSIVE`.
-
-F4C debe producir evidencia suficiente para llenar los fixtures definidos en `docs/f6-provider-contract-harness.md` sin placeholders ni suposiciones.
-
-Solo después:
+Solo después de seleccionar un PT con evidencia suficiente:
 
 - contract tests reales;
 - contingencias según causa;
 - límites/backoff reales;
 - XML/PDF reales;
-- adapter seleccionado.
+- adapter seleccionado;
+- packaging productivo de API/worker acorde al adapter real.
 
 ## F7 — Readiness/piloto
 
