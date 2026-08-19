@@ -73,21 +73,14 @@ try {
             continue
         }
         Write-Host "Applying $($migration.Name)"
-        Get-Content $migration.FullName -Raw |
-            & docker compose -f $ComposeFile exec -T postgres psql \
-                -U postgres -d api_dian -v ON_ERROR_STOP=1
+        Get-Content $migration.FullName -Raw | & docker compose -f $ComposeFile exec -T postgres psql -U postgres -d api_dian -v ON_ERROR_STOP=1
         if ($LASTEXITCODE -ne 0) {
             throw "Migration failed: $($migration.Name)"
         }
     }
 
     Write-Host '=== Provisioning least-privilege local logins ==='
-    Get-Content $ProvisionSql -Raw |
-        & docker compose -f $ComposeFile exec -T postgres psql \
-            -U postgres -d api_dian -v ON_ERROR_STOP=1 \
-            --set=api_password=$ApiPassword \
-            --set=worker_password=$WorkerPassword \
-            --set=ops_password=$OpsPassword
+    Get-Content $ProvisionSql -Raw | & docker compose -f $ComposeFile exec -T postgres psql -U postgres -d api_dian -v ON_ERROR_STOP=1 --set=api_password=$ApiPassword --set=worker_password=$WorkerPassword --set=ops_password=$OpsPassword
     if ($LASTEXITCODE -ne 0) {
         throw 'Local runtime role provisioning failed'
     }
@@ -115,7 +108,7 @@ OPS_DATABASE_URL=postgresql://api_dian_ops_dev:$OpsPassword@localhost:5432/api_d
         Write-Warning "apps/api/.env already exists; generated credentials were written to $GeneratedEnv instead. Review it before replacing .env."
     }
 
-    Set-Content -Path $targetEnv -Value $envContent -Encoding UTF8
+    Set-Content -Path $targetEnv -Value $envContent -Encoding ASCII
 
     Write-Host ''
     Write-Host 'Local database bootstrap completed.'
