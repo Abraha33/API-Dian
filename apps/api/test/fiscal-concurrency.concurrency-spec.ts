@@ -110,14 +110,16 @@ describe('API-DIAN F6 concurrency gates', () => {
     expect(responses.every((response) => response.status === 202)).toBe(true);
 
     const bodies = responses.map((response) => response.body as OperationBody);
-    const operationIds = new Set(bodies.map((bodyItem) => bodyItem.operation_id));
+    const operationIds = new Set(
+      bodies.map((bodyItem) => bodyItem.operation_id),
+    );
     expect(operationIds.size).toBe(1);
-    expect(bodies.filter((bodyItem) => bodyItem.replayed === false)).toHaveLength(
-      1,
-    );
-    expect(bodies.filter((bodyItem) => bodyItem.replayed === true)).toHaveLength(
-      SAME_KEY_PARALLELISM - 1,
-    );
+    expect(
+      bodies.filter((bodyItem) => bodyItem.replayed === false),
+    ).toHaveLength(1);
+    expect(
+      bodies.filter((bodyItem) => bodyItem.replayed === true),
+    ).toHaveLength(SAME_KEY_PARALLELISM - 1);
 
     const operationId = bodies[0]?.operation_id;
     if (!operationId) throw new Error('concurrency operation id missing');
