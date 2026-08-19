@@ -23,10 +23,13 @@ F5A  Pruebas adversariales genéricas/runbooks  ✅
 F5B  Contingencias + contract tests PT         ⏸ depende F4C
 F6A  Core SQL + c14n + fake provider           ✅
 F6B  Auth/repos/worker + fake vertical slice   ✅
+F6H  Hardening interno independiente del PT    ✅
 F6C  Adapter PT real                           ⏸ depende F4C
 F7   Readiness + piloto                         ⏸ depende F6C
 F8   Estabilización + V1.1                      ⏸
 ```
+
+`F6H` es una etiqueta de seguimiento del hardening posterior a F6B; no cambia el alcance funcional V1.
 
 ## Salidas cerradas F0–F6B
 
@@ -37,7 +40,8 @@ F8   Estabilización + V1.1                      ⏸
 - contrato/idempotencia/PT gates: ADR-007/008 + docs F4;
 - pruebas/fault injection/kill switch: ADR-009 + docs F5;
 - core persistencia: `docs/f6-checkpoint-01-core-persistence.md`;
-- vertical slice fake: `docs/f6-checkpoint-02-fake-vertical-slice.md`.
+- vertical slice fake: `docs/f6-checkpoint-02-fake-vertical-slice.md`;
+- operación: `docs/runbook-fiscal-worker-v1.md`.
 
 ## F6A — Core independiente del PT
 
@@ -80,15 +84,38 @@ Prisma fue retirado del runtime/scaffold de F6B: PostgreSQL + SQL versionado + r
 
 No existe adapter PT real.
 
+## F6H — Hardening interno independiente del PT
+
+**Estado: ✅ Cerrado**
+
+Completado después de F6B:
+
+- telemetría estructurada del worker sin payloads/credenciales;
+- `app_ops` cross-tenant read-only con columnas operativas limitadas;
+- `app_ops_control` separado para kill switches;
+- historial append-only de cambios de `runtime_controls`;
+- reporte SQL operativo + runbook de incidentes;
+- gates de concurrencia permanentes:
+  - 32 requests simultáneas con misma idempotency key → una sola operación lógica;
+  - carrera semántica misma key → un 202 y un 409;
+  - 40 operaciones distintas simultáneas sin pérdida/duplicado;
+  - 42 claims paralelos `SKIP LOCKED` sin doble claim;
+- infraestructura local reducida a PostgreSQL 15;
+- retirados Redis/MinIO y el antiguo runtime local con superusuario;
+- bootstrap Windows aplica migraciones y crea logins separados API/worker/ops;
+- CI valida compose, sintaxis PowerShell, provisioning y aislamiento de membresías.
+
+La limpieza local fue validada en PR #60, CI run #69, antes de su promoción limpia a `dev`.
+
 ## Siguiente trabajo interno sin PT
 
-Mientras F4C siga bloqueado externamente, solo avanzar trabajo que reduzca riesgo sin inventar comportamiento del proveedor:
+Mientras F4C siga bloqueado externamente, queda un frente interno útil y seguro:
 
-- observabilidad estructurada y métricas del protocolo interno;
-- runbook operativo del worker y kill switches;
-- pruebas de concurrencia/carga moderada del intake y queue PostgreSQL;
-- limpieza de infraestructura histórica no usada;
-- preparación de contrato de adapter y fixture harness sin codificar endpoints PT ficticios.
+- preparar el **contract-test harness del adapter** contra fixtures abstractos, sin URLs, códigos ni semántica inventada de un PT;
+- definir el paquete mínimo de evidencia que debe entregar F4C para llenar esos fixtures;
+- opcionalmente reforzar packaging/deployment del API/worker sin introducir infraestructura productiva nueva.
+
+Observabilidad, runbook, concurrencia y limpieza de infraestructura ya no son pendientes.
 
 No construir respuestas, códigos, reintentos, XML/PDF ni rate limits específicos de un PT sin sandbox/contrato real.
 
@@ -129,6 +156,7 @@ Expandir solo por evidencia real.
 - Tenant deriva de credential + RLS.
 - Evidencia es append-only.
 - API runtime no posee secreto PT.
-- API y worker usan roles/credenciales DB separados.
+- API, worker y operaciones usan roles/credenciales DB separados.
 - Kill switch de mutaciones no apaga reconciliación/read.
+- Superusuario/migrator nunca es runtime normal, ni siquiera en desarrollo.
 - Ninguna dependencia o infraestructura entra por inercia: debe justificar riesgo/coste V1.
