@@ -2,9 +2,7 @@ import { createHash } from 'node:crypto';
 import type {
   FiscalProvider,
   ProviderArtifact,
-  ProviderDocumentQuery,
   ProviderDocumentStatus,
-  ProviderReconciliationQuery,
   ProviderReconciliationResult,
   ProviderSubmissionResult,
 } from '../../src/modules/provider/fiscal-provider';
@@ -23,28 +21,24 @@ class StubProvider implements FiscalProvider {
     contentType: 'application/octet-stream',
   };
 
-  async submit(): Promise<ProviderSubmissionResult> {
-    return this.submission;
+  submit(): Promise<ProviderSubmissionResult> {
+    return Promise.resolve(this.submission);
   }
 
-  async reconcile(
-    _query: ProviderReconciliationQuery,
-  ): Promise<ProviderReconciliationResult> {
-    return this.reconciliation;
+  reconcile(): Promise<ProviderReconciliationResult> {
+    return Promise.resolve(this.reconciliation);
   }
 
-  async getStatus(
-    _query: ProviderDocumentQuery,
-  ): Promise<ProviderDocumentStatus> {
-    return this.status;
+  getStatus(): Promise<ProviderDocumentStatus> {
+    return Promise.resolve(this.status);
   }
 
-  async fetchXml(_query: ProviderDocumentQuery): Promise<ProviderArtifact> {
-    return this.artifact;
+  fetchXml(): Promise<ProviderArtifact> {
+    return Promise.resolve(this.artifact);
   }
 
-  async fetchPdf(_query: ProviderDocumentQuery): Promise<ProviderArtifact> {
-    return this.artifact;
+  fetchPdf(): Promise<ProviderArtifact> {
+    return Promise.resolve(this.artifact);
   }
 }
 
@@ -79,8 +73,8 @@ const query = {
 };
 
 function driver(provider = new StubProvider()) {
-  const arrange = jest.fn(async (_fixture: ProviderContractFixture) => undefined);
-  const cleanup = jest.fn(async (_fixture: ProviderContractFixture) => undefined);
+  const arrange = jest.fn(() => Promise.resolve());
+  const cleanup = jest.fn(() => Promise.resolve());
   const value: ProviderContractTestDriver = { provider, arrange, cleanup };
   return { value, provider, arrange, cleanup };
 }
@@ -137,7 +131,8 @@ describe('provider contract evidence harness', () => {
       gate_conclusion: 'PASS',
       evidence,
       proof_of_no_remote_side_effect: {
-        basis: 'Sandbox capture proves request never crossed the mutation boundary.',
+        basis:
+          'Sandbox capture proves request never crossed the mutation boundary.',
         evidence_ref_ids: ['sandbox-capture-1'],
       },
       method: 'submit',
