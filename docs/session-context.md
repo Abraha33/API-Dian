@@ -6,7 +6,7 @@
 F0–F3 ✅
 F4A contratos ✅
 F4B shortlist PT ✅
-F4C sandbox/contrato PT ▶ bloqueo externo
+F4C sandbox/contrato PT ▶ ACTIVO / bloqueo externo
 F5A diseño pruebas/runbooks ✅
 F5B pruebas reales PT ⏸ depende F4C
 F6A core independiente PT ✅
@@ -16,7 +16,8 @@ F6C adapter real ⏸ depende F4C
 F7 readiness/piloto ⏸ depende F6C
 ```
 
-Rama principal de trabajo consolidado: `dev`.
+Rama principal consolidada: `dev` = `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d` al iniciar este corte F4C.  
+Rama de investigación actual: `research/f4c-public-evidence-2026-08-19`.
 
 ## Producto
 
@@ -34,7 +35,10 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - ADR-005/006 datos + seguridad;
 - ADR-007/008 contratos + PT gates;
 - ADR-009 pruebas/fault injection/kill switch;
-- docs F3/F4/F5;
+- `docs/f4-matriz-seleccion-pt-v1.md`;
+- `docs/f4-prueba-ambiguedad-pt-v1.md`;
+- `docs/f4c-evidencia-publica-2026-08-19.md`;
+- `docs/f4c-cuestionario-solicitud-sandbox-pt.md`;
 - `docs/f6-checkpoint-01-core-persistence.md`;
 - `docs/f6-checkpoint-02-fake-vertical-slice.md`;
 - `docs/runbook-fiscal-worker-v1.md`;
@@ -57,7 +61,8 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - API, worker y ops usan credenciales DB separadas;
 - kill switch de submit no pausa reconcile/read;
 - superusuario/app_migrator nunca es runtime normal, tampoco en desarrollo;
-- `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba referenciada, no inferencia informal.
+- `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba referenciada, no inferencia informal;
+- evidencia pública decide orden de prueba, **no** sustituye PASS contractual.
 
 ## Contrato interno actual
 
@@ -81,7 +86,7 @@ validated DTO
 
 `FiscalProvider`: `submit`, `reconcile`, `getStatus`, `fetchXml`, `fetchPdf`; no `resend`.
 
-## F6A + F6B implementados
+## F6A + F6B cerrados
 
 Flujo ejecutable probado:
 
@@ -103,110 +108,150 @@ Decisiones cerradas:
 - cliente DB: `pg` / node-postgres;
 - SQL explícito en repositories;
 - Prisma retirado del scaffold activo;
-- proceso API con login `app_api`;
-- proceso worker con login `app_worker` distinto;
+- API con login `app_api`;
+- worker con login `app_worker` distinto;
 - fake worker prohibido en producción;
-- crash en `SUBMITTING` se recupera a `UNKNOWN`, nunca a segundo submit;
+- crash en `SUBMITTING` → `UNKNOWN`, nunca segundo submit ciego;
 - `SUBMITTING → READY` exige último attempt `PROVEN_NOT_SENT`;
 - kill switch bloquea nuevos side effects pero permite reconciliación.
 
-Evidencia base:
-
-- F6B1: PR #55, snapshot `a2b5b2ede98024968372e5a3df97353b5bbc5117`;
-- F6B2: PR #56, CI run #54, snapshot `7a940ac46e8f977bf33374fb5d1c75ad56d192c1`;
-- closeout F6B: `c176a223c1d9dd7908124847b8d4d3f123a48e12`.
-
-## F6H — hardening posterior a F6B
+## F6H cerrado
 
 ### Operación/observabilidad
 
-Consolidado en `dev`:
-
-- worker emite `worker_job_completed`, `provider_submit_result`, `provider_reconcile_result`;
-- sin payloads fiscales/credenciales en logs;
-- `app_ops`: NOLOGIN, cross-tenant read-only con columnas limitadas;
-- `app_ops_control`: NOLOGIN, solo kill switches;
-- `runtime_control_events`: historial append-only de cambios;
-- `scripts/ops/fiscal-ops-report.sql`;
-- `docs/runbook-fiscal-worker-v1.md`.
+- telemetría estructurada worker sin payloads/credenciales;
+- `app_ops` cross-tenant read-only limitado;
+- `app_ops_control` solo kill switches;
+- `runtime_control_events` append-only;
+- reporte SQL operacional + runbook.
 
 Snapshot: `fb84c99be55694b3cd830a84d153ca3cf9b9bf12`.
 
 ### Concurrencia
 
-Gate permanente validado en CI #66 y consolidado como `77d2ac797747a0ac7075d2ae4ed9bd8f2fd75cda`:
+Consolidado: `77d2ac797747a0ac7075d2ae4ed9bd8f2fd75cda`, CI #66.
 
-- 32 requests iguales/same key → 1 operación, 1 work, 1 audit;
-- payloads distintos/same key → exactamente un 202 y un 409;
-- 40 comandos distintos simultáneos → 40 operaciones únicas;
-- 42 claims paralelos → cada work exactamente una vez, sin claim extra.
-
-El harness usa servidor Fastify real en puerto efímero + `Promise.allSettled`; un fallo previo por `ECONNRESET` fue identificado como problema del harness, no PostgreSQL.
+- 32 requests same key → 1 operación/work/audit;
+- carrera semántica same key → un 202 + un 409;
+- 40 distintos simultáneos → 40 operaciones;
+- 42 claims paralelos → cada work una vez.
 
 ### Infra local
 
-PR #60 / árbol final CI #71, consolidado como `99bd26383a299c24604c3a345ad0f7d573be682e`:
+Consolidado: `99bd26383a299c24604c3a345ad0f7d573be682e`, árbol final CI #71.
 
-- `docker-compose.dev.yml` reducido a PostgreSQL 15 solamente;
-- Redis/MinIO retirados del setup local activo;
-- eliminado runtime local de API con superusuario `postgres`;
-- `scripts/dev/bootstrap-local.ps1` compatible con Windows PowerShell y validado por parser;
-- bootstrap aplica migraciones y genera secretos;
-- logins locales separados:
-  - `api_dian_dev` → `app_api`;
-  - `api_dian_worker_dev` → `app_worker`;
-  - `api_dian_ops_dev` → `app_ops` + `app_ops_control`;
-- CI ejecuta `scripts/dev/provision-local-runtime.sql` y `verify-local-runtime.sql` para impedir membresías cruzadas;
-- worker prefiere `WORKER_DATABASE_URL` cuando existe, con `DATABASE_URL` como fallback de despliegue.
+- compose solo PostgreSQL 15;
+- Redis/MinIO y runtime local superuser retirados;
+- bootstrap PowerShell validado;
+- logins separados API/worker/ops;
+- CI verifica memberships/privilegios;
+- worker prefiere `WORKER_DATABASE_URL`.
 
-### Harness abstracto del futuro adapter PT
+### Harness abstracto PT
 
-PR #61; CI run #75 pasó self-tests + pipeline completo antes del cierre documental final.
+Consolidado: `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d`, árbol final CI #77.
 
-Implementado:
+- fixtures requieren evidencia sanitizada;
+- `PROVEN_NOT_SENT` requiere prueba de no side effect;
+- `NOT_FOUND_CONCLUSIVE` requiere prueba concluyente de inexistencia;
+- artefactos por content type/tamaño/SHA-256;
+- no contiene semántica específica de ningún PT.
 
-- `apps/api/test/provider-contract/provider-contract-harness.ts`;
-- `apps/api/test/provider-contract/provider-contract-harness.spec.ts`;
-- `docs/f6-provider-contract-harness.md`;
-- gate CI `test:provider-contract-harness`.
+## F4C — evidencia pública actualizada 2026-08-19
 
-Reglas:
+La lista pública vigente de la DIAN mantiene a:
 
-- cada fixture requiere evidencia sanitizada y fecha de observación;
-- fixtures sin evidencia se rechazan antes de preparar transporte;
-- `TRANSPORT_PROVEN_NOT_SENT` requiere `proof_of_no_remote_side_effect` referenciando evidencia conocida;
-- `NOT_FOUND_CONCLUSIVE` requiere `proof_not_found_is_conclusive` referenciando evidencia conocida;
-- artefactos se verifican por content type, tamaño mínimo y SHA-256;
-- el harness no contiene URL/auth/códigos/rate limits/timing/wire format de ningún PT.
+- The Factory HKA Colombia;
+- DATAICO;
+- Facture S.A.S.
 
-F4C debe producir la evidencia para llenar fixtures reales. Un resultado `FAIL`/`INCONCLUSIVE` de F4C no puede convertirse artificialmente en fixture `PASS`.
+La nueva evidencia oficial **no selecciona ganador**, pero sí define un orden racional de prueba:
 
-## Runtime/CI actual
+```text
+1. HKA
+2. DATAICO
+3. Facture / ESTELA
+```
+
+### HKA — probar primero
+
+La documentación pública localizada describe explícitamente:
+
+- intermitencia/timeouts DIAN;
+- estados no concluyentes/intermedios;
+- reconsulta/reconstrucción posterior;
+- necesidad de esperar estado definitivo;
+- proceso formal de integración con ambiente DEMO, credenciales, folios, documentación y especialista técnico.
+
+Esto encaja mejor con nuestra arquitectura `UNKNOWN → reconcile`, pero **todavía no demuestra** el mapping real de códigos ni un criterio contractual de `NOT_FOUND_CONCLUSIVE`.
+
+### DATAICO — segundo / paralelo administrativo
+
+La documentación pública confirma:
+
+- API orientada a software/ERP/POS;
+- casos donde DIAN ya aceptó y Dataico sigue pendiente, con sincronización posterior;
+- estados/UUID/CUFE y reenvío de factura existente en ciertos estados;
+- POS y nota de ajuste visibles en documentación.
+
+Bloqueos:
+
+- `DIAN_NO_ENVIADO` no se mapeará por nombre a `PROVEN_NOT_SENT`;
+- no hay evidencia pública suficiente de `NOT_FOUND_CONCLUSIVE`;
+- confirmar sandbox, POS status/reconcile y contrato real.
+
+### Facture / ESTELA — reserva
+
+Continúa habilitado ante DIAN y ESTELA publica oferta FEV/documento equivalente, pero no encontramos documentación pública técnica comparable para auth, sandbox, correlación y ambigüedad. Solicitar paquete privado antes de invertir integración.
+
+## Ejecución inmediata F4C
+
+1. solicitar a HKA DEMO/sandbox, credenciales, docs FEV + POS, contacto técnico, contrato/SLA/precio;
+2. solicitar DATAICO en paralelo administrativo;
+3. solicitar Facture/ESTELA paquete técnico y sandbox;
+4. ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` primero con HKA;
+5. conservar evidencia sanitizada por caso;
+6. llenar `docs/f4-matriz-seleccion-pt-v1.md` **solo** con evidencia real;
+7. convertir casos PASS a fixtures de `docs/f6-provider-contract-harness.md`;
+8. un FAIL/INCONCLUSIVE crítico bloquea F6C con ese candidato.
+
+Cuestionario listo: `docs/f4c-cuestionario-solicitud-sandbox-pt.md`.
+
+## Gate mínimo de salida F4C
+
+```text
+sandbox real
++ FEV
++ POS electrónico
++ auth
++ correlación durable
++ timeout controlado
++ reconcile
++ prueba duplicado
++ criterio seguro de inexistencia
++ XML/PDF
++ SLA/soporte
++ contrato/precio
++ responsabilidad certificado
+```
+
+Un 404 aislado nunca equivale a `NOT_FOUND_CONCLUSIVE`; un estado “no enviado” tampoco equivale a `PROVEN_NOT_SENT` por nombre.
+
+## Runtime/CI consolidado
 
 - Node 24;
-- `npm audit --omit=dev --audit-level=high`;
-- compose local syntax check;
-- PowerShell bootstrap syntax check;
+- audit productivo;
+- compose + parser PowerShell;
 - build/lint/unit;
 - provider contract harness self-tests;
-- migraciones SQL + verificaciones estructurales/comportamiento;
-- provisioning de runtime local least-privilege;
+- migraciones + verificaciones SQL;
+- provisioning local least-privilege;
 - ops control/report;
-- e2e con `ci_api` / `ci_worker` separados;
-- concurrency correctness gate con timeout explícito de 120 s.
+- e2e API/worker;
+- concurrency gate.
 
-## PT
+## Siguiente avance real
 
-Candidatos: The Factory HKA, DATAICO; Facture reserva. No hay selección final hasta sandbox + contrato de ambigüedad/reconciliación.
+El desarrollo interno funcional independiente del PT está sustancialmente agotado. **No seguir construyendo capas especulativas.**
 
-No crear adapter productivo todavía.
-
-## Siguiente trabajo permitido
-
-Observabilidad, runbook, concurrencia, limpieza local y contract-test harness abstracto ya están cerrados.
-
-El trabajo interno funcional independiente del PT está sustancialmente agotado. Solo queda opcionalmente packaging/deployment mínimo si reduce riesgo sin elegir infraestructura productiva nueva ni introducir componentes innecesarios.
-
-El siguiente avance funcional real es F4C → F5B/F6C.
-
-No inventar endpoints, códigos, reintentos, XML/PDF ni rate limits de un PT.
+El siguiente avance significativo requiere obtener acceso real F4C. Packaging productivo también queda pospuesto hasta F6C para no crear una falsa sensación de readiness alrededor de `FakeFiscalProvider`.
