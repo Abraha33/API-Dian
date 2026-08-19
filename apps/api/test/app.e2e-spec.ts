@@ -295,7 +295,9 @@ describe('API-DIAN F6B (e2e)', () => {
     expect((await readOperation(created.operation_id)).status).toBe('UNKNOWN');
 
     expect(await worker.processNext()).toBe('RETRY_SCHEDULED');
-    expect((await readOperation(created.operation_id)).status).toBe('RECONCILING');
+    expect((await readOperation(created.operation_id)).status).toBe(
+      'RECONCILING',
+    );
 
     expect(await worker.processNext()).toBe('RECONCILED');
     expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');
@@ -354,7 +356,10 @@ describe('API-DIAN F6B (e2e)', () => {
     expect(prepared.action).toBe('SUBMIT');
     if (prepared.action !== 'SUBMIT') throw new Error('expected submit');
 
-    const remote = await fakeProvider.submit(prepared.command, prepared.context);
+    const remote = await fakeProvider.submit(
+      prepared.command,
+      prepared.context,
+    );
     expect(remote.outcome).toBe('CONCLUSIVE_ACCEPTED');
 
     await adminPool.query(
