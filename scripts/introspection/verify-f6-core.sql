@@ -119,6 +119,12 @@ BEGIN
     RAISE EXCEPTION 'app_ops cannot inspect runtime controls';
   END IF;
 
+  IF NOT has_table_privilege(
+    'app_ops', 'app.runtime_control_events', 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'app_ops cannot inspect runtime control history';
+  END IF;
+
   IF has_column_privilege(
     'app_ops', 'app.fiscal_operations', 'request_payload', 'SELECT'
   ) THEN
@@ -140,7 +146,8 @@ BEGIN
 
   IF has_table_privilege('app_ops', 'app.fiscal_operations', 'UPDATE')
      OR has_table_privilege('app_ops', 'app.work_items', 'UPDATE')
-     OR has_table_privilege('app_ops', 'app.runtime_controls', 'UPDATE') THEN
+     OR has_table_privilege('app_ops', 'app.runtime_controls', 'UPDATE')
+     OR has_table_privilege('app_ops', 'app.runtime_control_events', 'INSERT') THEN
     RAISE EXCEPTION 'app_ops must be read-only';
   END IF;
 END
@@ -171,8 +178,17 @@ BEGIN
   IF has_table_privilege('app_ops_control', 'app.fiscal_operations', 'SELECT')
      OR has_table_privilege('app_ops_control', 'app.fiscal_operations', 'UPDATE')
      OR has_table_privilege('app_ops_control', 'app.work_items', 'UPDATE')
-     OR has_table_privilege('app_ops_control', 'app.provider_attempts', 'UPDATE') THEN
-    RAISE EXCEPTION 'app_ops_control has fiscal data privileges';
+     OR has_table_privilege('app_ops_control', 'app.provider_attempts', 'UPDATE')
+     OR has_table_privilege('app_ops_control', 'app.runtime_control_events', 'INSERT')
+     OR has_table_privilege('app_ops_control', 'app.runtime_control_events', 'UPDATE')
+     OR has_table_privilege('app_ops_control', 'app.runtime_control_events', 'DELETE') THEN
+    RAISE EXCEPTION 'app_ops_control exceeds control-only privileges';
+  END IF;
+
+  IF has_function_privilege(
+    'app_ops_control', 'app.audit_runtime_control_update()', 'EXECUTE'
+  ) THEN
+    RAISE EXCEPTION 'app_ops_control must not execute audit trigger directly';
   END IF;
 END
 $$;
@@ -188,6 +204,10 @@ BEGIN
   IF controls.accept_new_operations OR controls.provider_mutations_enabled THEN
     RAISE EXCEPTION 'runtime kill switches must default fail-closed';
   END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM app.runtime_control_events) THEN
+    RAISE EXCEPTION 'runtime control audit baseline missing';
+  END IF;
 END
 $$;
 
@@ -199,7 +219,7 @@ BEGIN
   FOREACH object_name IN ARRAY ARRAY[
     'tenants', 'api_credentials', 'fiscal_operations', 'provider_attempts',
     'work_items', 'evidence_records', 'artifacts', 'audit_events',
-    'runtime_controls'
+    'runtime_controls', 'runtime_control_events'
   ] LOOP
     SELECT pg_get_userbyid(c.relowner)
       INTO object_owner
@@ -224,6 +244,15 @@ BEGIN
   END IF;
   IF to_regclass('app.work_items_claim_idx') IS NULL THEN
     RAISE EXCEPTION 'work claim index missing';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_trigger
+    WHERE tgrelid = 'app.runtime_controls'::regclass
+      AND tgname = 'runtime_controls_audit_update'
+      AND NOT tgisinternal
+  ) THEN
+    RAISE EXCEPTION 'runtime control audit trigger missing';
   END IF;
 END
 $$;
