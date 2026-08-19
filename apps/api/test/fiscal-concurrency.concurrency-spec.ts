@@ -79,7 +79,7 @@ describe('API-DIAN F6 concurrency gates', () => {
       new ValidationPipe({ whitelist: true, transform: true }),
     );
     await app.init();
-    await app.getHttpAdapter().getInstance().ready();
+    await app.listen(0, '127.0.0.1');
 
     adminPool = new Pool({
       connectionString: process.env.TEST_ADMIN_DATABASE_URL,
@@ -99,11 +99,22 @@ describe('API-DIAN F6 concurrency gates', () => {
       .send(body);
   }
 
+  async function settlePosts(tests: Array<ReturnType<typeof post>>) {
+    const settled = await Promise.allSettled(tests);
+    const failures = settled.filter((result) => result.status === 'rejected');
+    if (failures.length > 0) {
+      throw new Error(`${failures.length} concurrent HTTP request(s) rejected`);
+    }
+    return settled.flatMap((result) =>
+      result.status === 'fulfilled' ? [result.value] : [],
+    );
+  }
+
   it('collapses 32 simultaneous identical commands into one logical operation', async () => {
     const key = 'f6-concurrency-same-key';
     const body = commandFor('sale:concurrency:same-key');
 
-    const responses = await Promise.all(
+    const responses = await settlePosts(
       Array.from({ length: SAME_KEY_PARALLELISM }, () => post(key, body)),
     );
 
@@ -156,10 +167,12 @@ describe('API-DIAN F6 concurrency gates', () => {
 
   it('allows exactly one semantic winner when different payloads race on one key', async () => {
     const key = 'f6-concurrency-conflict';
-    const [left, right] = await Promise.all([
+    const responses = await settlePosts([
       post(key, commandFor('sale:concurrency:conflict', '29750.00')),
       post(key, commandFor('sale:concurrency:conflict', '29751.00')),
     ]);
+    const [left, right] = responses;
+    if (!left || !right) throw new Error('semantic race responses missing');
 
     expect([left.status, right.status].sort((a, b) => a - b)).toEqual([
       202, 409,
@@ -187,7 +200,7 @@ describe('API-DIAN F6 concurrency gates', () => {
   });
 
   it('persists 40 distinct simultaneous commands without loss or duplication', async () => {
-    const responses = await Promise.all(
+    const responses = await settlePosts(
       Array.from({ length: DISTINCT_PARALLELISM }, (_, index) =>
         post(
           `f6-concurrency-distinct-${index}`,
