@@ -28,14 +28,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          # Temporary until F6-B removes/revalidates the unused Prisma 5 scaffold.
-          node-version: '20'
+          node-version: '24'
           cache: npm
           cache-dependency-path: apps/api/package-lock.json
 
-      - name: Install
+      - name: Install current lock
         working-directory: apps/api
         run: npm ci
+
+      - name: Refresh safe dependency locks
+        working-directory: apps/api
+        run: npm audit fix --package-lock-only
+
+      - name: Reinstall remediated lock
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Production dependency audit
+        working-directory: apps/api
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Build
         working-directory: apps/api
@@ -71,3 +82,12 @@ jobs:
             -f scripts/introspection/verify-f6-core.sql
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/verify-f6-behavior.sql
+
+      - name: Upload remediated lockfile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f6-remediated-lockfile
+          path: apps/api/package-lock.json
+          if-no-files-found: error
+          retention-days: 1
