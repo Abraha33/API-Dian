@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [dev, main]
 
-permissions:
-  contents: write
-
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -29,18 +26,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: apps/api/package-lock.json
-
-      - name: Refresh lock for intentional dependency change
-        working-directory: apps/api
-        run: npm install --package-lock-only --ignore-scripts
 
       - name: Install
         working-directory: apps/api
@@ -62,7 +52,7 @@ jobs:
         working-directory: apps/api
         run: npm test -- --runInBand
 
-      - name: Apply F6 migrations and structural checks
+      - name: Apply migrations and provision F6B test identities
         env:
           PGPASSWORD: postgres
         run: |
@@ -87,21 +77,3 @@ jobs:
           DATABASE_POOL_MAX: '3'
           AUTH_PEPPER: f6-test-pepper-0123456789abcdef-32bytes
         run: npm run test:e2e
-
-      - name: Commit validated lockfile
-        run: |
-          if ! git diff --quiet -- apps/api/package-lock.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add apps/api/package-lock.json
-            git commit -m "chore: refresh lock for pg client [skip ci]"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
-
-      - name: Upload validated lockfile
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: f6b-lockfile
-          path: apps/api/package-lock.json
-          retention-days: 1
