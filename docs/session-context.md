@@ -8,13 +8,14 @@ F4A contratos ✅
 F4B shortlist PT ✅
 F4C sandbox/contrato PT ▶ bloqueo externo
 F5A diseño pruebas/runbooks ✅
-F5B pruebas reales PT ⏸
+F5B pruebas reales PT ⏸ depende F4C
 F6A core independiente PT ✅
-F6B auth/repos/worker fake ▶ siguiente interno
+F6B auth/repos/worker fake ✅
 F6C adapter real ⏸ depende F4C
+F7 readiness/piloto ⏸ depende F6C
 ```
 
-Rama: `dev`.
+Rama principal de trabajo consolidado: `dev`.
 
 ## Producto
 
@@ -34,6 +35,7 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - ADR-009 pruebas/fault injection/kill switch;
 - docs F3/F4/F5;
 - `docs/f6-checkpoint-01-core-persistence.md`;
+- `docs/f6-checkpoint-02-fake-vertical-slice.md`;
 - `ROADMAP.md`.
 
 ## Invariantes
@@ -41,16 +43,18 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - PostgreSQL autoridad;
 - API HTTP persiste, no emite;
 - solo worker muta PT;
-- `provider_attempt` antes de HTTP;
+- `provider_attempt` antes del side effect remoto;
 - ambigüedad → `UNKNOWN`;
 - `UNKNOWN` reconcilia antes de cualquier nuevo submit;
 - no retry HTTP transparente de mutaciones;
+- retry de submit solo con evidencia concluyente de no envío;
 - tenant por credential + RLS;
 - evidencia append-only;
 - API no tiene secreto PT;
+- API y worker usan roles/credenciales DB separados;
 - kill switch de submit no pausa reconcile/read.
 
-## Contrato
+## Contrato interno actual
 
 ```text
 POST /v1/fiscal-operations
@@ -74,17 +78,15 @@ validated DTO
 
 ## F6A implementado
 
-Código/migraciones:
-
-- `supabase/migrations/20260819041000_create_f6_core_schema.sql`;
-- `supabase/migrations/20260819042000_harden_f6_runtime_roles.sql`;
-- `scripts/introspection/verify-f6-core.sql`;
-- `scripts/introspection/verify-f6-behavior.sql`;
-- `apps/api/src/common/fiscal/canonicalization.ts` + tests;
-- `apps/api/src/modules/provider/fiscal-provider.ts`;
-- `apps/api/src/modules/provider/fake-fiscal-provider.ts` + tests.
-
-PostgreSQL impone roles/privilegios, RLS/FORCE RLS, idempotencia, tenant-safe FKs, transiciones válidas, inmutabilidad, attempt abierto único y queue durable.
+- schema `app` y tablas fiscales núcleo;
+- RLS/FORCE RLS + tenant-safe FKs;
+- constraints de idempotencia y guards de estados;
+- queue durable con `SKIP LOCKED`;
+- kill switches fail-closed;
+- canonicalización/hash V1;
+- `FiscalProvider` mínimo;
+- `FakeFiscalProvider` con fault injection;
+- tests TypeScript y verificaciones PostgreSQL de comportamiento.
 
 `runtime_controls` inicia:
 
@@ -93,26 +95,9 @@ accept_new_operations = false
 provider_mutations_enabled = false
 ```
 
-## Runtime/CI
+## F6B implementado
 
-- Node 24 en CI y `Dockerfile.dev`;
-- lockfile de dependencias remediado y comprometido;
-- CI ejecuta `npm audit --omit=dev --audit-level=high` sin mutar dependencias;
-- build/lint/unit/e2e + migraciones + verificaciones SQL.
-
-Evidencia final: PR efímero #54, run #44, todo PASS; PR cerrado sin merge.
-
-Prisma 5 permanece temporalmente como scaffold/build dependency, pero no existe uso de `PrismaClient` en dominio y no gobierna el modelo fiscal.
-
-## PT
-
-Candidatos: The Factory HKA, DATAICO; Facture reserva. No hay selección final hasta sandbox + contrato de ambigüedad/reconciliación.
-
-No crear adapter productivo todavía.
-
-## Siguiente — F6B
-
-Construir vertical slice con fake provider:
+Flujo ejecutable probado:
 
 ```text
 credential
@@ -120,11 +105,53 @@ credential
 → POST command
 → c14n/idempotency
 → operation + audit + work (1 tx)
-→ worker claim
-→ provider_attempt
+→ worker claim/lease
+→ provider_attempt persistido
 → FakeFiscalProvider
-→ ACCEPT/REJECT/UNKNOWN
+→ ACCEPT/REJECT/PROVEN_NOT_SENT/UNKNOWN
 → reconcile
 ```
 
-Primera decisión F6B: cliente PostgreSQL/repository layer. Debe permitir transacciones explícitas, queries parametrizadas y tenant context local; no introducir un ORM por comodidad si oculta RLS/SQL crítico.
+Decisiones cerradas:
+
+- cliente DB: `pg` / node-postgres;
+- SQL explícito en repositories;
+- Prisma retirado del scaffold activo;
+- proceso API con login `app_api`;
+- proceso worker con login `app_worker` distinto;
+- fake worker prohibido en producción;
+- crash en `SUBMITTING` se recupera a `UNKNOWN`, nunca a segundo submit;
+- `SUBMITTING → READY` exige último attempt `PROVEN_NOT_SENT`;
+- kill switch bloquea nuevos side effects pero permite reconciliación.
+
+Evidencia:
+
+- F6B1: PR #55, snapshot promovido `a2b5b2ede98024968372e5a3df97353b5bbc5117`;
+- F6B2: PR #56, CI run #54 PASS completo, snapshot promovido `7a940ac46e8f977bf33374fb5d1c75ad56d192c1`.
+
+## Runtime/CI
+
+- Node 24;
+- `npm audit --omit=dev --audit-level=high`;
+- build/lint/unit;
+- migraciones SQL;
+- verificaciones estructurales/comportamiento;
+- e2e con logins PostgreSQL no privilegiados y separados `ci_api`/`ci_worker`.
+
+## PT
+
+Candidatos: The Factory HKA, DATAICO; Facture reserva. No hay selección final hasta sandbox + contrato de ambigüedad/reconciliación.
+
+No crear adapter productivo todavía.
+
+## Siguiente trabajo permitido
+
+Mientras F4C no se resuelva, avanzar solo trabajo independiente del PT que reduzca riesgo:
+
+1. observabilidad y métricas internas;
+2. runbook operativo del worker/kill switches;
+3. pruebas de concurrencia y carga moderada;
+4. limpieza de infraestructura histórica no usada;
+5. harness de contract tests del adapter, sin inventar respuestas/endpoints PT.
+
+El siguiente gran gate funcional sigue siendo F4C → F5B/F6C.
