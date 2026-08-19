@@ -225,7 +225,10 @@ describe('API-DIAN F6B (e2e)', () => {
   it('worker accepts a READY operation with one persisted provider attempt', async () => {
     await drainWorker();
     fakeProvider.setScenario('ACCEPT');
-    const created = await postOperation('f6b-worker-accept', 'sale:worker:accept');
+    const created = await postOperation(
+      'f6b-worker-accept',
+      'sale:worker:accept',
+    );
 
     expect(await worker.processNext()).toBe('SUBMITTED');
     expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');

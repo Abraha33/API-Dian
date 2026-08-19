@@ -15,9 +15,7 @@ import { FiscalWorkerService } from './fiscal-worker.service';
       provide: FISCAL_PROVIDER,
       inject: [ConfigService],
       useFactory: (config: ConfigService): FiscalProvider =>
-        new FakeFiscalProvider(
-          config.getOrThrow('FAKE_PROVIDER_SCENARIO'),
-        ),
+        new FakeFiscalProvider(config.getOrThrow('FAKE_PROVIDER_SCENARIO')),
     },
     FiscalWorkerService,
   ],

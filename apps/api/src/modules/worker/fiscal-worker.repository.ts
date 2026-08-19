@@ -91,10 +91,7 @@ export class FiscalWorkerRepository {
     );
   }
 
-  async deadLetterWork(
-    job: ClaimedWorkItem,
-    errorCode: string,
-  ): Promise<void> {
+  async deadLetterWork(job: ClaimedWorkItem, errorCode: string): Promise<void> {
     await this.db.query(
       `UPDATE app.work_items
        SET status = 'DEAD',
@@ -148,7 +145,12 @@ export class FiscalWorkerRepository {
         }
         await this.transitionOperation(client, operation.id, 'UNKNOWN');
         await this.completeWork(client, job.id, 'RECOVERED_AFTER_CRASH');
-        await this.enqueueWork(client, job.tenant_id, operation.id, 'RECONCILE');
+        await this.enqueueWork(
+          client,
+          job.tenant_id,
+          operation.id,
+          'RECONCILE',
+        );
         await this.audit(client, {
           tenantId: job.tenant_id,
           operationId: operation.id,
@@ -163,7 +165,12 @@ export class FiscalWorkerRepository {
       if (operation.status !== 'READY') {
         await this.completeWork(client, job.id, 'STALE_SUBMIT_WORK');
         if (operation.status === 'UNKNOWN') {
-          await this.enqueueWork(client, job.tenant_id, operation.id, 'RECONCILE');
+          await this.enqueueWork(
+            client,
+            job.tenant_id,
+            operation.id,
+            'RECONCILE',
+          );
         }
         return { action: 'SKIPPED' };
       }
@@ -259,7 +266,12 @@ export class FiscalWorkerRepository {
              outcome_code = $4,
              finished_at = now()
          WHERE id = $1::uuid`,
-        [attemptId, attemptStatus, result.providerReference ?? null, outcomeCode],
+        [
+          attemptId,
+          attemptStatus,
+          result.providerReference ?? null,
+          outcomeCode,
+        ],
       );
 
       await this.transitionOperation(client, job.operation_id, target);
@@ -273,7 +285,12 @@ export class FiscalWorkerRepository {
           'RECONCILE',
         );
       } else if (target === 'READY') {
-        await this.enqueueWork(client, job.tenant_id, job.operation_id, 'SUBMIT');
+        await this.enqueueWork(
+          client,
+          job.tenant_id,
+          job.operation_id,
+          'SUBMIT',
+        );
       }
 
       await this.audit(client, {
@@ -412,7 +429,12 @@ export class FiscalWorkerRepository {
       await this.completeWork(client, job.id, outcomeCode);
 
       if (target === 'READY') {
-        await this.enqueueWork(client, job.tenant_id, job.operation_id, 'SUBMIT');
+        await this.enqueueWork(
+          client,
+          job.tenant_id,
+          job.operation_id,
+          'SUBMIT',
+        );
       }
 
       await this.audit(client, {
