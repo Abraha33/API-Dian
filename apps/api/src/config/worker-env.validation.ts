@@ -78,7 +78,11 @@ export class WorkerEnvironmentVariables {
 export function validateWorkerEnv(
   config: Record<string, unknown>,
 ): WorkerEnvironmentVariables {
-  const validated = plainToInstance(WorkerEnvironmentVariables, config, {
+  const normalized = {
+    ...config,
+    DATABASE_URL: config.WORKER_DATABASE_URL ?? config.DATABASE_URL,
+  };
+  const validated = plainToInstance(WorkerEnvironmentVariables, normalized, {
     enableImplicitConversion: true,
   });
   const errors = validateSync(validated, {
