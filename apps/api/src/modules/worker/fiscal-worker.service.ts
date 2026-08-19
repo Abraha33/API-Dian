@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PinoLoggerService } from '../../common/logger/pino-logger.service';
 import {
   FISCAL_PROVIDER,
   type FiscalProvider,
@@ -32,6 +33,7 @@ export class FiscalWorkerService {
   constructor(
     private readonly repository: FiscalWorkerRepository,
     @Inject(FISCAL_PROVIDER) private readonly provider: FiscalProvider,
+    private readonly logger: PinoLoggerService,
     config: ConfigService,
   ) {
     this.workerId = config.get<string>('WORKER_ID', 'worker-1');
@@ -57,6 +59,29 @@ export class FiscalWorkerService {
     );
     if (!job) return 'IDLE';
 
+    const started = Date.now();
+    try {
+      const result = await this.dispatch(job);
+      this.logJobResult(job, result, Date.now() - started);
+      return result;
+    } catch (error) {
+      this.logger.logWorkerEvent({
+        event: 'worker_job_completed',
+        worker_id: this.workerId,
+        work_id: job.id,
+        operation_id: job.operation_id,
+        tenant_id: job.tenant_id,
+        work_kind: job.kind,
+        attempt_count: job.attempt_count,
+        elapsed_ms: Date.now() - started,
+        outcome: 'UNHANDLED_ERROR',
+        normalized_code: error instanceof Error ? error.name : 'UNKNOWN_ERROR',
+      });
+      throw error;
+    }
+  }
+
+  private async dispatch(job: ClaimedWorkItem): Promise<WorkerProcessResult> {
     if (job.kind === 'SUBMIT') {
       return this.processSubmit(job);
     }
@@ -95,6 +120,7 @@ export class FiscalWorkerService {
       return 'SKIPPED';
     }
 
+    const providerStarted = Date.now();
     let result: ProviderSubmissionResult;
     try {
       result = await this.provider.submit(prepared.command, prepared.context);
@@ -104,6 +130,22 @@ export class FiscalWorkerService {
         normalizedCode: 'UNEXPECTED_PROVIDER_ERROR',
       };
     }
+
+    this.logger.logWorkerEvent({
+      event: 'provider_submit_result',
+      worker_id: this.workerId,
+      work_id: job.id,
+      operation_id: job.operation_id,
+      tenant_id: job.tenant_id,
+      work_kind: job.kind,
+      attempt_count: job.attempt_count,
+      elapsed_ms: Date.now() - providerStarted,
+      outcome: result.outcome,
+      attempt_id: prepared.attemptId,
+      ...(result.normalizedCode
+        ? { normalized_code: result.normalizedCode }
+        : {}),
+    });
 
     await this.repository.applySubmissionResult(
       job,
@@ -119,6 +161,7 @@ export class FiscalWorkerService {
     const prepared = await this.repository.prepareReconciliation(job);
     if (!prepared) return 'SKIPPED';
 
+    const providerStarted = Date.now();
     let result: ProviderReconciliationResult;
     try {
       result = await this.provider.reconcile(prepared.query);
@@ -128,6 +171,22 @@ export class FiscalWorkerService {
         normalizedCode: 'UNEXPECTED_RECONCILIATION_ERROR',
       };
     }
+
+    this.logger.logWorkerEvent({
+      event: 'provider_reconcile_result',
+      worker_id: this.workerId,
+      work_id: job.id,
+      operation_id: job.operation_id,
+      tenant_id: job.tenant_id,
+      work_kind: job.kind,
+      attempt_count: job.attempt_count,
+      elapsed_ms: Date.now() - providerStarted,
+      outcome: result.outcome,
+      attempt_id: prepared.attemptId,
+      ...(result.normalizedCode
+        ? { normalized_code: result.normalizedCode }
+        : {}),
+    });
 
     await this.repository.applyReconciliationResult(
       job,
@@ -140,5 +199,23 @@ export class FiscalWorkerService {
     return result.outcome === 'INDETERMINATE'
       ? 'RETRY_SCHEDULED'
       : 'RECONCILED';
+  }
+
+  private logJobResult(
+    job: ClaimedWorkItem,
+    result: WorkerProcessResult,
+    elapsedMs: number,
+  ): void {
+    this.logger.logWorkerEvent({
+      event: 'worker_job_completed',
+      worker_id: this.workerId,
+      work_id: job.id,
+      operation_id: job.operation_id,
+      tenant_id: job.tenant_id,
+      work_kind: job.kind,
+      attempt_count: job.attempt_count,
+      elapsed_ms: elapsedMs,
+      outcome: result,
+    });
   }
 }

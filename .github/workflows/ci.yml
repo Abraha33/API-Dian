@@ -69,6 +69,28 @@ jobs:
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/provision-f6b-ci.sql
 
+      - name: Kill-switch control as constrained ops login
+        env:
+          PGPASSWORD: ci_ops
+        run: |
+          psql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 <<'SQL'
+          BEGIN;
+          SET LOCAL ROLE app_ops_control;
+          UPDATE app.runtime_controls
+          SET reason = 'CI ops control check',
+              updated_at = now(),
+              updated_by = session_user
+          WHERE singleton_id = 1;
+          COMMIT;
+          SQL
+
+      - name: Operational report as constrained ops login
+        env:
+          PGPASSWORD: ci_ops
+        run: |
+          psql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 \
+            -f scripts/ops/fiscal-ops-report.sql
+
       - name: E2E tests as separated API and worker DB logins
         working-directory: apps/api
         env:

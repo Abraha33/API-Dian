@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PinoLoggerService } from '../../common/logger/pino-logger.service';
 import { FakeFiscalProvider } from '../provider/fake-fiscal-provider';
 import {
   FISCAL_PROVIDER,
@@ -10,6 +11,7 @@ import { FiscalWorkerService } from './fiscal-worker.service';
 
 @Module({
   providers: [
+    PinoLoggerService,
     FiscalWorkerRepository,
     {
       provide: FISCAL_PROVIDER,

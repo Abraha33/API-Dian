@@ -11,6 +11,7 @@ import { Pool } from 'pg';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { DatabaseService } from './../src/common/database/database.service';
+import { PinoLoggerService } from './../src/common/logger/pino-logger.service';
 import { FakeFiscalProvider } from './../src/modules/provider/fake-fiscal-provider';
 import { FiscalWorkerRepository } from './../src/modules/worker/fiscal-worker.repository';
 import { FiscalWorkerService } from './../src/modules/worker/fiscal-worker.service';
@@ -95,9 +96,11 @@ describe('API-DIAN F6B (e2e)', () => {
     workerDb = new DatabaseService(workerConfig);
     workerRepository = new FiscalWorkerRepository(workerDb);
     fakeProvider = new FakeFiscalProvider('ACCEPT');
+    const workerLogger = moduleFixture.get(PinoLoggerService);
     worker = new FiscalWorkerService(
       workerRepository,
       fakeProvider,
+      workerLogger,
       workerConfig,
     );
   });
@@ -123,35 +126,52 @@ describe('API-DIAN F6B (e2e)', () => {
     return response.body as OperationBody;
   }
 
+  async function drainWorker(): Promise<void> {
+    while ((await worker.processNext()) !== 'IDLE') {
+      // Drain pre-existing work created by earlier tests.
+    }
+  }
+
   async function countAttempts(operationId: string): Promise<number> {
-    return workerDb.withTenantTransaction(TENANT_A, async (client) => {
-      const result = await client.query<{ count: string }>(
-        `SELECT count(*)::text AS count
-         FROM app.provider_attempts
-         WHERE operation_id = $1::uuid`,
-        [operationId],
-      );
-      return Number.parseInt(result.rows[0]?.count ?? '0', 10);
-    });
+    const result = await adminPool.query<{ count: string }>(
+      `SELECT count(*)::text AS count
+       FROM app.provider_attempts
+       WHERE operation_id = $1::uuid`,
+      [operationId],
+    );
+    return Number(result.rows[0]?.count ?? '0');
+  }
+
+  async function readProviderAttempt(operationId: string): Promise<{
+    status: string;
+    outcome_code: string | null;
+  }> {
+    const result = await adminPool.query<{
+      status: string;
+      outcome_code: string | null;
+    }>(
+      `SELECT status, outcome_code
+       FROM app.provider_attempts
+       WHERE operation_id = $1::uuid
+       ORDER BY attempt_no DESC
+       LIMIT 1`,
+      [operationId],
+    );
+    const row = result.rows[0];
+    if (!row) throw new Error('provider attempt not found');
+    return row;
   }
 
   async function setProviderMutations(enabled: boolean): Promise<void> {
     await adminPool.query(
       `UPDATE app.runtime_controls
        SET provider_mutations_enabled = $1,
+           reason = 'e2e',
            updated_at = now(),
-           updated_by = 'f6b-e2e'
+           updated_by = 'e2e'
        WHERE singleton_id = 1`,
       [enabled],
     );
-  }
-
-  async function drainWorker(): Promise<void> {
-    fakeProvider.setScenario('ACCEPT');
-    for (let index = 0; index < 20; index += 1) {
-      if ((await worker.processNext()) === 'IDLE') return;
-    }
-    throw new Error('Worker did not drain within safety bound');
   }
 
   it('/health and /ready expose real DB readiness', async () => {
@@ -176,6 +196,7 @@ describe('API-DIAN F6B (e2e)', () => {
     const operationId = first.operation_id;
 
     const replay = await postOperation('f6b-idempotency-1', 'sale:f6b:1');
+
     expect(replay.operation_id).toBe(operationId);
     expect(replay.replayed).toBe(true);
 
@@ -199,10 +220,21 @@ describe('API-DIAN F6B (e2e)', () => {
   });
 
   it('rejects reuse of idempotency key with changed fiscal semantics', async () => {
-    await postOperation('f6b-idempotency-conflict', 'sale:f6b:conflict');
+    const original = commandFor('sale:f6b:conflict');
+    await request(app.getHttpServer())
+      .post('/v1/fiscal-operations')
+      .set('Authorization', `Bearer ${AUTH_TOKEN}`)
+      .set('Idempotency-Key', 'f6b-idempotency-conflict')
+      .send(original)
+      .expect(202);
 
-    const changed = commandFor('sale:f6b:conflict');
-    changed.document.totals.payable = '29751.00';
+    const changed = {
+      ...original,
+      document: {
+        ...original.document,
+        totals: { ...original.document.totals, payable: '29751.00' },
+      },
+    };
 
     const response = await request(app.getHttpServer())
       .post('/v1/fiscal-operations')
@@ -246,6 +278,7 @@ describe('API-DIAN F6B (e2e)', () => {
     expect((await readOperation(created.operation_id)).status).toBe('UNKNOWN');
     expect(await countAttempts(created.operation_id)).toBe(1);
 
+    fakeProvider.setScenario('ACCEPT');
     expect(await worker.processNext()).toBe('RECONCILED');
     expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');
     expect(await countAttempts(created.operation_id)).toBe(1);
@@ -258,11 +291,19 @@ describe('API-DIAN F6B (e2e)', () => {
       'sale:worker:delayed',
     );
 
-    await worker.processNext();
+    expect(await worker.processNext()).toBe('SUBMITTED');
     expect((await readOperation(created.operation_id)).status).toBe('UNKNOWN');
 
     expect(await worker.processNext()).toBe('RETRY_SCHEDULED');
+    expect((await readOperation(created.operation_id)).status).toBe(
+      'RECONCILING',
+    );
+
     expect(await worker.processNext()).toBe('RETRY_SCHEDULED');
+    expect((await readOperation(created.operation_id)).status).toBe(
+      'RECONCILING',
+    );
+
     expect(await worker.processNext()).toBe('RECONCILED');
     expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');
     expect(await countAttempts(created.operation_id)).toBe(1);
@@ -277,6 +318,9 @@ describe('API-DIAN F6B (e2e)', () => {
 
     expect(await worker.processNext()).toBe('SUBMITTED');
     expect((await readOperation(created.operation_id)).status).toBe('READY');
+    expect((await readProviderAttempt(created.operation_id)).outcome_code).toBe(
+      'PROVEN_NOT_SENT',
+    );
     expect(await countAttempts(created.operation_id)).toBe(1);
 
     fakeProvider.setScenario('ACCEPT');
@@ -286,18 +330,18 @@ describe('API-DIAN F6B (e2e)', () => {
   });
 
   it('kill switch pauses new submits without creating provider attempts', async () => {
-    await setProviderMutations(false);
-    fakeProvider.setScenario('ACCEPT');
     const created = await postOperation(
       'f6b-worker-kill-switch',
       'sale:worker:kill-switch',
     );
+    await setProviderMutations(false);
 
     expect(await worker.processNext()).toBe('MUTATIONS_PAUSED');
     expect((await readOperation(created.operation_id)).status).toBe('READY');
     expect(await countAttempts(created.operation_id)).toBe(0);
 
     await setProviderMutations(true);
+    fakeProvider.setScenario('ACCEPT');
     expect(await worker.processNext()).toBe('SUBMITTED');
     expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');
   });
@@ -309,22 +353,26 @@ describe('API-DIAN F6B (e2e)', () => {
       'sale:worker:crash',
     );
 
-    const claimed = await workerRepository.claimNext('crash-simulator', 30);
-    expect(claimed).not.toBeNull();
-    if (!claimed) throw new Error('Expected a claimed work item');
+    const job = await workerRepository.claimNext('crash-sim', 1);
+    expect(job).not.toBeNull();
+    if (!job) throw new Error('expected claimed job');
+    expect(job.operation_id).toBe(created.operation_id);
 
-    const prepared = await workerRepository.prepareSubmission(claimed, true);
+    const prepared = await workerRepository.prepareSubmission(job, true);
     expect(prepared.action).toBe('SUBMIT');
-    if (prepared.action !== 'SUBMIT') {
-      throw new Error('Expected prepared provider submit');
-    }
+    if (prepared.action !== 'SUBMIT') throw new Error('expected submit');
 
-    await fakeProvider.submit(prepared.command, prepared.context);
+    const remote = await fakeProvider.submit(
+      prepared.command,
+      prepared.context,
+    );
+    expect(remote.outcome).toBe('CONCLUSIVE_ACCEPTED');
+
     await adminPool.query(
       `UPDATE app.work_items
        SET lease_until = now() - interval '1 second'
        WHERE id = $1::uuid`,
-      [claimed.id],
+      [job.id],
     );
 
     expect(await worker.processNext()).toBe('RECOVERED_UNKNOWN');
@@ -337,7 +385,7 @@ describe('API-DIAN F6B (e2e)', () => {
   });
 
   afterAll(async () => {
-    await setProviderMutations(false);
+    await setProviderMutations(true);
     await workerDb.onModuleDestroy();
     await apiPool.end();
     await adminPool.end();
