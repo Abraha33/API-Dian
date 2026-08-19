@@ -20,6 +20,23 @@ END
 $$;
 
 DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_roles
+    WHERE rolname = 'app_ops'
+      AND NOT rolcanlogin
+      AND NOT rolsuper
+      AND NOT rolcreatedb
+      AND NOT rolcreaterole
+      AND rolbypassrls
+  ) THEN
+    RAISE EXCEPTION 'app_ops missing or role attributes are unsafe';
+  END IF;
+END
+$$;
+
+DO $$
 DECLARE
   table_name text;
 BEGIN
@@ -67,6 +84,53 @@ BEGIN
     'app_worker', 'app.claim_work_item(text,integer)', 'EXECUTE'
   ) THEN
     RAISE EXCEPTION 'app_worker cannot execute work claim function';
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT has_column_privilege(
+    'app_ops', 'app.fiscal_operations', 'status', 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'app_ops cannot read fiscal status';
+  END IF;
+
+  IF NOT has_column_privilege(
+    'app_ops', 'app.work_items', 'lease_until', 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'app_ops cannot inspect queue leases';
+  END IF;
+
+  IF NOT has_column_privilege(
+    'app_ops', 'app.runtime_controls', 'provider_mutations_enabled', 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'app_ops cannot inspect runtime controls';
+  END IF;
+
+  IF has_column_privilege(
+    'app_ops', 'app.fiscal_operations', 'request_payload', 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'app_ops must not read fiscal request payloads';
+  END IF;
+
+  IF has_column_privilege(
+    'app_ops', 'app.provider_attempts', 'request_hash', 'SELECT'
+  ) THEN
+    RAISE EXCEPTION 'app_ops must not read provider request hashes';
+  END IF;
+
+  IF has_table_privilege('app_ops', 'app.api_credentials', 'SELECT')
+     OR has_column_privilege(
+       'app_ops', 'app.api_credentials', 'secret_digest', 'SELECT'
+     ) THEN
+    RAISE EXCEPTION 'app_ops must not read API credential material';
+  END IF;
+
+  IF has_table_privilege('app_ops', 'app.fiscal_operations', 'UPDATE')
+     OR has_table_privilege('app_ops', 'app.work_items', 'UPDATE')
+     OR has_table_privilege('app_ops', 'app.runtime_controls', 'UPDATE') THEN
+    RAISE EXCEPTION 'app_ops must be read-only';
   END IF;
 END
 $$;
