@@ -69,11 +69,13 @@ jobs:
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/provision-f6b-ci.sql
 
-      - name: E2E tests as non-privileged API login
+      - name: E2E tests as separated API and worker DB logins
         working-directory: apps/api
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://ci_api:ci_api@localhost:5432/ci
+          WORKER_DATABASE_URL: postgresql://ci_worker:ci_worker@localhost:5432/ci
+          TEST_ADMIN_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci
           DATABASE_POOL_MAX: '3'
           AUTH_PEPPER: f6-test-pepper-0123456789abcdef-32bytes
-        run: npm run test:e2e
+        run: npm run test:e2e -- --runInBand

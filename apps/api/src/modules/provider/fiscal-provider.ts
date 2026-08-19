@@ -1,3 +1,5 @@
+export const FISCAL_PROVIDER = Symbol('FISCAL_PROVIDER');
+
 export type SubmissionOutcome =
   | 'CONCLUSIVE_ACCEPTED'
   | 'CONCLUSIVE_REJECTED'
