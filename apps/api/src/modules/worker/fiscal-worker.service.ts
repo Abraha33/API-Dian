@@ -91,6 +91,9 @@ export class FiscalWorkerService {
       );
       return 'MUTATIONS_PAUSED';
     }
+    if (prepared.action !== 'SUBMIT') {
+      return 'SKIPPED';
+    }
 
     let result: ProviderSubmissionResult;
     try {
