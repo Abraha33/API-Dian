@@ -79,7 +79,7 @@ jobs:
           UPDATE app.runtime_controls
           SET reason = 'CI ops control check',
               updated_at = now(),
-              updated_by = 'ci_ops'
+              updated_by = session_user
           WHERE singleton_id = 1;
           COMMIT;
           SQL
