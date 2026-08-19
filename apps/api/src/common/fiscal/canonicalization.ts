@@ -88,7 +88,7 @@ function normalizeValue(value: unknown, fieldName?: string): CanonicalValue {
   }
 
   if (typeof value === 'object') {
-    const prototype = Object.getPrototypeOf(value);
+    const prototype = Object.getPrototypeOf(value) as object | null;
     if (prototype !== Object.prototype && prototype !== null) {
       throw new Error(
         'Only plain JSON objects are allowed in canonical fiscal commands',
@@ -149,10 +149,7 @@ export function stableStringify(value: CanonicalValue): string {
 
   const entries = Object.entries(value);
   return `{${entries
-    .map(
-      ([key, child]) =>
-        `${JSON.stringify(key)}:${stableStringify(child)}`,
-    )
+    .map(([key, child]) => `${JSON.stringify(key)}:${stableStringify(child)}`)
     .join(',')}}`;
 }
 
@@ -164,9 +161,7 @@ export function canonicalizeFiscalCommand(
   const preimage =
     `API-DIAN|contract=${CONTRACT_VERSION}|` +
     `c14n=${CANONICALIZATION_VERSION}|${canonicalJson}`;
-  const hashHex = createHash('sha256')
-    .update(preimage, 'utf8')
-    .digest('hex');
+  const hashHex = createHash('sha256').update(preimage, 'utf8').digest('hex');
 
   return { projection, canonicalJson, hashHex, hashVersion: HASH_VERSION };
 }
