@@ -8,13 +8,13 @@ F4A contratos ✅
 F4B shortlist PT ✅
 F4C sandbox/contrato PT ▶ bloqueo externo
 F5A diseño pruebas/runbooks ✅
-F5B pruebas reales PT ⏸
+F5B pruebas reales PT ⏸ depende F4C
 F6A core independiente PT ✅
-F6B auth/repos/worker fake ▶ siguiente interno
+F6B auth/repos/worker fake ✅
 F6C adapter real ⏸ depende F4C
 ```
 
-Rama: `dev`.
+Rama principal de trabajo: `dev`.
 
 ## Producto
 
@@ -34,6 +34,7 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - ADR-009 pruebas/fault injection/kill switch;
 - docs F3/F4/F5;
 - `docs/f6-checkpoint-01-core-persistence.md`;
+- `docs/f6-checkpoint-02-fake-vertical-slice.md`;
 - `ROADMAP.md`.
 
 ## Invariantes
@@ -41,14 +42,16 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - PostgreSQL autoridad;
 - API HTTP persiste, no emite;
 - solo worker muta PT;
-- `provider_attempt` antes de HTTP;
+- `provider_attempt` antes del HTTP mutante;
 - ambigüedad → `UNKNOWN`;
 - `UNKNOWN` reconcilia antes de cualquier nuevo submit;
 - no retry HTTP transparente de mutaciones;
 - tenant por credential + RLS;
 - evidencia append-only;
 - API no tiene secreto PT;
-- kill switch de submit no pausa reconcile/read.
+- API y worker usan identidades DB separadas;
+- kill switch de submit no pausa reconcile/read;
+- `SUBMITTING → READY` solo con evidencia `PROVEN_NOT_SENT`.
 
 ## Contrato
 
@@ -74,45 +77,16 @@ validated DTO
 
 ## F6A implementado
 
-Código/migraciones:
+- schema `app` y tablas fiscales núcleo;
+- RLS/FORCE RLS + tenant-safe FKs;
+- constraints de idempotencia y guards de estados;
+- queue durable con `SKIP LOCKED`;
+- kill switches fail-closed;
+- canonicalización/hash V1;
+- `FiscalProvider` mínimo;
+- `FakeFiscalProvider` con fault injection.
 
-- `supabase/migrations/20260819041000_create_f6_core_schema.sql`;
-- `supabase/migrations/20260819042000_harden_f6_runtime_roles.sql`;
-- `scripts/introspection/verify-f6-core.sql`;
-- `scripts/introspection/verify-f6-behavior.sql`;
-- `apps/api/src/common/fiscal/canonicalization.ts` + tests;
-- `apps/api/src/modules/provider/fiscal-provider.ts`;
-- `apps/api/src/modules/provider/fake-fiscal-provider.ts` + tests.
-
-PostgreSQL impone roles/privilegios, RLS/FORCE RLS, idempotencia, tenant-safe FKs, transiciones válidas, inmutabilidad, attempt abierto único y queue durable.
-
-`runtime_controls` inicia:
-
-```text
-accept_new_operations = false
-provider_mutations_enabled = false
-```
-
-## Runtime/CI
-
-- Node 24 en CI y `Dockerfile.dev`;
-- lockfile de dependencias remediado y comprometido;
-- CI ejecuta `npm audit --omit=dev --audit-level=high` sin mutar dependencias;
-- build/lint/unit/e2e + migraciones + verificaciones SQL.
-
-Evidencia final: PR efímero #54, run #44, todo PASS; PR cerrado sin merge.
-
-Prisma 5 permanece temporalmente como scaffold/build dependency, pero no existe uso de `PrismaClient` en dominio y no gobierna el modelo fiscal.
-
-## PT
-
-Candidatos: The Factory HKA, DATAICO; Facture reserva. No hay selección final hasta sandbox + contrato de ambigüedad/reconciliación.
-
-No crear adapter productivo todavía.
-
-## Siguiente — F6B
-
-Construir vertical slice con fake provider:
+## F6B implementado
 
 ```text
 credential
@@ -127,4 +101,55 @@ credential
 → reconcile
 ```
 
-Primera decisión F6B: cliente PostgreSQL/repository layer. Debe permitir transacciones explícitas, queries parametrizadas y tenant context local; no introducir un ORM por comodidad si oculta RLS/SQL crítico.
+Detalles:
+
+- `pg`/node-postgres es la capa de acceso; SQL/RLS sigue siendo autoridad;
+- Prisma fue retirado;
+- credential opaca validada con HMAC-SHA256 + pepper;
+- tenant se deriva de la credential;
+- API usa login que hereda `app_api`;
+- worker usa login separado que hereda `app_worker`;
+- replay idempotente no crea segundo trabajo;
+- misma key + semántica diferente devuelve conflicto;
+- crash durante submit no autoriza segundo submit;
+- recuperación de `SUBMITTING` pasa a `UNKNOWN` y encola reconcile;
+- `PROVEN_NOT_SENT` permite volver a `READY` de forma explícitamente probada;
+- agotamiento de reconcile termina en `NEEDS_ATTENTION`;
+- fake worker no arranca en producción.
+
+Evidencia: PR efímero #56, run #54, todo PASS con `ci_api` y `ci_worker` no privilegiados. Snapshot promovido a `dev` como `7a940ac46e8f977bf33374fb5d1c75ad56d192c1`.
+
+## Runtime/CI
+
+- Node 24;
+- `npm audit --omit=dev --audit-level=high`;
+- build/lint/unit/e2e;
+- migraciones + verificaciones SQL;
+- e2e de API y worker contra PostgreSQL real y roles separados.
+
+## PT
+
+Candidatos: The Factory HKA, DATAICO; Facture reserva.
+
+No hay selección final hasta sandbox + contrato de ambigüedad/reconciliación. Un 404 aislado no equivale a `NOT_FOUND_CONCLUSIVE`.
+
+No crear adapter productivo todavía.
+
+## Siguiente trabajo
+
+### Bloqueante principal
+
+F4C: conseguir sandbox/contrato y ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md`.
+
+### Mientras F4C siga bloqueado
+
+Solo trabajo independiente del PT:
+
+- observabilidad del worker/colas/UNKNOWN;
+- herramientas operativas seguras para `NEEDS_ATTENTION`;
+- métricas y readiness;
+- pruebas de concurrencia/fault injection adicionales;
+- empaquetado/deploy no productivo;
+- documentación/runbooks.
+
+No inventar mappings, códigos, retries, endpoints ni semántica de un PT todavía.
