@@ -71,21 +71,25 @@ export class FiscalWorkerService {
   private async processSubmit(
     job: ClaimedWorkItem,
   ): Promise<WorkerProcessResult> {
-    if (!(await this.repository.providerMutationsEnabled())) {
+    const mutationsEnabled = await this.repository.providerMutationsEnabled();
+    const prepared = await this.repository.prepareSubmission(
+      job,
+      mutationsEnabled,
+    );
+
+    if (prepared.action === 'RECOVERED_UNKNOWN') {
+      return 'RECOVERED_UNKNOWN';
+    }
+    if (prepared.action === 'SKIPPED') {
+      return 'SKIPPED';
+    }
+    if (prepared.action === 'PAUSED') {
       await this.repository.rescheduleWork(
         job,
         this.mutationPauseSeconds,
         'PROVIDER_MUTATIONS_DISABLED',
       );
       return 'MUTATIONS_PAUSED';
-    }
-
-    const prepared = await this.repository.prepareSubmission(job);
-    if (prepared.action === 'RECOVERED_UNKNOWN') {
-      return 'RECOVERED_UNKNOWN';
-    }
-    if (prepared.action === 'SKIPPED') {
-      return 'SKIPPED';
     }
 
     let result: ProviderSubmissionResult;
