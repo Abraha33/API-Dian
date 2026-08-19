@@ -3,58 +3,74 @@
 **Corte:** 2026-08-19  
 **Rama consolidada:** `dev`
 
-## 1. Autoridades vigentes
+## 1. Autoridades congeladas
 
 ```text
-docs/PRODUCT-DEFINITION-V1-FINAL.md   ✅ FROZEN — qué se construye
-docs/SYSTEM-ARCHITECTURE-V1.md        ✅ FROZEN — cómo se construye
-docs/BUILD-PLAN-V1.md                 ✅ FROZEN — en qué orden se construye
+docs/PRODUCT-DEFINITION-V1-FINAL.md   ✅ qué se construye
+docs/SYSTEM-ARCHITECTURE-V1.md        ✅ cómo se construye
+docs/BUILD-PLAN-V1.md                 ✅ orden de construcción
+docs/BACKLOG-V1.md                    ✅ obligaciones/tareas verificables
+docs/DEPENDENCY-MAP-V1.md             ✅ dependencias y gates
+docs/DEFINITION-OF-DONE-V1.md         ✅ qué significa DONE
+docs/DAILY-BUILD-PLAN-V1.md           ✅ secuencia de jornadas
 ```
 
-Si existe conflicto: producto > arquitectura > build plan > implementación existente.
-
-## 2. Estado de planificación
+Jerarquía si existe conflicto:
 
 ```text
-Producto                         ✅
-Arquitectura                     ✅
-Build Plan                       ✅
-Backlog detallado                ▶ SIGUIENTE
-Mapa de dependencias             ⏸
-Definition of Done               ⏸
-Plan diario                      ⏸
-Auditoría del código existente   ⏸
+producto > arquitectura > build plan > backlog/dependencias/DoD > plan diario > implementación existente
+```
+
+## 2. Estado actual
+
+```text
+Producto                         ✅ FROZEN
+Arquitectura                     ✅ FROZEN
+Build Plan                       ✅ FROZEN
+Backlog                          ✅ FROZEN
+Mapa de dependencias             ✅ FROZEN
+Definition of Done               ✅ FROZEN
+Plan diario                      ✅ FROZEN
+Auditoría del código existente   ▶ SIGUIENTE
 Nueva implementación             ⏸
 ```
 
-Orden oficial:
+No reanudar implementación hasta auditar el código adelantado contra estos baselines.
+
+## 3. Producto y arquitectura en una vista
 
 ```text
-producto
-→ arquitectura
-→ build plan
-→ backlog
-→ dependencias + DoD
-→ plan diario
-→ auditoría del código existente
-→ implementación controlada
+POS propio
+   ↓
+API runtime
+   ↓
+PostgreSQL administrado  ← autoridad transaccional
+   ↑
+Worker runtime ───────────▶ 1 PT habilitado ─▶ DIAN
+   │
+   └──────────────────────▶ Object storage privado
 ```
 
-No agregar runtime por inercia antes de completar esta secuencia.
+V1:
 
-## 3. Producto V1
-
-```text
-POS propio → API-DIAN → 1 PT habilitado → DIAN
-```
-
-- mercado inicial: comercios colombianos;
-- V1 no es API pública;
+- comercios colombianos;
+- consumidor técnico inicial: POS propio;
+- no API pública;
 - multiempresa;
-- un solo PT;
+- exactamente un PT;
 - no DIAN directa;
-- no ser PT inicialmente;
-- FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado, XML/PDF, trazabilidad.
+- FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado, XML/PDF y trazabilidad;
+- monolito modular Node 24 + TypeScript + NestJS/Fastify;
+- PostgreSQL autoridad y trabajo durable;
+- `pg`/SQL explícito en camino fiscal crítico;
+- tenant credential + tenant-safe FK + RLS;
+- perfil fiscal versionado por tenant;
+- roles `api`/`worker` y DB separados;
+- `provider_attempt` antes del side effect;
+- API no muta PT; solo worker;
+- evidencia/auditoría append-only;
+- kill switches;
+- proveedor cloud exacto aún no congelado.
 
 Invariante superior:
 
@@ -62,97 +78,83 @@ Invariante superior:
 DESCONOCIDO != REEMITIR
 ```
 
-## 4. Arquitectura V1
+## 4. Secuencia de construcción
 
 ```text
-POS
- ↓
-API runtime
- ↓
-PostgreSQL administrado  ← autoridad
- ↑
-Worker runtime ───────────▶ 1 PT
- │
- └────────────────────────▶ Object storage privado
-```
-
-Decisiones principales:
-
-- monolito modular;
-- mismo artefacto con roles `api` y `worker`;
-- Node 24 + TypeScript + NestJS/Fastify;
-- PostgreSQL autoridad y trabajo durable;
-- `pg`/SQL explícito en camino crítico;
-- sin Redis/BullMQ productivo;
-- tenant credential + tenant-safe FK + RLS;
-- perfil fiscal versionado por tenant;
-- `provider_attempt` antes del side effect;
-- solo worker muta PT;
-- `UNKNOWN → reconcile`;
-- evidencia/auditoría append-only;
-- API sin secreto PT;
-- kill switches;
-- observabilidad administrada;
-- proveedor cloud exacto todavía no congelado.
-
-## 5. Build Plan V1
-
-Secuencia congelada:
-
-```text
-B1  baseline ejecutable + gates
-B2  multiempresa + auth + perfil fiscal versionado
-B3  contrato fiscal + validación + decimales exactos
-B4  idempotencia + persistencia + máquina de estados
-B5  trabajo durable + worker + side-effect protocol
-B6  reconcile + FakeFiscalProvider + fault injection
-B7  evidencia + auditoría + XML/PDF + operación segura
-B8  gate externo: seleccionar/probar 1 PT real
-B9  adapter PT real + mapeos + contingencias
-B10 plataforma productiva + backup/restore + observabilidad
-B11 integración POS → API-DIAN
-B12 pruebas adversariales E2E
-B13 piloto controlado
+B1  baseline ejecutable
+B2  multiempresa/auth/perfil fiscal
+B3  contrato fiscal/validación
+B4  idempotencia/persistencia/estados
+B5  worker/trabajo durable/side-effect boundary
+B6  UNKNOWN/reconcile/fake/fault injection
+B7  evidencia/artefactos/operación
+B8  gate PT real
+B9  adapter PT real/contingencias
+B10 plataforma productiva/restore
+B11 integración POS
+B12 adversarial E2E
+B13 piloto
 B14 cierre V1
 ```
 
-Mientras avanzan B1–B7 puede adelantarse administrativamente B8 (sandbox, documentación, contrato y precio), pero **B9 no se construye con comportamiento inventado del PT**.
+B8 administrativo puede adelantarse en paralelo, pero B9 requiere evidencia real del PT.
 
-## 6. Regla de ejecución
+## 5. Regla de ejecución diaria
 
-Cada unidad futura seguirá:
-
-```text
-capacidad pequeña
-→ prueba normal
-→ prueba de fallo
-→ integración
-→ gates verdes
-→ cerrar
-```
-
-No se pedirá a Codex “construir toda la API”. Se trabajará por piezas pequeñas, verificables y con contexto mínimo para controlar calidad y coste de tokens.
-
-## 7. Código existente
-
-Existe trabajo adelantado relevante: SQL core, auth/RLS, idempotencia, worker/leases, FakeFiscalProvider, UNKNOWN/reconcile, kill switches, observabilidad, concurrencia y contract-test harness.
-
-No se elimina automáticamente y tampoco se considera terminado por existir.
-
-Después del plan diario, cada pieza se clasificará:
+Cada jornada futura:
 
 ```text
-CONSERVAR
-ADAPTAR
-REHACER
-ELIMINAR
+contexto mínimo
+→ uno o pocos backlog IDs relacionados
+→ happy path
+→ fallo relevante
+→ gates
+→ revisar diff
+→ registrar evidencia
+→ DONE / BLOCKED / INCONCLUSIVE
 ```
 
-Una pieza solo cuenta como avance cuando pasa el gate de la fase correspondiente del Build Plan.
+DoD significa demostrado, no simplemente implementado.
 
-## 8. Gate PT
+## 6. Código adelantado existente
 
-Orden de prueba documentado actualmente:
+El repo ya contiene trabajo relevante, incluyendo:
+
+- PostgreSQL/migraciones y SQL core;
+- auth/tenant/RLS;
+- idempotencia/canonicalización;
+- operaciones/estados;
+- worker/leases/provider attempts;
+- FakeFiscalProvider;
+- UNKNOWN/reconcile;
+- kill switches;
+- observabilidad;
+- concurrencia;
+- contract-test harness PT.
+
+No se borra ni se considera terminado automáticamente.
+
+La auditoría siguiente debe mapear cada bloque/jornada a:
+
+```text
+DONE_EXISTING  = ya cumple DoD/gate con evidencia
+ADAPT          = existe y sirve, pero requiere corrección
+REBUILD        = contradice baseline o no es confiable
+NEW            = no existe
+BLOCKED_EXTERNAL = requiere PT/contrato/evidencia externa
+```
+
+Resultado esperado de la auditoría:
+
+```text
+docs/AUDIT-EXISTING-CODE-V1.md
+```
+
+Después de esa auditoría se genera el plan diario **real restante**, eliminando trabajo ya válido en vez de reconstruirlo por inercia.
+
+## 7. Gate PT
+
+Orden actual de prueba:
 
 ```text
 1. HKA
@@ -162,33 +164,29 @@ Orden de prueba documentado actualmente:
 
 No es selección final.
 
-El PT debe demostrar sandbox real, alcance documental V1, correlación, timeout ambiguo, reconciliación, duplicados, criterio seguro de inexistencia, XML/PDF, firma/certificado, seguridad/datos, SLA/soporte/rate limits y modelo/coste multiempresa.
+Nunca mapear por intuición un 404 o texto “no enviado” a permiso seguro de reemisión. `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren evidencia explícita.
 
-Un 404 o un texto “no enviado” no autorizan por sí mismos una reemisión.
+## 8. Uso eficiente de agentes/Codex
 
-## 9. Fuentes de detalle bajo demanda
-
-Consultar solo si la tarea lo necesita:
-
-- `docs/v1-requisitos.md`;
-- ADR-003..009;
-- `docs/f3-modelo-datos-v1.md`;
-- `docs/f3-threat-model-v1.md`;
-- `docs/f4-contrato-pos-api-v1.md`;
-- `docs/f4-prueba-ambiguedad-pt-v1.md`;
-- `docs/f6-provider-contract-harness.md`.
-
-Para agentes/Codex, empezar normalmente con `docs/session-context.md` + el documento de la fase actual. No cargar todo el repositorio sin necesidad.
-
-## 10. Siguiente avance oficial
-
-Crear el backlog completo derivado de `BUILD-PLAN-V1.md`:
+Empezar normalmente solo con:
 
 ```text
-fase
-→ épica
-→ historia/capacidad
-→ tarea pequeña verificable
+docs/session-context.md
++ documento de fase/jornada actual
 ```
 
-Después: mapa de dependencias, Definition of Done y plan diario.
+Abrir ADR/requisitos/código adicional solo bajo necesidad. No cargar todo el repo por defecto.
+
+Usar el modelo de menor coste que pueda resolver correctamente la tarea y escalar únicamente para decisiones difíciles de arquitectura, seguridad o semántica fiscal.
+
+## 9. Siguiente avance oficial
+
+Auditar el repositorio existente contra el backlog y la Definition of Done, sin modificar runtime todavía.
+
+Crear:
+
+```text
+docs/AUDIT-EXISTING-CODE-V1.md
+```
+
+Luego convertir `DAILY-BUILD-PLAN-V1.md` en el plan real restante, marcando qué jornadas ya están cumplidas por código válido y cuáles faltan.
