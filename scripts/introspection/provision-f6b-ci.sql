@@ -5,6 +5,9 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'ci_api') THEN
     CREATE ROLE ci_api LOGIN PASSWORD 'ci_api' IN ROLE app_api;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'ci_worker') THEN
+    CREATE ROLE ci_worker LOGIN PASSWORD 'ci_worker' IN ROLE app_worker;
+  END IF;
 END
 $$;
 
@@ -45,6 +48,7 @@ ON CONFLICT (tenant_id, idempotency_key) DO NOTHING;
 
 UPDATE app.runtime_controls
 SET accept_new_operations = true,
+    provider_mutations_enabled = true,
     reason = 'F6B CI only',
     updated_at = now(),
     updated_by = 'provision-f6b-ci'
