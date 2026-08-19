@@ -2,7 +2,7 @@
 
 - **Estado:** Supersedido para V1 por ADR-003 y ADR-004
 - **Fecha original:** 2026-04-07
-- **Reconciliado:** 2026-08-18
+- **Reconciliado:** 2026-08-19
 - **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 ## Estado histórico
@@ -22,7 +22,7 @@ La decisión vigente está en:
 | Node.js 20 | aprobado | **Reemplazado por Node.js 24 LTS**; Node 20 está EOL al corte. |
 | TypeScript estricto | aprobado | **Conservado**. |
 | PostgreSQL/Supabase | aprobado | **PostgreSQL administrado conservado**; Supabase es candidato preferente sujeto a F3. |
-| Prisma | aprobado | **No es un invariante arquitectónico.** Puede mantenerse donde ayude; SQL crítico/locking puede requerir acceso explícito. Versionado se revisa al implementar. |
+| Prisma | aprobado | **Retirado del runtime/scaffold activo en F6B.** El camino fiscal usa `pg`, repositories explícitos y SQL versionado porque RLS, locking, transacciones e invariantes DB son autoridad. |
 | Redis + BullMQ | aprobado | **Eliminado de arquitectura productiva V1.** Trabajo durable en PostgreSQL. |
 | API Key para integradores | aprobado | **Fuera de contexto V1.** Auth POS→API se diseña en F3. |
 | JWT panel | aprobado | **Sin requisito V1.** |
