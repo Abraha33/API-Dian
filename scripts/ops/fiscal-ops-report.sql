@@ -13,6 +13,19 @@ SELECT
 FROM app.runtime_controls
 WHERE singleton_id = 1;
 
+\echo '=== recent runtime control changes ==='
+SELECT
+  previous_accept_new_operations,
+  previous_provider_mutations_enabled,
+  accept_new_operations,
+  provider_mutations_enabled,
+  reason,
+  changed_by,
+  created_at
+FROM app.runtime_control_events
+ORDER BY created_at DESC
+LIMIT 20;
+
 \echo '=== fiscal operations by state ==='
 SELECT status, count(status) AS total
 FROM app.fiscal_operations
