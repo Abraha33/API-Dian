@@ -1,6 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { DatabaseService } from '../../common/database/database.service';
 
 function readPackageVersion(): string {
   const path = join(process.cwd(), 'package.json');
@@ -13,12 +18,10 @@ function readPackageVersion(): string {
 export class HealthController {
   private readonly version = readPackageVersion();
 
+  constructor(private readonly database: DatabaseService) {}
+
   @Get('health')
-  health(): {
-    status: string;
-    timestamp: string;
-    version: string;
-  } {
+  health(): { status: string; timestamp: string; version: string } {
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
@@ -27,13 +30,14 @@ export class HealthController {
   }
 
   @Get('ready')
-  ready(): {
-    status: string;
-    checks: { db: string; redis: string };
-  } {
-    return {
-      status: 'ok',
-      checks: { db: 'ok', redis: 'ok' },
-    };
+  async ready(): Promise<{ status: string; checks: { db: string } }> {
+    const db = await this.database.isReady();
+    if (!db) {
+      throw new ServiceUnavailableException({
+        status: 'not_ready',
+        checks: { db: 'failed' },
+      });
+    }
+    return { status: 'ok', checks: { db: 'ok' } };
   }
 }
