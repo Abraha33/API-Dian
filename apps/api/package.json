@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:concurrency": "jest --config ./test/jest-concurrency.json --runInBand"
+    "test:concurrency": "jest --config ./test/jest-concurrency.json --runInBand",
+    "test:provider-contract-harness": "jest --config ./test/jest-provider-contract.json --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
