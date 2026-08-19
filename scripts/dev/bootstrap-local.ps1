@@ -120,7 +120,7 @@ OPS_DATABASE_URL=postgresql://api_dian_ops_dev:$OpsPassword@localhost:5432/api_d
     Write-Host 'Start API:'
     Write-Host '  cd apps/api; npm ci; npm run start:dev'
     Write-Host 'Start fake worker in another PowerShell:'
-    Write-Host '  cd apps/api; $env:DATABASE_URL=$env:WORKER_DATABASE_URL; npm run start:worker'
+    Write-Host '  cd apps/api; npm run start:worker'
 }
 finally {
     Pop-Location
