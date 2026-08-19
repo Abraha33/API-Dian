@@ -36,6 +36,10 @@ jobs:
         working-directory: apps/api
         run: npm ci
 
+      - name: Production dependency audit
+        working-directory: apps/api
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Build
         working-directory: apps/api
         env:
