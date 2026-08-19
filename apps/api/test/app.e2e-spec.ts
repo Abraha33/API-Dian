@@ -299,6 +299,11 @@ describe('API-DIAN F6B (e2e)', () => {
       'RECONCILING',
     );
 
+    expect(await worker.processNext()).toBe('RETRY_SCHEDULED');
+    expect((await readOperation(created.operation_id)).status).toBe(
+      'RECONCILING',
+    );
+
     expect(await worker.processNext()).toBe('RECONCILED');
     expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');
     expect(await countAttempts(created.operation_id)).toBe(1);
@@ -351,6 +356,7 @@ describe('API-DIAN F6B (e2e)', () => {
     const job = await workerRepository.claimNext('crash-sim', 1);
     expect(job).not.toBeNull();
     if (!job) throw new Error('expected claimed job');
+    expect(job.operation_id).toBe(created.operation_id);
 
     const prepared = await workerRepository.prepareSubmission(job, true);
     expect(prepared.action).toBe('SUBMIT');
