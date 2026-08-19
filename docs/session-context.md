@@ -38,6 +38,7 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - `docs/f6-checkpoint-01-core-persistence.md`;
 - `docs/f6-checkpoint-02-fake-vertical-slice.md`;
 - `docs/runbook-fiscal-worker-v1.md`;
+- `docs/f6-provider-contract-harness.md`;
 - `ROADMAP.md`.
 
 ## Invariantes
@@ -55,7 +56,8 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - API no tiene secreto PT;
 - API, worker y ops usan credenciales DB separadas;
 - kill switch de submit no pausa reconcile/read;
-- superusuario/app_migrator nunca es runtime normal, tampoco en desarrollo.
+- superusuario/app_migrator nunca es runtime normal, tampoco en desarrollo;
+- `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba referenciada, no inferencia informal.
 
 ## Contrato interno actual
 
@@ -143,7 +145,7 @@ El harness usa servidor Fastify real en puerto efímero + `Promise.allSettled`; 
 
 ### Infra local
 
-PR #60 / CI #69 validó:
+PR #60 / árbol final CI #71, consolidado como `99bd26383a299c24604c3a345ad0f7d573be682e`:
 
 - `docker-compose.dev.yml` reducido a PostgreSQL 15 solamente;
 - Redis/MinIO retirados del setup local activo;
@@ -157,6 +159,28 @@ PR #60 / CI #69 validó:
 - CI ejecuta `scripts/dev/provision-local-runtime.sql` y `verify-local-runtime.sql` para impedir membresías cruzadas;
 - worker prefiere `WORKER_DATABASE_URL` cuando existe, con `DATABASE_URL` como fallback de despliegue.
 
+### Harness abstracto del futuro adapter PT
+
+PR #61; CI run #75 pasó self-tests + pipeline completo antes del cierre documental final.
+
+Implementado:
+
+- `apps/api/test/provider-contract/provider-contract-harness.ts`;
+- `apps/api/test/provider-contract/provider-contract-harness.spec.ts`;
+- `docs/f6-provider-contract-harness.md`;
+- gate CI `test:provider-contract-harness`.
+
+Reglas:
+
+- cada fixture requiere evidencia sanitizada y fecha de observación;
+- fixtures sin evidencia se rechazan antes de preparar transporte;
+- `TRANSPORT_PROVEN_NOT_SENT` requiere `proof_of_no_remote_side_effect` referenciando evidencia conocida;
+- `NOT_FOUND_CONCLUSIVE` requiere `proof_not_found_is_conclusive` referenciando evidencia conocida;
+- artefactos se verifican por content type, tamaño mínimo y SHA-256;
+- el harness no contiene URL/auth/códigos/rate limits/timing/wire format de ningún PT.
+
+F4C debe producir la evidencia para llenar fixtures reales. Un resultado `FAIL`/`INCONCLUSIVE` de F4C no puede convertirse artificialmente en fixture `PASS`.
+
 ## Runtime/CI actual
 
 - Node 24;
@@ -164,6 +188,7 @@ PR #60 / CI #69 validó:
 - compose local syntax check;
 - PowerShell bootstrap syntax check;
 - build/lint/unit;
+- provider contract harness self-tests;
 - migraciones SQL + verificaciones estructurales/comportamiento;
 - provisioning de runtime local least-privilege;
 - ops control/report;
@@ -178,14 +203,10 @@ No crear adapter productivo todavía.
 
 ## Siguiente trabajo permitido
 
-Observabilidad, runbook, concurrencia y limpieza local ya están cerrados.
+Observabilidad, runbook, concurrencia, limpieza local y contract-test harness abstracto ya están cerrados.
 
-Mientras F4C no se resuelva, el siguiente frente interno seguro es:
+El trabajo interno funcional independiente del PT está sustancialmente agotado. Solo queda opcionalmente packaging/deployment mínimo si reduce riesgo sin elegir infraestructura productiva nueva ni introducir componentes innecesarios.
 
-1. contract-test harness del adapter basado en fixtures abstractos;
-2. checklist de evidencia que F4C debe proporcionar para llenar esos fixtures;
-3. packaging/deployment mínimo solo si reduce riesgo sin introducir componentes productivos nuevos.
+El siguiente avance funcional real es F4C → F5B/F6C.
 
 No inventar endpoints, códigos, reintentos, XML/PDF ni rate limits de un PT.
-
-El siguiente gran gate funcional sigue siendo F4C → F5B/F6C.
