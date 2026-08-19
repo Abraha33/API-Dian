@@ -78,17 +78,17 @@ export class FiscalOperationsRepository {
         ],
       );
 
-      let operation = inserted.rows[0];
+      const operation = inserted.rows[0];
       if (!operation) {
-        operation = await this.findByIdempotencyKey(
+        const racedOperation = await this.findByIdempotencyKey(
           client,
           params.idempotencyKey,
         );
-        if (!operation) {
+        if (!racedOperation) {
           throw new Error('Idempotency conflict resolved without visible row');
         }
-        this.assertSameSemanticCommand(operation, params);
-        return { operation, replayed: true };
+        this.assertSameSemanticCommand(racedOperation, params);
+        return { operation: racedOperation, replayed: true };
       }
 
       await client.query(
