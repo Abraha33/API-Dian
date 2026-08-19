@@ -1,6 +1,6 @@
 # Roadmap API-DIAN
 
-**Corte:** 2026-08-18/19  
+**Corte:** 2026-08-19  
 **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 ```text
@@ -22,26 +22,26 @@ F4C  Sandbox + contrato + selección PT         ▶ Bloqueante externo
 F5A  Pruebas adversariales genéricas/runbooks  ✅
 F5B  Contingencias + contract tests PT         ⏸ depende F4C
 F6A  Core SQL + c14n + fake provider           ✅
-F6B  Auth/repos/worker + fake vertical slice   ▶ Siguiente interno
+F6B  Auth/repos/worker + fake vertical slice   ✅
 F6C  Adapter PT real                           ⏸ depende F4C
 F7   Readiness + piloto                         ⏸
 F8   Estabilización + V1.1                      ⏸
 ```
 
-## Salidas cerradas F0–F5A
+## Salidas cerradas F0–F6B
 
 - baseline: `docs/f0-producto-v1-validado-2026-08-18.md`;
 - requisitos: `docs/v1-requisitos.md`;
 - arquitectura/side effects: ADR-003/004;
 - datos/seguridad: ADR-005/006 + docs F3;
 - contrato/idempotencia/PT gates: ADR-007/008 + docs F4;
-- pruebas/fault injection/kill switch: ADR-009 + docs F5.
+- pruebas/fault injection/kill switch: ADR-009 + docs F5;
+- core independiente PT: `docs/f6-checkpoint-01-core-persistence.md`;
+- vertical slice interno: `docs/f6-checkpoint-02-fake-vertical-slice.md`.
 
 ## F6A — Core independiente del PT
 
 **Estado: ✅ Cerrado**
-
-Salida: `docs/f6-checkpoint-01-core-persistence.md`.
 
 Implementado y verificado:
 
@@ -55,26 +55,26 @@ Implementado y verificado:
 - supply-chain gate de dependencias productivas;
 - CI con migraciones y pruebas PostgreSQL de comportamiento.
 
-No hay adapter PT real.
-
 ## F6B — Vertical slice interno con fake provider
 
-**Estado: ▶ Siguiente interno**
+**Estado: ✅ Cerrado**
 
-Orden:
+Implementado y probado:
 
-1. decidir cliente PostgreSQL/repository layer mínimo; SQL/RLS sigue siendo autoridad;
-2. conexión y transacciones tenant-aware (`SET LOCAL`/equivalente seguro);
-3. auth de credential POS;
-4. recepción atómica `operation + idempotency + audit + work`;
+1. `pg`/node-postgres como capa SQL explícita; Prisma retirado;
+2. conexión/transacciones tenant-aware con RLS;
+3. auth de credential POS con HMAC + pepper;
+4. recepción atómica `operation + audit + work`;
 5. GET operation tenant-safe;
-6. worker/lease + persistencia de `provider_attempt`;
-7. `FakeFiscalProvider.submit`;
-8. `UNKNOWN → reconcile`;
-9. runtime kill switches;
-10. pruebas concurrentes/adversariales DB end-to-end.
+6. worker separado con login `app_worker`;
+7. claim/lease durable + `provider_attempt` persistido antes de submit;
+8. `FakeFiscalProvider.submit` + reconciliación;
+9. `UNKNOWN → RECONCILING` antes de cualquier decisión de reenvío;
+10. `PROVEN_NOT_SENT` como única vía segura de `SUBMITTING → READY`;
+11. kill switch que bloquea submit pero no reconcile/read;
+12. pruebas e2e con logins PostgreSQL `ci_api` y `ci_worker` no privilegiados.
 
-F6B no usa un PT real y debe poder demostrar el protocolo completo mediante fault injection.
+Evidencia final: PR efímero #56, run #54, todo PASS. Snapshot limpio promovido a `dev` como `7a940ac46e8f977bf33374fb5d1c75ad56d192c1`.
 
 ## F4C / F5B / F6C — Gate externo PT
 
@@ -93,6 +93,8 @@ Solo después:
 - límites/backoff reales;
 - XML/PDF reales;
 - adapter seleccionado.
+
+**No implementar adapter productivo inventando semántica del PT.** Mientras F4C permanezca bloqueado, el trabajo interno permitido es endurecimiento, observabilidad, operación y pruebas independientes del proveedor.
 
 ## F7 — Readiness/piloto
 
@@ -114,4 +116,5 @@ Expandir solo por evidencia real.
 - Evidencia es append-only.
 - API runtime no posee secreto PT.
 - Kill switch de mutaciones no apaga reconciliación/read.
+- API y worker usan identidades DB separadas y de mínimo privilegio.
 - Ninguna dependencia o infraestructura entra por inercia: debe justificar riesgo/coste V1.
