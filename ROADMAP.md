@@ -12,130 +12,109 @@ Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin
 ## Estado actual
 
 ```text
-F0  Baseline de producto y validación         ✅ Cerrado
-F1  Requisitos V1                             ✅ Cerrado
-F2  Arquitectura formal                       ✅ Cerrado
-F3  Modelo de datos + seguridad/amenazas      ✅ Cerrado
-F4A Contratos internos                        ✅ Cerrado
-F4B Shortlist/evidencia pública PT            ✅ Cerrado
-F4C Sandbox + contrato + selección final PT   ▶ Bloqueante actual
-F5  Pruebas, contingencia y operación         ⏸ Preparación permitida
-F6  Implementación incremental                ⏸ Pendiente
-F7  Readiness + piloto                         ⏸ Pendiente
-F8  Estabilización + V1.1                      ⏸ Pendiente
+F0   Baseline producto                         ✅ Cerrado
+F1   Requisitos V1                             ✅ Cerrado
+F2   Arquitectura                              ✅ Cerrado
+F3   Datos + seguridad                         ✅ Cerrado
+F4A  Contratos internos                        ✅ Cerrado
+F4B  Shortlist/evidencia pública PT            ✅ Cerrado
+F4C  Sandbox + contrato + selección PT         ▶ Bloqueante externo
+F5A  Pruebas adversariales genéricas/runbooks  ✅ Diseño cerrado
+F5B  Contingencias + contract tests PT         ⏸ Depende de F4C
+F6   Implementación incremental                ⏸ Pendiente
+F7   Readiness + piloto                         ⏸ Pendiente
+F8   Estabilización + V1.1                      ⏸ Pendiente
 ```
 
 ## F0–F3
 
-Fuentes:
-
-- `docs/f0-producto-v1-validado-2026-08-18.md`;
-- `docs/v1-requisitos.md`;
-- ADR-003/004 — arquitectura y side effects;
-- ADR-005/006 — datos/tenancy y seguridad;
-- `docs/f3-modelo-datos-v1.md`;
-- `docs/f3-threat-model-v1.md`.
-
-No reabrir salvo evidencia nueva fuerte.
+Fuentes maestras: baseline, requisitos y ADR-003..006. No reabrir salvo evidencia fuerte.
 
 ## F4A — Contratos internos
 
-**Estado: ✅ Cerrado**
-
 Salidas:
 
-- `ADR/ADR-007-contratos-internos-idempotencia-v1.md`;
+- ADR-007;
 - `docs/f4-contrato-pos-api-v1.md`.
 
-Decisiones:
+Decisiones: endpoint mutante único, tenant por credential, idempotency key, semantic hash/canonicalización versionados, estados/errores propios, `FiscalProvider` mínimo y sin `resend()`.
 
-- `POST /v1/fiscal-operations` como entrada mutante única del POS;
-- tenant derivado de credential;
-- `Idempotency-Key` obligatoria;
-- contrato `schema_version=1.0` independiente del PT;
-- dinero/cantidad/tasas como decimal string;
-- semantic hash sobre DTO normalizado, no raw JSON;
-- canonicalización versionada;
-- estados normalizados incluyen `UNKNOWN`;
-- no endpoint `resend/retry` fiscal;
-- `FiscalProvider.submit/reconcile/getStatus/fetchXml/fetchPdf` mínimo;
-- `NOT_FOUND_CONCLUSIVE` exige garantía, un 404 no basta.
+## F4B/C — Proveedor Tecnológico
 
-## F4B — Shortlist PT
+Salidas públicas:
 
-**Estado: ✅ Cerrado a nivel público**
-
-Salidas:
-
-- `ADR/ADR-008-seleccion-pt-gates-v1.md`;
+- ADR-008;
 - `docs/f4-matriz-seleccion-pt-v1.md`;
 - `docs/f4-prueba-ambiguedad-pt-v1.md`.
 
-Candidatos iniciales:
+Orden de prueba actual:
 
-1. The Factory HKA — candidato A para prueba de reconciliación.
-2. DATAICO — candidato B, fuerte API-first; validar especialmente POS/notas y semántica de timeout.
-3. Facture — reserva por menor evidencia técnica pública localizada.
+1. The Factory HKA.
+2. DATAICO.
+3. Facture como reserva.
 
-No hay selección final todavía.
+F4C requiere credenciales sandbox, contrato, prueba de timeout/reconciliación, multiempresa, certificado, contingencias, SLA/límites/datos y precio API real.
 
-## F4C — Sandbox + contrato + selección
+`INCONCLUSIVE` en reconciliación bloquea selección.
 
-**Estado: ▶ Bloqueante actual**
+## F5A — Pruebas adversariales genéricas
 
-Para cerrar:
+**Estado: ✅ Diseño cerrado**
 
-1. obtener credenciales sandbox y docs completas del candidato A;
-2. ejecutar protocolo de ambigüedad para FEV/NC/ND/POS/nota POS;
-3. confirmar multiempresa/casa de software;
-4. confirmar certificado/firma sin custodia nuestra;
-5. confirmar contingencias V1;
-6. obtener rate limits/timeouts/versionado;
-7. revisar soporte/SLA/tratamiento datos;
-8. obtener cotización API real;
-9. repetir con candidato B si A falla o el coste/operación no es aceptable;
-10. seleccionar un PT y congelar adapter mapping inicial.
+Salidas:
 
-Regla:
+- ADR-009;
+- `docs/f5-plan-pruebas-adversariales-v1.md`;
+- `docs/f5-runbooks-base-v1.md`.
 
-```text
-INCONCLUSIVE en reconciliación = no seleccionar todavía
-```
+Decisiones:
 
-## F5 — Pruebas, contingencia y operación
+- fault injection obligatorio;
+- FakeFiscalProvider antes del adapter real;
+- contract suite común a cualquier PT;
+- dos kill switches: aceptación y mutación remota;
+- reconcile/read sigue funcionando al pausar submit;
+- llamadas en vuelo se tratan como potencialmente ejecutadas;
+- restore/PITR obliga reconciliar ventana divergente;
+- kill switch no equivale a contingencia fiscal.
 
-Puede prepararse en paralelo solo en lo que no dependa del PT:
+## F5B — Provider/regulación
 
-- fake provider + fault injection;
-- casos ADR-004;
-- test de canonicalización/idempotencia;
-- threat/security tests;
-- runbooks base;
-- diseño kill switch.
+Después de F4C:
 
-Los casos de contingencia fiscal exactos se cierran con evidencia DIAN/PT.
+1. ejecutar contract tests contra sandbox;
+2. cerrar matriz regulatoria vigente FEV/DEE POS;
+3. modelar contingencias por causa;
+4. fijar backoff/rate limits según PT;
+5. completar runbooks con endpoints/canales reales;
+6. fijar SLO internos;
+7. probar recuperación de XML/PDF;
+8. probar kill switch con adapter real.
+
+Fuentes regulatorias deben ser oficiales DIAN y mantenerse separadas de recomendaciones del PT.
 
 ## F6 — Implementación incremental
 
-No implementar adapter productivo antes de cerrar F4C.
+Puede comenzar **solo la infraestructura interna independiente del PT** cuando se decida abrir F6. El adapter productivo queda bloqueado hasta F4C.
 
-Orden previsto:
+Orden:
 
 1. migraciones/roles/RLS;
 2. auth tenant;
-3. operación/idempotencia/canonicalización;
-4. work queue/worker;
-5. `FiscalProvider` fake + fault injection;
-6. adapter PT seleccionado + FEV sandbox;
-7. notas;
-8. DEE POS/ajustes;
-9. estado/artefactos;
-10. contingencia/reconciliación;
-11. hardening.
+3. operation/idempotencia/canonicalización;
+4. queue/worker;
+5. FakeFiscalProvider + fault injection;
+6. operational controls/kill switch;
+7. adapter seleccionado + FEV sandbox;
+8. notas;
+9. DEE POS/ajustes;
+10. estado/artefactos;
+11. contingencias/reconciliación;
+12. hardening.
 
 ## F7 — Readiness/piloto
 
-Ejecutar gates, limitar empresas/volumen y demostrar operación unipersonal sostenible.
+Ejecutar todos los gates, limitar empresas/volumen y demostrar operación unipersonal sostenible.
 
 ## F8 — Estabilización/V1.1
 
