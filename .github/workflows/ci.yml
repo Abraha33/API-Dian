@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [dev, main]
 
+permissions:
+  contents: write
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -26,11 +29,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: apps/api/package-lock.json
+
+      - name: Refresh lock for intentional dependency change
+        working-directory: apps/api
+        run: npm install --package-lock-only --ignore-scripts
 
       - name: Install
         working-directory: apps/api
@@ -42,8 +52,6 @@ jobs:
 
       - name: Build
         working-directory: apps/api
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci
         run: npm run build
 
       - name: Lint check
@@ -54,13 +62,7 @@ jobs:
         working-directory: apps/api
         run: npm test -- --runInBand
 
-      - name: E2E tests
-        working-directory: apps/api
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci
-        run: npm run test:e2e
-
-      - name: Apply and verify F6 core SQL
+      - name: Apply F6 migrations and structural checks
         env:
           PGPASSWORD: postgres
         run: |
@@ -74,3 +76,32 @@ jobs:
             -f scripts/introspection/verify-f6-core.sql
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/verify-f6-behavior.sql
+          psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
+            -f scripts/introspection/provision-f6b-ci.sql
+
+      - name: E2E tests as non-privileged API login
+        working-directory: apps/api
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://ci_api:ci_api@localhost:5432/ci
+          DATABASE_POOL_MAX: '3'
+          AUTH_PEPPER: f6-test-pepper-0123456789abcdef-32bytes
+        run: npm run test:e2e
+
+      - name: Commit validated lockfile
+        run: |
+          if ! git diff --quiet -- apps/api/package-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add apps/api/package-lock.json
+            git commit -m "chore: refresh lock for pg client [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+
+      - name: Upload validated lockfile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: f6b-lockfile
+          path: apps/api/package-lock.json
+          retention-days: 1
