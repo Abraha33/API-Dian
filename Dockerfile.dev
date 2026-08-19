@@ -9,9 +9,6 @@ RUN npm ci
 
 COPY apps/api/ ./
 
-ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5432/api_dian
-RUN npx prisma generate
-
 EXPOSE 3000
 
 CMD ["npm", "run", "start:dev"]
