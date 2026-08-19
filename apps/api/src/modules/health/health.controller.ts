@@ -1,8 +1,4 @@
-import {
-  Controller,
-  Get,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseService } from '../../common/database/database.service';

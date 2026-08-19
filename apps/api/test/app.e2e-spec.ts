@@ -15,6 +15,16 @@ const AUTH_TOKEN =
 const TENANT_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
 const TENANT_B_OPERATION = 'bbbbbbbb-0000-4000-8000-000000000099';
 
+interface OperationBody {
+  operation_id: string;
+  status: string;
+  replayed: boolean;
+}
+
+interface ErrorBody {
+  error: string;
+}
+
 const command = {
   schema_version: '1.0',
   document_kind: 'FEV',
@@ -80,10 +90,11 @@ describe('API-DIAN F6B (e2e)', () => {
       .set('Idempotency-Key', 'f6b-idempotency-1')
       .send(command)
       .expect(202);
+    const firstBody = first.body as OperationBody;
 
-    expect(first.body.status).toBe('READY');
-    expect(first.body.replayed).toBe(false);
-    const operationId = first.body.operation_id as string;
+    expect(firstBody.status).toBe('READY');
+    expect(firstBody.replayed).toBe(false);
+    const operationId = firstBody.operation_id;
 
     const replay = await request(app.getHttpServer())
       .post('/v1/fiscal-operations')
@@ -91,9 +102,10 @@ describe('API-DIAN F6B (e2e)', () => {
       .set('Idempotency-Key', 'f6b-idempotency-1')
       .send(command)
       .expect(202);
+    const replayBody = replay.body as OperationBody;
 
-    expect(replay.body.operation_id).toBe(operationId);
-    expect(replay.body.replayed).toBe(true);
+    expect(replayBody.operation_id).toBe(operationId);
+    expect(replayBody.replayed).toBe(true);
 
     const client = await pool.connect();
     try {
@@ -136,8 +148,9 @@ describe('API-DIAN F6B (e2e)', () => {
       .set('Idempotency-Key', 'f6b-idempotency-conflict')
       .send(changed)
       .expect(409);
+    const errorBody = response.body as ErrorBody;
 
-    expect(response.body.error).toBe('IDEMPOTENCY_CONFLICT');
+    expect(errorBody.error).toBe('IDEMPOTENCY_CONFLICT');
   });
 
   it('does not reveal an operation from another tenant', async () => {

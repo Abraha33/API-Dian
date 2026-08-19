@@ -55,9 +55,7 @@ export class CredentialService {
       throw new UnauthorizedException('Invalid credential');
     }
 
-    const candidate = createHmac('sha256', this.pepper)
-      .update(secret)
-      .digest();
+    const candidate = createHmac('sha256', this.pepper).update(secret).digest();
     if (
       row.secret_digest.length !== candidate.length ||
       !timingSafeEqual(row.secret_digest, candidate)
