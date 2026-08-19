@@ -41,7 +41,8 @@ F8   Estabilización + V1.1                      ⏸
 - pruebas/fault injection/kill switch: ADR-009 + docs F5;
 - core persistencia: `docs/f6-checkpoint-01-core-persistence.md`;
 - vertical slice fake: `docs/f6-checkpoint-02-fake-vertical-slice.md`;
-- operación: `docs/runbook-fiscal-worker-v1.md`.
+- operación: `docs/runbook-fiscal-worker-v1.md`;
+- harness abstracto del futuro adapter: `docs/f6-provider-contract-harness.md`.
 
 ## F6A — Core independiente del PT
 
@@ -103,19 +104,26 @@ Completado después de F6B:
 - infraestructura local reducida a PostgreSQL 15;
 - retirados Redis/MinIO y el antiguo runtime local con superusuario;
 - bootstrap Windows aplica migraciones y crea logins separados API/worker/ops;
-- CI valida compose, sintaxis PowerShell, provisioning y aislamiento de membresías.
+- CI valida compose, sintaxis PowerShell, provisioning y aislamiento de membresías;
+- harness de contract tests del futuro adapter basado únicamente en evidencia sanitizada;
+- el harness rechaza fixtures sin evidencia y exige prueba explícita para clasificar `TRANSPORT_PROVEN_NOT_SENT` o `NOT_FOUND_CONCLUSIVE`;
+- el harness no contiene URLs, auth, códigos, tiempos, wire formats ni semántica específica de ningún PT.
 
-La limpieza local fue validada en PR #60, CI run #69, antes de su promoción limpia a `dev`.
+Evidencia reciente:
+
+- limpieza local: PR #60, árbol final validado en CI run #71;
+- harness abstracto PT: PR #61, self-tests + pipeline completo PASS en CI run #75 antes del cierre documental final.
 
 ## Siguiente trabajo interno sin PT
 
-Mientras F4C siga bloqueado externamente, queda un frente interno útil y seguro:
+El trabajo funcional y de hardening **independiente del proveedor** está sustancialmente agotado. No conviene seguir agregando capas especulativas para aparentar avance.
 
-- preparar el **contract-test harness del adapter** contra fixtures abstractos, sin URLs, códigos ni semántica inventada de un PT;
-- definir el paquete mínimo de evidencia que debe entregar F4C para llenar esos fixtures;
-- opcionalmente reforzar packaging/deployment del API/worker sin introducir infraestructura productiva nueva.
+Solo queda como trabajo opcional:
 
-Observabilidad, runbook, concurrencia y limpieza de infraestructura ya no son pendientes.
+- packaging/deployment mínimo del API/worker si puede hacerse sin elegir infraestructura productiva nueva ni asumir comportamiento del PT;
+- mantenimiento de CI/documentación.
+
+El siguiente avance funcional significativo requiere F4C.
 
 No construir respuestas, códigos, reintentos, XML/PDF ni rate limits específicos de un PT sin sandbox/contrato real.
 
@@ -128,6 +136,8 @@ Shortlist actual:
 3. Facture como reserva.
 
 No hay selección definitiva hasta ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` y confirmar contrato/sandbox real. Un 404 aislado nunca equivale automáticamente a `NOT_FOUND_CONCLUSIVE`.
+
+F4C debe producir evidencia suficiente para llenar los fixtures definidos en `docs/f6-provider-contract-harness.md` sin placeholders ni suposiciones.
 
 Solo después:
 
@@ -159,4 +169,5 @@ Expandir solo por evidencia real.
 - API, worker y operaciones usan roles/credenciales DB separados.
 - Kill switch de mutaciones no apaga reconciliación/read.
 - Superusuario/migrator nunca es runtime normal, ni siquiera en desarrollo.
+- Una clasificación peligrosa del adapter debe estar respaldada por evidencia verificable, no por intuición del desarrollador.
 - Ninguna dependencia o infraestructura entra por inercia: debe justificar riesgo/coste V1.
