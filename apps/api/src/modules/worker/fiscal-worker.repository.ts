@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { QueryResultRow } from 'pg';
+import type { PoolClient, QueryResultRow } from 'pg';
 import { DatabaseService } from '../../common/database/database.service';
 import type {
   ProviderAttemptContext,
@@ -42,7 +42,7 @@ export type PrepareSubmissionResult =
       command: ProviderFiscalCommand;
       context: ProviderAttemptContext;
     }
-  | { action: 'RECOVERED_UNKNOWN' | 'SKIPPED' };
+  | { action: 'RECOVERED_UNKNOWN' | 'PAUSED' | 'SKIPPED' };
 
 export interface PreparedReconciliation {
   attemptId: string;
@@ -107,7 +107,10 @@ export class FiscalWorkerRepository {
     );
   }
 
-  prepareSubmission(job: ClaimedWorkItem): Promise<PrepareSubmissionResult> {
+  prepareSubmission(
+    job: ClaimedWorkItem,
+    mutationsEnabled: boolean,
+  ): Promise<PrepareSubmissionResult> {
     return this.db.withTenantTransaction(job.tenant_id, async (client) => {
       const operationResult = await client.query<WorkerOperationRow>(
         `SELECT *
@@ -163,6 +166,10 @@ export class FiscalWorkerRepository {
           await this.enqueueWork(client, job.tenant_id, operation.id, 'RECONCILE');
         }
         return { action: 'SKIPPED' };
+      }
+
+      if (!mutationsEnabled) {
+        return { action: 'PAUSED' };
       }
 
       const attemptNoResult = await client.query<{ next_attempt: number }>(
@@ -420,7 +427,7 @@ export class FiscalWorkerRepository {
   }
 
   private async transitionOperation(
-    client: import('pg').PoolClient,
+    client: PoolClient,
     operationId: string,
     target: string,
   ): Promise<void> {
@@ -437,12 +444,12 @@ export class FiscalWorkerRepository {
     }
   }
 
-  private completeWork(
-    client: import('pg').PoolClient,
+  private async completeWork(
+    client: PoolClient,
     workId: string,
     reasonCode: string,
-  ): Promise<unknown> {
-    return client.query(
+  ): Promise<void> {
+    await client.query(
       `UPDATE app.work_items
        SET status = 'DONE',
            lease_owner = NULL,
@@ -454,13 +461,13 @@ export class FiscalWorkerRepository {
     );
   }
 
-  private retryWorkInTransaction(
-    client: import('pg').PoolClient,
+  private async retryWorkInTransaction(
+    client: PoolClient,
     workId: string,
     delaySeconds: number,
     reasonCode: string,
-  ): Promise<unknown> {
-    return client.query(
+  ): Promise<void> {
+    await client.query(
       `UPDATE app.work_items
        SET status = 'RETRY',
            available_at = now() + make_interval(secs => $2),
@@ -473,12 +480,12 @@ export class FiscalWorkerRepository {
     );
   }
 
-  private deadWorkInTransaction(
-    client: import('pg').PoolClient,
+  private async deadWorkInTransaction(
+    client: PoolClient,
     workId: string,
     reasonCode: string,
-  ): Promise<unknown> {
-    return client.query(
+  ): Promise<void> {
+    await client.query(
       `UPDATE app.work_items
        SET status = 'DEAD',
            lease_owner = NULL,
@@ -490,13 +497,13 @@ export class FiscalWorkerRepository {
     );
   }
 
-  private enqueueWork(
-    client: import('pg').PoolClient,
+  private async enqueueWork(
+    client: PoolClient,
     tenantId: string,
     operationId: string,
     kind: 'SUBMIT' | 'RECONCILE',
-  ): Promise<unknown> {
-    return client.query(
+  ): Promise<void> {
+    await client.query(
       `INSERT INTO app.work_items (tenant_id, operation_id, kind)
        VALUES ($1::uuid, $2::uuid, $3)
        ON CONFLICT DO NOTHING`,
@@ -504,8 +511,8 @@ export class FiscalWorkerRepository {
     );
   }
 
-  private audit(
-    client: import('pg').PoolClient,
+  private async audit(
+    client: PoolClient,
     event: {
       tenantId: string;
       operationId: string;
@@ -514,8 +521,8 @@ export class FiscalWorkerRepository {
       toState: string;
       reasonCode: string;
     },
-  ): Promise<unknown> {
-    return client.query(
+  ): Promise<void> {
+    await client.query(
       `INSERT INTO app.audit_events (
          tenant_id, event_type, entity_type, entity_id,
          actor_type, actor_id, from_state, to_state, reason_code
