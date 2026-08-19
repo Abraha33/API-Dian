@@ -3,115 +3,139 @@
 **Corte:** 2026-08-18  
 **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
-Modelo V1:
-
 ```text
 POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
-Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin API pública; sin multi-PT; sin custodia propia de certificados si puede delegarse de forma segura; integridad fiscal por encima de velocidad.
+Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin API pública; sin multi-PT; sin custodia propia de certificados si puede delegarse; integridad fiscal por encima de velocidad.
 
 ## Estado actual
 
 ```text
-F0  Baseline de producto y validación        ✅ Cerrado
-F1  Requisitos V1                            ✅ Cerrado para arquitectura
-F2  Arquitectura formal y ADR                ✅ Cerrado para F3
-F3  Modelo de datos + seguridad/amenazas     ✅ Cerrado para F4
-F4  Contratos internos + selección del PT    ▶ Siguiente
-F5  Pruebas, contingencia y operación        ⏸ Pendiente
-F6  Implementación incremental               ⏸ Pendiente
-F7  Readiness + piloto controlado con POS     ⏸ Pendiente
-F8  Estabilización + decisión V1.1            ⏸ Pendiente
+F0  Baseline de producto y validación         ✅ Cerrado
+F1  Requisitos V1                             ✅ Cerrado
+F2  Arquitectura formal                       ✅ Cerrado
+F3  Modelo de datos + seguridad/amenazas      ✅ Cerrado
+F4A Contratos internos                        ✅ Cerrado
+F4B Shortlist/evidencia pública PT            ✅ Cerrado
+F4C Sandbox + contrato + selección final PT   ▶ Bloqueante actual
+F5  Pruebas, contingencia y operación         ⏸ Preparación permitida
+F6  Implementación incremental                ⏸ Pendiente
+F7  Readiness + piloto                         ⏸ Pendiente
+F8  Estabilización + V1.1                      ⏸ Pendiente
 ```
 
-## F0 — Producto
+## F0–F3
 
-Salida: `docs/f0-producto-v1-validado-2026-08-18.md`.
+Fuentes:
 
-## F1 — Requisitos
-
-Salida: `docs/v1-requisitos.md`.
-
-## F2 — Arquitectura
-
-Salidas:
-
-- `ADR/ADR-003-arquitectura-v1-monolito-postgres.md`;
-- `ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md`.
-
-Decisiones: monolito modular; PostgreSQL autoridad; trabajo durable en DB; roles `api/worker`; sin Redis/BullMQ productivo; solo worker muta PT; `UNKNOWN` reconcilia antes de repetir.
-
-## F3 — Datos + seguridad/amenazas
-
-**Estado: ✅ Cerrado para F4**
-
-Salidas:
-
-- `ADR/ADR-005-modelo-datos-tenancy-v1.md`;
-- `ADR/ADR-006-seguridad-auth-threat-model-v1.md`;
+- `docs/f0-producto-v1-validado-2026-08-18.md`;
+- `docs/v1-requisitos.md`;
+- ADR-003/004 — arquitectura y side effects;
+- ADR-005/006 — datos/tenancy y seguridad;
 - `docs/f3-modelo-datos-v1.md`;
 - `docs/f3-threat-model-v1.md`.
 
+No reabrir salvo evidencia nueva fuerte.
+
+## F4A — Contratos internos
+
+**Estado: ✅ Cerrado**
+
+Salidas:
+
+- `ADR/ADR-007-contratos-internos-idempotencia-v1.md`;
+- `docs/f4-contrato-pos-api-v1.md`.
+
 Decisiones:
 
-- schema `app` no expuesto directamente al POS;
-- UUID aleatorio interno;
-- `tenant_id NOT NULL` y FK compuestas tenant-safe;
-- RLS + runtime no-owner/no-BYPASSRLS;
-- roles DB separados `api`, `worker`, `migrator`;
-- tenant derivado de credencial POS, no del body;
-- credential opaca por instalación, scoped a un tenant;
-- unique `(tenant_id, idempotency_key)` + semantic hash;
-- snapshot de comando inmutable;
-- attempts/jobs/evidence/artifacts/audit separados;
-- evidencia/audit append-only;
-- PT secret solo worker;
-- object storage privado;
-- restore implica reconciliar la ventana posterior al restore.
+- `POST /v1/fiscal-operations` como entrada mutante única del POS;
+- tenant derivado de credential;
+- `Idempotency-Key` obligatoria;
+- contrato `schema_version=1.0` independiente del PT;
+- dinero/cantidad/tasas como decimal string;
+- semantic hash sobre DTO normalizado, no raw JSON;
+- canonicalización versionada;
+- estados normalizados incluyen `UNKNOWN`;
+- no endpoint `resend/retry` fiscal;
+- `FiscalProvider.submit/reconcile/getStatus/fetchXml/fetchPdf` mínimo;
+- `NOT_FOUND_CONCLUSIVE` exige garantía, un 404 no basta.
 
-El DDL productivo/migraciones se implementa en F6 después de contratos F4; F3 define el modelo e invariantes que ese DDL debe materializar.
+## F4B — Shortlist PT
 
-## F4 — Contratos internos + evaluación y selección del PT
+**Estado: ✅ Cerrado a nivel público**
 
-**Estado: ▶ Siguiente**
+Salidas:
 
-Objetivo:
+- `ADR/ADR-008-seleccion-pt-gates-v1.md`;
+- `docs/f4-matriz-seleccion-pt-v1.md`;
+- `docs/f4-prueba-ambiguedad-pt-v1.md`.
 
-1. definir contrato versionado POS→API para FEV/NC/ND/DEE;
-2. definir canonicalización/fingerprint semántico;
-3. definir estados/errores públicos internos;
-4. definir puerto mínimo `FiscalProvider`;
-5. evaluar PTs habilitados actuales con evidencia oficial/contractual;
-6. confirmar firma/certificados, multiempresa, correlación/reconciliación y contingencias;
-7. seleccionar un PT o declarar que ninguno satisface gates;
-8. completar campos fiscales del modelo F3 que dependan del contrato/PT.
+Candidatos iniciales:
 
-**No seleccionar un PT por precio antes de demostrar que puede resolver resultados ambiguos.**
+1. The Factory HKA — candidato A para prueba de reconciliación.
+2. DATAICO — candidato B, fuerte API-first; validar especialmente POS/notas y semántica de timeout.
+3. Facture — reserva por menor evidencia técnica pública localizada.
+
+No hay selección final todavía.
+
+## F4C — Sandbox + contrato + selección
+
+**Estado: ▶ Bloqueante actual**
+
+Para cerrar:
+
+1. obtener credenciales sandbox y docs completas del candidato A;
+2. ejecutar protocolo de ambigüedad para FEV/NC/ND/POS/nota POS;
+3. confirmar multiempresa/casa de software;
+4. confirmar certificado/firma sin custodia nuestra;
+5. confirmar contingencias V1;
+6. obtener rate limits/timeouts/versionado;
+7. revisar soporte/SLA/tratamiento datos;
+8. obtener cotización API real;
+9. repetir con candidato B si A falla o el coste/operación no es aceptable;
+10. seleccionar un PT y congelar adapter mapping inicial.
+
+Regla:
+
+```text
+INCONCLUSIVE en reconciliación = no seleccionar todavía
+```
 
 ## F5 — Pruebas, contingencia y operación
 
-Pruebas adversariales, contingencias reales, reconciliación, runbooks, observabilidad, restauración y kill switch.
+Puede prepararse en paralelo solo en lo que no dependa del PT:
+
+- fake provider + fault injection;
+- casos ADR-004;
+- test de canonicalización/idempotencia;
+- threat/security tests;
+- runbooks base;
+- diseño kill switch.
+
+Los casos de contingencia fiscal exactos se cierran con evidencia DIAN/PT.
 
 ## F6 — Implementación incremental
 
-Orden:
+No implementar adapter productivo antes de cerrar F4C.
+
+Orden previsto:
 
 1. migraciones/roles/RLS;
 2. auth tenant;
-3. operación/idempotencia;
+3. operación/idempotencia/canonicalización;
 4. work queue/worker;
 5. `FiscalProvider` fake + fault injection;
-6. FEV sandbox;
+6. adapter PT seleccionado + FEV sandbox;
 7. notas;
-8. DEE;
-9. artefactos/estado;
+8. DEE POS/ajustes;
+9. estado/artefactos;
 10. contingencia/reconciliación;
 11. hardening.
 
 ## F7 — Readiness/piloto
 
-Ejecutar todos los gates, limitar empresas/volumen y demostrar operación unipersonal sostenible.
+Ejecutar gates, limitar empresas/volumen y demostrar operación unipersonal sostenible.
 
 ## F8 — Estabilización/V1.1
 

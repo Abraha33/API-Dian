@@ -4,106 +4,149 @@
 
 1. `docs/f0-producto-v1-validado-2026-08-18.md` — producto.
 2. `docs/v1-requisitos.md` — requisitos.
-3. ADR-003 — arquitectura/topología.
-4. ADR-004 — side effects/idempotencia/reconciliación.
-5. ADR-005 — datos/tenancy.
-6. ADR-006 — seguridad/auth.
-7. `docs/f3-modelo-datos-v1.md` y `docs/f3-threat-model-v1.md` — detalle F3.
-8. `ROADMAP.md` — secuencia.
+3. ADR-003/004 — arquitectura + protocolo de side effect.
+4. ADR-005/006 — datos/tenancy + seguridad.
+5. ADR-007 — contrato interno/idempotencia semántica.
+6. ADR-008 — gates de selección PT.
+7. `docs/f4-contrato-pos-api-v1.md`.
+8. `docs/f4-matriz-seleccion-pt-v1.md`.
+9. `docs/f4-prueba-ambiguedad-pt-v1.md`.
+10. `ROADMAP.md`.
 
-No reabrir F0–F3 salvo evidencia nueva fuerte.
+No reabrir F0–F4A/B salvo evidencia nueva fuerte.
 
 ## Estado
 
-- rama `dev`;
-- F0 ✅;
-- F1 ✅;
-- F2 ✅;
-- F3 ✅ cerrado para F4;
-- **siguiente: F4 — contratos internos + selección PT**.
+```text
+F0  ✅ producto
+F1  ✅ requisitos
+F2  ✅ arquitectura
+F3  ✅ datos/seguridad
+F4A ✅ contratos internos
+F4B ✅ shortlist pública PT
+F4C ▶ sandbox/contrato/selección PT
+```
+
+Rama: `dev`.
 
 ## Producto
 
 ```text
-POS propio → API fiscal propia → 1 PT habilitado → DIAN
+POS → API-DIAN → 1 PT habilitado → DIAN
 ```
 
-## Arquitectura
+## Arquitectura vigente
 
 - monolito modular NestJS/Fastify/TypeScript;
 - Node 24 LTS al implementar;
-- PostgreSQL administrado autoridad;
-- async durable PostgreSQL;
-- `api` + `worker` mismo artefacto;
+- PostgreSQL autoridad;
+- queue durable en PostgreSQL;
+- procesos `api` y `worker` del mismo artefacto;
 - solo worker muta PT;
-- object storage privado solo artefactos;
+- object storage privado para artefactos;
 - sin Redis/BullMQ productivo, microservicios ni Kubernetes.
 
-## Protocolo fiscal
+## Invariantes
 
 ```text
-persist operation + idempotency + work
-→ claim
-→ persist provider_attempt
-→ PT mutation
-→ definitive result OR UNKNOWN
-→ reconcile before any new mutation
+DESCONOCIDO != REEMITIR
 ```
 
-No retry HTTP transparente de mutaciones.
+- persistir operation + idempotencia antes del PT;
+- provider_attempt antes de side effect;
+- no retry HTTP transparente de mutaciones;
+- crash/timeout ambiguo → UNKNOWN;
+- UNKNOWN → reconcile;
+- un 404 del PT no equivale por sí solo a safe-to-resend.
 
-## Modelo F3
+## Contrato POS V1
 
-Tablas conceptuales:
+Entrada:
 
-- tenants;
-- api_credentials;
-- fiscal_operations;
-- provider_attempts;
-- work_items;
-- evidence_records;
-- artifacts;
-- audit_events.
+```text
+POST /v1/fiscal-operations
+Authorization
+Idempotency-Key
+schema_version=1.0
+```
 
-Invariantes:
+Tipos:
 
-- tenant_id obligatorio;
-- FK tenant-safe;
-- RLS + runtime no BYPASSRLS;
-- tenant proviene de credential;
-- unique tenant+idempotency key;
-- payload/hash inmutables;
-- state_version/concurrency;
-- evidencia/audit append-only;
-- work status != fiscal status.
+- FEV;
+- CREDIT_NOTE;
+- DEBIT_NOTE;
+- ELECTRONIC_POS;
+- POS_ADJUSTMENT.
 
-## Seguridad F3
+Tenant no va en body. Emisor se resuelve por tenant.
 
-- credential opaca 32-byte secret por instalación POS, scoped a un tenant;
-- secreto almacenado solo como digest; rotatable/revocable;
-- Authorization redacted;
-- API no tiene PT secret;
-- worker sí, con privilegio mínimo;
-- migrator separado;
-- no service_role/superuser como runtime normal;
-- PT host fijo;
-- buckets privados;
-- logs sin payload fiscal completo/secrets;
-- restore de DB obliga reconciliar ventana posterior al restore.
+Dinero/cantidad/tasas = decimal strings.
 
-## F4 siguiente
+Semantic hash:
 
-No empezar implementación fiscal real todavía.
+```text
+validated DTO
+→ semantic projection
+→ canonicalization fiscal-command-c14n/1
+→ SHA-256 domain-separated
+```
 
-Cerrar en orden:
+Correlation/trace metadata no cambian hash.
 
-1. contrato POS→API;
-2. canonicalización + semantic hash;
-3. errores/estados internos expuestos;
-4. `FiscalProvider` mínimo;
-5. investigación vigente de PTs habilitados;
-6. shortlist y pruebas sandbox;
-7. seleccionar PT con prioridad a reconciliación/correlación, firma/certificados, contingencias y operación multiempresa;
-8. completar modelo de campos dependientes PT/DIAN.
+## FiscalProvider V1
 
-Un PT barato que no permita saber qué ocurrió tras timeout es **incompatible**.
+```text
+submit       # única mutación
+reconcile    # read-only sobre hecho fiscal
+getStatus
+fetchXml
+fetchPdf
+```
+
+No existe `resend()`.
+
+Reconciliación normalizada:
+
+```text
+FOUND_ACCEPTED
+FOUND_REJECTED
+NOT_FOUND_CONCLUSIVE
+INDETERMINATE
+```
+
+`NOT_FOUND_CONCLUSIVE` requiere semántica demostrada del PT.
+
+## PT shortlist actual
+
+Fuente DIAN vigente consultada el 2026-08-18 lista como autorizados a HKA, DATAICO y Facture.
+
+Prioridad de prueba:
+
+1. **The Factory HKA** — documentación pública fuerte de EstadoDocumento, XML/PDF, DEE y demo; certificado gestionado. Falta demostrar semántica de no-encontrado/retry.
+2. **DATAICO** — API-first, FE/NC/ND/POS/nota ajuste POS, consulta FE, sandbox/certificado publicados. Falta demostrar reconciliación completa especialmente POS/notas.
+3. Facture — reserva; evidencia API pública localizada insuficiente para priorizar.
+
+No hay PT final seleccionado.
+
+## Bloqueante actual F4C
+
+Ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` con sandbox real y obtener respuestas contractuales a `docs/f4-matriz-seleccion-pt-v1.md`.
+
+Necesitamos demostrar para cada documento V1:
+
+1. identificador consultable conocido antes del POST;
+2. consulta tras timeout;
+3. ventana de consistencia;
+4. significado de not-found;
+5. cuándo es seguro un nuevo intento;
+6. comportamiento de duplicados;
+7. XML/PDF/estado;
+8. multiempresa;
+9. certificado/firma;
+10. contingencias, límites, SLA, precio y datos.
+
+## Implementación
+
+Todavía no crear adapter productivo.
+
+Sí se puede preparar F5 genérico/fake provider y, cuando se abra F6, construir primero infraestructura interna que no dependa de un PT concreto.
