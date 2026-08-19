@@ -100,9 +100,7 @@ function normalizeValue(value: unknown, fieldName?: string): CanonicalValue {
     const entries = Object.entries(source)
       .filter(([, child]) => child !== undefined)
       .map(([key, child]) => [key.normalize('NFC'), child] as const)
-      .sort(([left], [right]) =>
-        left < right ? -1 : left > right ? 1 : 0,
-      );
+      .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0));
 
     for (const [key, child] of entries) {
       if (Object.prototype.hasOwnProperty.call(result, key)) {
