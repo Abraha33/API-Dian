@@ -9,13 +9,14 @@
 docs/PRODUCT-DEFINITION-V1-FINAL.md   ✅ qué se construye
 docs/SYSTEM-ARCHITECTURE-V1.md        ✅ cómo se construye
 docs/BUILD-PLAN-V1.md                 ✅ orden de construcción
-docs/BACKLOG-V1.md                    ✅ obligaciones/tareas verificables
-docs/DEPENDENCY-MAP-V1.md             ✅ dependencias y gates
+docs/BACKLOG-V1.md                    ✅ obligaciones/tareas
+docs/DEPENDENCY-MAP-V1.md             ✅ dependencias/gates
 docs/DEFINITION-OF-DONE-V1.md         ✅ qué significa DONE
-docs/DAILY-BUILD-PLAN-V1.md           ✅ secuencia de jornadas
+docs/DAILY-BUILD-PLAN-V1.md           ✅ jornadas de referencia
+docs/AUDIT-EXISTING-CODE-V1.md        ✅ qué código existente se conserva/adapta/falta
 ```
 
-Jerarquía si existe conflicto:
+Jerarquía ante conflicto:
 
 ```text
 producto > arquitectura > build plan > backlog/dependencias/DoD > plan diario > implementación existente
@@ -23,54 +24,33 @@ producto > arquitectura > build plan > backlog/dependencias/DoD > plan diario > 
 
 ## 2. Estado actual
 
+La planificación previa a implementación está cerrada.
+
+Auditoría del código existente sobre 59 jornadas técnicas:
+
 ```text
-Producto                         ✅ FROZEN
-Arquitectura                     ✅ FROZEN
-Build Plan                       ✅ FROZEN
-Backlog                          ✅ FROZEN
-Mapa de dependencias             ✅ FROZEN
-Definition of Done               ✅ FROZEN
-Plan diario                      ✅ FROZEN
-Auditoría del código existente   ▶ SIGUIENTE
-Nueva implementación             ⏸
+DONE_EXISTING      23
+ADAPT              18
+NEW                11
+BLOCKED_EXTERNAL    7
+REBUILD             0
 ```
 
-No reanudar implementación hasta auditar el código adelantado contra estos baselines.
+Conclusión: **no reiniciar ni reescribir el núcleo**. Conservar lo que ya pasa el diseño y completar únicamente huecos demostrables.
 
-## 3. Producto y arquitectura en una vista
+## 3. Producto/arquitectura resumidos
 
 ```text
 POS propio
    ↓
 API runtime
    ↓
-PostgreSQL administrado  ← autoridad transaccional
+PostgreSQL administrado  ← autoridad
    ↑
 Worker runtime ───────────▶ 1 PT habilitado ─▶ DIAN
    │
    └──────────────────────▶ Object storage privado
 ```
-
-V1:
-
-- comercios colombianos;
-- consumidor técnico inicial: POS propio;
-- no API pública;
-- multiempresa;
-- exactamente un PT;
-- no DIAN directa;
-- FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado, XML/PDF y trazabilidad;
-- monolito modular Node 24 + TypeScript + NestJS/Fastify;
-- PostgreSQL autoridad y trabajo durable;
-- `pg`/SQL explícito en camino fiscal crítico;
-- tenant credential + tenant-safe FK + RLS;
-- perfil fiscal versionado por tenant;
-- roles `api`/`worker` y DB separados;
-- `provider_attempt` antes del side effect;
-- API no muta PT; solo worker;
-- evidencia/auditoría append-only;
-- kill switches;
-- proveedor cloud exacto aún no congelado.
 
 Invariante superior:
 
@@ -78,83 +58,52 @@ Invariante superior:
 DESCONOCIDO != REEMITIR
 ```
 
-## 4. Secuencia de construcción
+V1: FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado, XML/PDF, trazabilidad y multiempresa. No API pública, no segundo PT, no DIAN directa, no forks por cliente.
 
-```text
-B1  baseline ejecutable
-B2  multiempresa/auth/perfil fiscal
-B3  contrato fiscal/validación
-B4  idempotencia/persistencia/estados
-B5  worker/trabajo durable/side-effect boundary
-B6  UNKNOWN/reconcile/fake/fault injection
-B7  evidencia/artefactos/operación
-B8  gate PT real
-B9  adapter PT real/contingencias
-B10 plataforma productiva/restore
-B11 integración POS
-B12 adversarial E2E
-B13 piloto
-B14 cierre V1
-```
+Arquitectura: monolito modular Node 24 + TypeScript + NestJS/Fastify; PostgreSQL autoridad/trabajo durable; `pg` y SQL explícito crítico; tenant credential + RLS + FK tenant-safe; roles API/worker separados; `provider_attempt` antes del side effect; UNKNOWN→reconcile; evidencia append-only; kill switches; API sin secreto PT.
 
-B8 administrativo puede adelantarse en paralelo, pero B9 requiere evidencia real del PT.
+## 4. Código existente que se conserva
 
-## 5. Regla de ejecución diaria
+Existe evidencia ejecutable para gran parte del núcleo:
 
-Cada jornada futura:
-
-```text
-contexto mínimo
-→ uno o pocos backlog IDs relacionados
-→ happy path
-→ fallo relevante
-→ gates
-→ revisar diff
-→ registrar evidencia
-→ DONE / BLOCKED / INCONCLUSIVE
-```
-
-DoD significa demostrado, no simplemente implementado.
-
-## 6. Código adelantado existente
-
-El repo ya contiene trabajo relevante, incluyendo:
-
-- PostgreSQL/migraciones y SQL core;
-- auth/tenant/RLS;
-- idempotencia/canonicalización;
-- operaciones/estados;
-- worker/leases/provider attempts;
+- baseline Node/Nest/PostgreSQL/CI;
+- tenant + RLS + aislamiento;
+- autenticación POS;
+- roles DB least privilege;
+- idempotencia persistida y concurrencia;
+- máquina de estados;
+- work queue durable + leases;
+- worker separado;
+- provider attempt pre-send;
+- crash recovery a UNKNOWN;
 - FakeFiscalProvider;
-- UNKNOWN/reconcile;
-- kill switches;
-- observabilidad;
-- concurrencia;
-- contract-test harness PT.
+- reconciliación y NEEDS_ATTENTION;
+- contract-test harness PT;
+- kill switches y tooling/runbook de operaciones.
 
-No se borra ni se considera terminado automáticamente.
+No rehacer estas piezas por estética. Volver a probarlas después de cambios que puedan afectarlas.
 
-La auditoría siguiente debe mapear cada bloque/jornada a:
+## 5. Huecos internos prioritarios
 
-```text
-DONE_EXISTING  = ya cumple DoD/gate con evidencia
-ADAPT          = existe y sirve, pero requiere corrección
-REBUILD        = contradice baseline o no es confiable
-NEW            = no existe
-BLOCKED_EXTERNAL = requiere PT/contrato/evidencia externa
-```
-
-Resultado esperado de la auditoría:
+Orden de reanudación recomendado:
 
 ```text
-docs/AUDIT-EXISTING-CODE-V1.md
+J08  completar lifecycle/rotación/revocación de credenciales
+J10  perfil/configuración fiscal versionado por tenant
+J11–J16 contrato fiscal tipado + validación + exactitud + canonicalización
+J17  asociar operación con perfil fiscal histórico
+J27  segunda verificación kill switch en último punto seguro antes de submit
+J30  fault injection temporal/delayed response
+J34  evidencia relevante del provider en evidence_records
+J35–J36 storage privado + XML/PDF + endpoints/worker
+J37  métricas/alertas mínimas
 ```
 
-Después de esa auditoría se genera el plan diario **real restante**, eliminando trabajo ya válido en vez de reconstruirlo por inercia.
+Jornadas 39–44 y 56 dependen de PT real/evidencia externa.
 
-## 7. Gate PT
+## 6. Gate PT
 
-Orden actual de prueba:
+Orden racional de prueba actualmente documentado:
 
 ```text
 1. HKA
@@ -162,31 +111,44 @@ Orden actual de prueba:
 3. Facture / ESTELA
 ```
 
-No es selección final.
+No es selección final. `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren evidencia real; 404 o texto “no enviado” no autorizan reemisión por nombre.
 
-Nunca mapear por intuición un 404 o texto “no enviado” a permiso seguro de reemisión. `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren evidencia explícita.
+## 7. Próxima acción inmediata
 
-## 8. Uso eficiente de agentes/Codex
+**No empezar J08 hasta verificar que el baseline actual sigue verde localmente.**
 
-Empezar normalmente solo con:
+Secuencia:
+
+```text
+sin modificar código
+→ sincronizar dev
+→ ejecutar gates actuales reproducibles
+→ registrar PASS/FAIL
+→ si verde, iniciar J08
+```
+
+La verificación baseline debe incluir como mínimo build, lint, unit, migraciones/roles, e2e, concurrencia y provider-contract harness, reutilizando los comandos/documentación ya existentes.
+
+## 8. Uso eficiente de Codex/modelos
+
+Para la verificación baseline usar modelo barato: **Luna**. Solo inspeccionar, ejecutar gates y resumir; no modificar archivos.
+
+Para implementación normal de jornadas `ADAPT/NEW`, usar **Terra** por defecto. Escalar a **Sol** únicamente si aparece un problema difícil de seguridad fiscal, concurrencia, DB o semántica PT que Terra no pueda resolver con confianza.
+
+Contexto de agente por defecto:
 
 ```text
 docs/session-context.md
-+ documento de fase/jornada actual
++ documento/jornada actual
++ solo los archivos estrictamente necesarios
 ```
 
-Abrir ADR/requisitos/código adicional solo bajo necesidad. No cargar todo el repo por defecto.
+No cargar todo el repositorio.
 
-Usar el modelo de menor coste que pueda resolver correctamente la tarea y escalar únicamente para decisiones difíciles de arquitectura, seguridad o semántica fiscal.
+## 9. Próximo hito
 
-## 9. Siguiente avance oficial
+1. baseline local verde;
+2. J08 cerrado bajo `DEFINITION-OF-DONE-V1.md`;
+3. continuar por los huecos prioritarios en orden de dependencias.
 
-Auditar el repositorio existente contra el backlog y la Definition of Done, sin modificar runtime todavía.
-
-Crear:
-
-```text
-docs/AUDIT-EXISTING-CODE-V1.md
-```
-
-Luego convertir `DAILY-BUILD-PLAN-V1.md` en el plan real restante, marcando qué jornadas ya están cumplidas por código válido y cuáles faltan.
+**DONE significa demostrado, no declarado.**
