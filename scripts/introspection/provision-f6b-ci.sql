@@ -8,6 +8,9 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'ci_worker') THEN
     CREATE ROLE ci_worker LOGIN PASSWORD 'ci_worker' IN ROLE app_worker;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'ci_ops') THEN
+    CREATE ROLE ci_ops LOGIN PASSWORD 'ci_ops' IN ROLE app_ops;
+  END IF;
 END
 $$;
 
