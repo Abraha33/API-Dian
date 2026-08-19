@@ -4,7 +4,9 @@ DO $$
 DECLARE
   role_name text;
 BEGIN
-  FOREACH role_name IN ARRAY ARRAY['app_api', 'app_worker', 'app_migrator'] LOOP
+  FOREACH role_name IN ARRAY ARRAY[
+    'app_api', 'app_worker', 'app_migrator', 'app_ops_control'
+  ] LOOP
     IF NOT EXISTS (
       SELECT 1 FROM pg_roles
       WHERE rolname = role_name
@@ -32,6 +34,15 @@ BEGIN
       AND rolbypassrls
   ) THEN
     RAISE EXCEPTION 'app_ops missing or role attributes are unsafe';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM pg_roles
+    WHERE rolname = 'app_ops_control'
+      AND rolcanlogin
+  ) THEN
+    RAISE EXCEPTION 'app_ops_control must remain NOLOGIN';
   END IF;
 END
 $$;
@@ -131,6 +142,37 @@ BEGIN
      OR has_table_privilege('app_ops', 'app.work_items', 'UPDATE')
      OR has_table_privilege('app_ops', 'app.runtime_controls', 'UPDATE') THEN
     RAISE EXCEPTION 'app_ops must be read-only';
+  END IF;
+END
+$$;
+
+DO $$
+BEGIN
+  IF NOT has_column_privilege(
+    'app_ops_control',
+    'app.runtime_controls',
+    'provider_mutations_enabled',
+    'UPDATE'
+  ) OR NOT has_column_privilege(
+    'app_ops_control',
+    'app.runtime_controls',
+    'accept_new_operations',
+    'UPDATE'
+  ) THEN
+    RAISE EXCEPTION 'app_ops_control cannot update kill switches';
+  END IF;
+
+  IF has_column_privilege(
+    'app_ops_control', 'app.runtime_controls', 'singleton_id', 'UPDATE'
+  ) THEN
+    RAISE EXCEPTION 'app_ops_control must not change singleton identity';
+  END IF;
+
+  IF has_table_privilege('app_ops_control', 'app.fiscal_operations', 'SELECT')
+     OR has_table_privilege('app_ops_control', 'app.fiscal_operations', 'UPDATE')
+     OR has_table_privilege('app_ops_control', 'app.work_items', 'UPDATE')
+     OR has_table_privilege('app_ops_control', 'app.provider_attempts', 'UPDATE') THEN
+    RAISE EXCEPTION 'app_ops_control has fiscal data privileges';
   END IF;
 END
 $$;
