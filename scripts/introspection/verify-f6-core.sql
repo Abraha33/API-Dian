@@ -49,6 +49,14 @@ BEGIN
     RAISE EXCEPTION 'runtime role has direct SELECT on api_credentials';
   END IF;
 
+  IF has_table_privilege('app_api', 'app.fiscal_operations', 'UPDATE') THEN
+    RAISE EXCEPTION 'app_api must not advance fiscal operation state';
+  END IF;
+
+  IF has_table_privilege('app_worker', 'app.fiscal_operations', 'INSERT') THEN
+    RAISE EXCEPTION 'app_worker must not create POS fiscal operations';
+  END IF;
+
   IF NOT has_function_privilege(
     'app_api', 'app.lookup_api_credential(uuid)', 'EXECUTE'
   ) THEN
@@ -74,6 +82,29 @@ BEGIN
   IF controls.accept_new_operations OR controls.provider_mutations_enabled THEN
     RAISE EXCEPTION 'runtime kill switches must default fail-closed';
   END IF;
+END
+$$;
+
+DO $$
+DECLARE
+  object_name text;
+  object_owner text;
+BEGIN
+  FOREACH object_name IN ARRAY ARRAY[
+    'tenants', 'api_credentials', 'fiscal_operations', 'provider_attempts',
+    'work_items', 'evidence_records', 'artifacts', 'audit_events',
+    'runtime_controls'
+  ] LOOP
+    SELECT pg_get_userbyid(c.relowner)
+      INTO object_owner
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'app' AND c.relname = object_name AND c.relkind = 'r';
+
+    IF object_owner IS DISTINCT FROM 'app_migrator' THEN
+      RAISE EXCEPTION 'app.% owner is %, expected app_migrator', object_name, object_owner;
+    END IF;
+  END LOOP;
 END
 $$;
 
