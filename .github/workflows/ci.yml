@@ -69,6 +69,13 @@ jobs:
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/provision-f6b-ci.sql
 
+      - name: Operational report as constrained ops login
+        env:
+          PGPASSWORD: ci_ops
+        run: |
+          psql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 \
+            -f scripts/ops/fiscal-ops-report.sql
+
       - name: E2E tests as separated API and worker DB logins
         working-directory: apps/api
         env:
