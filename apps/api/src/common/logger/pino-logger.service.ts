@@ -18,6 +18,23 @@ export type FiscalEventLog = {
   level: string;
 };
 
+export type WorkerEventLog = {
+  event:
+    | 'worker_job_completed'
+    | 'provider_submit_result'
+    | 'provider_reconcile_result';
+  worker_id: string;
+  work_id: string;
+  operation_id: string;
+  tenant_id: string;
+  work_kind: string;
+  attempt_count: number;
+  elapsed_ms: number;
+  outcome: string;
+  attempt_id?: string;
+  normalized_code?: string;
+};
+
 @Injectable()
 export class PinoLoggerService implements LoggerService {
   private readonly root: Logger;
@@ -26,6 +43,19 @@ export class PinoLoggerService implements LoggerService {
     const isProd = process.env.NODE_ENV === 'production';
     this.root = pino({
       level: isProd ? 'info' : 'debug',
+      redact: {
+        paths: [
+          'authorization',
+          'headers.authorization',
+          'token',
+          'secret',
+          'pepper',
+          'password',
+          'credential',
+          'DATABASE_URL',
+        ],
+        censor: '[REDACTED]',
+      },
       ...(!isProd && {
         transport: {
           target: 'pino-pretty',
@@ -68,5 +98,23 @@ export class PinoLoggerService implements LoggerService {
 
   logFiscalEvent(meta: FiscalEventLog): void {
     this.root.info(meta, 'fiscal_event');
+  }
+
+  logWorkerEvent(meta: WorkerEventLog): void {
+    const warnOutcomes = new Set([
+      'TRANSPORT_AMBIGUOUS',
+      'INDETERMINATE',
+      'RECOVERED_UNKNOWN',
+      'RETRY_SCHEDULED',
+      'DEAD_LETTERED',
+      'MUTATIONS_PAUSED',
+    ]);
+
+    if (warnOutcomes.has(meta.outcome)) {
+      this.root.warn(meta, meta.event);
+      return;
+    }
+
+    this.root.info(meta, meta.event);
   }
 }
