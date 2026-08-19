@@ -1,5 +1,7 @@
 # Contexto de sesión — API-DIAN
 
+**Corte:** 2026-08-19
+
 ## Estado
 
 ```text
@@ -16,79 +18,56 @@ F6C adapter real ⏸ depende F4C
 F7 readiness/piloto ⏸ depende F6C
 ```
 
-Rama principal consolidada: `dev` = `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d` al iniciar este corte F4C.  
-Rama de investigación actual: `research/f4c-public-evidence-2026-08-19`.
+Rama principal consolidada: `dev` = `eeb3db83a27174ccbcb875f763b00897b952f2bb`.
 
-## Producto
+## Producto e invariantes
 
 ```text
 POS → API-DIAN → 1 PT habilitado → DIAN
 ```
 
-No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
+No reabrir alcance cerrado salvo evidencia nueva fuerte.
 
-## Fuentes maestras
+Reglas permanentes:
 
-- baseline F0;
-- `docs/v1-requisitos.md`;
-- ADR-003/004 arquitectura + side effects;
-- ADR-005/006 datos + seguridad;
-- ADR-007/008 contratos + PT gates;
-- ADR-009 pruebas/fault injection/kill switch;
-- `docs/f4-matriz-seleccion-pt-v1.md`;
-- `docs/f4-prueba-ambiguedad-pt-v1.md`;
-- `docs/f4c-evidencia-publica-2026-08-19.md`;
-- `docs/f4c-cuestionario-solicitud-sandbox-pt.md`;
-- `docs/f6-checkpoint-01-core-persistence.md`;
-- `docs/f6-checkpoint-02-fake-vertical-slice.md`;
-- `docs/runbook-fiscal-worker-v1.md`;
-- `docs/f6-provider-contract-harness.md`;
-- `ROADMAP.md`.
-
-## Invariantes
-
-- PostgreSQL autoridad;
+- PostgreSQL es autoridad;
 - API HTTP persiste, no emite;
 - solo worker muta PT;
-- `provider_attempt` antes del side effect remoto;
+- `provider_attempt` existe antes del side effect remoto;
 - ambigüedad → `UNKNOWN`;
 - `UNKNOWN` reconcilia antes de cualquier nuevo submit;
 - no retry HTTP transparente de mutaciones;
 - retry de submit solo con evidencia concluyente de no envío;
 - tenant por credential + RLS;
 - evidencia append-only;
-- API no tiene secreto PT;
 - API, worker y ops usan credenciales DB separadas;
 - kill switch de submit no pausa reconcile/read;
-- superusuario/app_migrator nunca es runtime normal, tampoco en desarrollo;
-- `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba referenciada, no inferencia informal;
-- evidencia pública decide orden de prueba, **no** sustituye PASS contractual.
+- superusuario/app_migrator nunca es runtime normal;
+- `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba referenciada;
+- evidencia pública decide orden de prueba, no sustituye PASS contractual.
 
-## Contrato interno actual
+## Fuentes maestras actuales
 
-```text
-POST /v1/fiscal-operations
-Authorization: Bearer <credential>
-Idempotency-Key: <key>
-schema_version = 1.0
-```
+- `docs/f0-producto-v1-validado-2026-08-18.md`;
+- `docs/v1-requisitos.md`;
+- ADR-003..009;
+- `docs/f4-matriz-seleccion-pt-v1.md`;
+- `docs/f4-prueba-ambiguedad-pt-v1.md`;
+- `docs/f4c-public-precheck-2026-08-19.md`;
+- `docs/f4c-evidencia-publica-2026-08-19.md`;
+- `docs/f4c-cuestionario-solicitud-sandbox-pt.md`;
+- `docs/f4c-canales-contacto-y-ejecucion-2026-08-19.md`;
+- `docs/f6-checkpoint-01-core-persistence.md`;
+- `docs/f6-checkpoint-02-fake-vertical-slice.md`;
+- `docs/runbook-fiscal-worker-v1.md`;
+- `docs/f6-provider-contract-harness.md`;
+- `ROADMAP.md`.
 
-Tipos: FEV, CREDIT_NOTE, DEBIT_NOTE, ELECTRONIC_POS, POS_ADJUSTMENT.
+## Core interno ya cerrado
 
-Hash:
+### F6A/F6B
 
-```text
-validated DTO
-→ semantic projection
-→ fiscal-command-c14n/1
-→ SHA-256
-```
-
-`FiscalProvider`: `submit`, `reconcile`, `getStatus`, `fetchXml`, `fetchPdf`; no `resend`.
-
-## F6A + F6B cerrados
-
-Flujo ejecutable probado:
+Flujo probado:
 
 ```text
 credential
@@ -103,119 +82,106 @@ credential
 → reconcile
 ```
 
-Decisiones cerradas:
+Decisiones:
 
-- cliente DB: `pg` / node-postgres;
-- SQL explícito en repositories;
-- Prisma retirado del scaffold activo;
-- API con login `app_api`;
-- worker con login `app_worker` distinto;
+- `pg` / node-postgres, SQL explícito;
+- Prisma retirado;
+- API `app_api`, worker `app_worker`;
 - fake worker prohibido en producción;
 - crash en `SUBMITTING` → `UNKNOWN`, nunca segundo submit ciego;
 - `SUBMITTING → READY` exige último attempt `PROVEN_NOT_SENT`;
-- kill switch bloquea nuevos side effects pero permite reconciliación.
+- kill switch bloquea nuevas mutaciones pero permite reconciliación.
 
-## F6H cerrado
+### F6H
 
-### Operación/observabilidad
+Consolidado:
 
 - telemetría estructurada worker sin payloads/credenciales;
 - `app_ops` cross-tenant read-only limitado;
 - `app_ops_control` solo kill switches;
 - `runtime_control_events` append-only;
-- reporte SQL operacional + runbook.
+- reporte operacional + runbook;
+- concurrencia: 32 same-key → 1 operación; carrera semántica → 202+409; 40 distintos → 40; 42 claims → sin duplicado;
+- compose local solo PostgreSQL 15;
+- bootstrap PowerShell y logins API/worker/ops separados;
+- harness abstracto PT fail-closed basado en evidencia sanitizada.
 
-Snapshot: `fb84c99be55694b3cd830a84d153ca3cf9b9bf12`.
+Snapshots relevantes:
 
-### Concurrencia
+- F6B2: `7a940ac46e8f977bf33374fb5d1c75ad56d192c1`;
+- ops hardening: `fb84c99be55694b3cd830a84d153ca3cf9b9bf12`;
+- concurrencia: `77d2ac797747a0ac7075d2ae4ed9bd8f2fd75cda`;
+- infra local: `99bd26383a299c24604c3a345ad0f7d573be682e`;
+- harness PT: `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d`;
+- F4C evidencia pública consolidada: `eeb3db83a27174ccbcb875f763b00897b952f2bb`.
 
-Consolidado: `77d2ac797747a0ac7075d2ae4ed9bd8f2fd75cda`, CI #66.
+## F4C activo — orden provisional
 
-- 32 requests same key → 1 operación/work/audit;
-- carrera semántica same key → un 202 + un 409;
-- 40 distintos simultáneos → 40 operaciones;
-- 42 claims paralelos → cada work una vez.
-
-### Infra local
-
-Consolidado: `99bd26383a299c24604c3a345ad0f7d573be682e`, árbol final CI #71.
-
-- compose solo PostgreSQL 15;
-- Redis/MinIO y runtime local superuser retirados;
-- bootstrap PowerShell validado;
-- logins separados API/worker/ops;
-- CI verifica memberships/privilegios;
-- worker prefiere `WORKER_DATABASE_URL`.
-
-### Harness abstracto PT
-
-Consolidado: `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d`, árbol final CI #77.
-
-- fixtures requieren evidencia sanitizada;
-- `PROVEN_NOT_SENT` requiere prueba de no side effect;
-- `NOT_FOUND_CONCLUSIVE` requiere prueba concluyente de inexistencia;
-- artefactos por content type/tamaño/SHA-256;
-- no contiene semántica específica de ningún PT.
-
-## F4C — evidencia pública actualizada 2026-08-19
-
-La lista pública vigente de la DIAN mantiene a:
-
-- The Factory HKA Colombia;
-- DATAICO;
-- Facture S.A.S.
-
-La nueva evidencia oficial **no selecciona ganador**, pero sí define un orden racional de prueba:
+La evidencia oficial actual mantiene el orden de prueba:
 
 ```text
-1. HKA
+1. The Factory HKA Colombia
 2. DATAICO
 3. Facture / ESTELA
 ```
 
-### HKA — probar primero
+No es selección definitiva.
 
-La documentación pública localizada describe explícitamente:
+### HKA
 
-- intermitencia/timeouts DIAN;
-- estados no concluyentes/intermedios;
-- reconsulta/reconstrucción posterior;
-- necesidad de esperar estado definitivo;
-- proceso formal de integración con ambiente DEMO, credenciales, folios, documentación y especialista técnico.
+Primero porque la documentación pública encontrada describe intermitencia/timeouts, estados no concluyentes, reconsulta/reconstrucción y un proceso de integración con DEMO/credenciales/especialista.
 
-Esto encaja mejor con nuestra arquitectura `UNKNOWN → reconcile`, pero **todavía no demuestra** el mapping real de códigos ni un criterio contractual de `NOT_FOUND_CONCLUSIVE`.
+Pendiente de demostrar en sandbox/contrato:
 
-### DATAICO — segundo / paralelo administrativo
+- mapping real de códigos;
+- correlación exacta;
+- FEV + DEE POS completos;
+- criterio seguro de inexistencia;
+- XML/PDF;
+- SLA/precio/certificado.
 
-La documentación pública confirma:
+### DATAICO
 
-- API orientada a software/ERP/POS;
-- casos donde DIAN ya aceptó y Dataico sigue pendiente, con sincronización posterior;
-- estados/UUID/CUFE y reenvío de factura existente en ciertos estados;
-- POS y nota de ajuste visibles en documentación.
+Segundo y en paralelo administrativo.
 
-Bloqueos:
+La documentación pública reconoce estados pendientes aun cuando DIAN ya aceptó, resincronización posterior y APIs para factura/POS.
 
-- `DIAN_NO_ENVIADO` no se mapeará por nombre a `PROVEN_NOT_SENT`;
-- no hay evidencia pública suficiente de `NOT_FOUND_CONCLUSIVE`;
-- confirmar sandbox, POS status/reconcile y contrato real.
+Reglas:
 
-### Facture / ESTELA — reserva
+- `DIAN_NO_ENVIADO != PROVEN_NOT_SENT` hasta evidencia;
+- ausencia/404 `!= NOT_FOUND_CONCLUSIVE` hasta evidencia.
 
-Continúa habilitado ante DIAN y ESTELA publica oferta FEV/documento equivalente, pero no encontramos documentación pública técnica comparable para auth, sandbox, correlación y ambigüedad. Solicitar paquete privado antes de invertir integración.
+### Facture / ESTELA
 
-## Ejecución inmediata F4C
+Reserva. Continúa habilitado y publica FEV/documento equivalente, pero falta paquete técnico público comparable para auth/sandbox/correlación/ambigüedad.
 
-1. solicitar a HKA DEMO/sandbox, credenciales, docs FEV + POS, contacto técnico, contrato/SLA/precio;
-2. solicitar DATAICO en paralelo administrativo;
-3. solicitar Facture/ESTELA paquete técnico y sandbox;
-4. ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` primero con HKA;
-5. conservar evidencia sanitizada por caso;
-6. llenar `docs/f4-matriz-seleccion-pt-v1.md` **solo** con evidencia real;
-7. convertir casos PASS a fixtures de `docs/f6-provider-contract-harness.md`;
-8. un FAIL/INCONCLUSIVE crítico bloquea F6C con ese candidato.
+## Contacto F4C listo
 
-Cuestionario listo: `docs/f4c-cuestionario-solicitud-sandbox-pt.md`.
+Documento operativo:
+
+`docs/f4c-canales-contacto-y-ejecucion-2026-08-19.md`
+
+Incluye:
+
+- HKA: canal oficial de integración, correo `integracion_fel_co@thefactoryhka.com`, WhatsApp y central;
+- DATAICO: landing API/casa de software + agenda oficial de consulta personalizada;
+- Facture/ESTELA: formulario oficial Colombia;
+- mensajes listos para cada proveedor;
+- secuencia de escalamiento;
+- formato de evidencia a conservar.
+
+**Estado de contacto:** no se ha enviado correo, formulario ni agenda desde ChatGPT. No realizar comunicación externa sin instrucción explícita del usuario.
+
+## Ejecución inmediata cuando exista autorización/contacto
+
+1. HKA: pedir DEMO, credenciales, docs FEV + POS, especialista, contrato/SLA/precio;
+2. DATAICO: agendar consulta API en paralelo;
+3. ESTELA: solicitar paquete técnico/API/sandbox;
+4. ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` primero con el primer sandbox útil;
+5. guardar evidencia cruda sensible fuera de Git y solo metadatos sanitizados en repo;
+6. llenar `docs/f4-matriz-seleccion-pt-v1.md` solo con evidencia real;
+7. convertir casos PASS a fixtures del harness;
+8. FAIL/INCONCLUSIVE crítico bloquea F6C para ese candidato.
 
 ## Gate mínimo de salida F4C
 
@@ -235,23 +201,8 @@ sandbox real
 + responsabilidad certificado
 ```
 
-Un 404 aislado nunca equivale a `NOT_FOUND_CONCLUSIVE`; un estado “no enviado” tampoco equivale a `PROVEN_NOT_SENT` por nombre.
-
-## Runtime/CI consolidado
-
-- Node 24;
-- audit productivo;
-- compose + parser PowerShell;
-- build/lint/unit;
-- provider contract harness self-tests;
-- migraciones + verificaciones SQL;
-- provisioning local least-privilege;
-- ops control/report;
-- e2e API/worker;
-- concurrency gate.
-
 ## Siguiente avance real
 
-El desarrollo interno funcional independiente del PT está sustancialmente agotado. **No seguir construyendo capas especulativas.**
+El desarrollo interno funcional independiente del PT está sustancialmente agotado. No seguir construyendo capas especulativas ni packaging productivo alrededor de `FakeFiscalProvider`.
 
-El siguiente avance significativo requiere obtener acceso real F4C. Packaging productivo también queda pospuesto hasta F6C para no crear una falsa sensación de readiness alrededor de `FakeFiscalProvider`.
+El siguiente avance significativo requiere obtener acceso real F4C.
