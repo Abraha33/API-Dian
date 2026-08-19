@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { validateWorkerEnv } from './worker-env.validation';
 
 const baseConfig = {
