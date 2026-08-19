@@ -1,6 +1,7 @@
--- F6 internal hardening: dedicated cross-tenant read-only operational role.
--- This role is NOLOGIN and intentionally BYPASSRLS, but receives only a narrow
--- set of column-level SELECT privileges. Runtime API/worker roles remain unchanged.
+-- F6 internal hardening: dedicated operational roles.
+-- app_ops is cross-tenant read-only and intentionally BYPASSRLS, but receives
+-- only narrow column-level SELECT privileges.
+-- app_ops_control cannot bypass RLS and can update only runtime kill switches.
 
 DO $$
 BEGIN
@@ -13,14 +14,24 @@ BEGIN
       NOREPLICATION
       BYPASSRLS;
   END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_ops_control') THEN
+    CREATE ROLE app_ops_control
+      NOLOGIN
+      NOSUPERUSER
+      NOCREATEDB
+      NOCREATEROLE
+      NOREPLICATION
+      NOBYPASSRLS;
+  END IF;
 END
 $$;
 
-REVOKE ALL ON SCHEMA app FROM app_ops;
-GRANT USAGE ON SCHEMA app TO app_ops;
+REVOKE ALL ON SCHEMA app FROM app_ops, app_ops_control;
+GRANT USAGE ON SCHEMA app TO app_ops, app_ops_control;
 
-REVOKE ALL ON ALL TABLES IN SCHEMA app FROM app_ops;
-REVOKE ALL ON ALL FUNCTIONS IN SCHEMA app FROM app_ops;
+REVOKE ALL ON ALL TABLES IN SCHEMA app FROM app_ops, app_ops_control;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA app FROM app_ops, app_ops_control;
 
 GRANT SELECT (
   id,
@@ -67,5 +78,16 @@ GRANT SELECT (
   updated_by
 ) ON app.runtime_controls TO app_ops;
 
+GRANT SELECT ON app.runtime_controls TO app_ops_control;
+GRANT UPDATE (
+  accept_new_operations,
+  provider_mutations_enabled,
+  reason,
+  updated_at,
+  updated_by
+) ON app.runtime_controls TO app_ops_control;
+
 COMMENT ON ROLE app_ops IS
   'NOLOGIN cross-tenant operational observer. BYPASSRLS but only narrow column-level SELECT grants; use via explicit SET ROLE from an authorized operator login.';
+COMMENT ON ROLE app_ops_control IS
+  'NOLOGIN operational control role. Can read runtime_controls and update kill-switch metadata only; no fiscal table mutation privileges.';
