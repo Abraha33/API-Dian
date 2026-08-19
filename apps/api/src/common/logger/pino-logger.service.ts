@@ -35,6 +35,16 @@ export type WorkerEventLog = {
   normalized_code?: string;
 };
 
+const WORKER_WARN_OUTCOMES = new Set([
+  'TRANSPORT_AMBIGUOUS',
+  'INDETERMINATE',
+  'RECOVERED_UNKNOWN',
+  'RETRY_SCHEDULED',
+  'DEAD_LETTERED',
+  'MUTATIONS_PAUSED',
+  'UNHANDLED_ERROR',
+]);
+
 @Injectable()
 export class PinoLoggerService implements LoggerService {
   private readonly root: Logger;
@@ -101,16 +111,7 @@ export class PinoLoggerService implements LoggerService {
   }
 
   logWorkerEvent(meta: WorkerEventLog): void {
-    const warnOutcomes = new Set([
-      'TRANSPORT_AMBIGUOUS',
-      'INDETERMINATE',
-      'RECOVERED_UNKNOWN',
-      'RETRY_SCHEDULED',
-      'DEAD_LETTERED',
-      'MUTATIONS_PAUSED',
-    ]);
-
-    if (warnOutcomes.has(meta.outcome)) {
+    if (WORKER_WARN_OUTCOMES.has(meta.outcome)) {
       this.root.warn(meta, meta.event);
       return;
     }
