@@ -1,12 +1,46 @@
 # Contexto de sesión — API-DIAN
 
-## Estado
+## Baseline de producto congelado — 2026-08-19
+
+La autoridad actual para definir **qué producto se construye** es:
+
+- `docs/PRODUCT-DEFINITION-V1-FINAL.md`
+
+Estado de planificación:
+
+```text
+PRODUCT-DEFINITION-V1-FINAL.md   ✅ FROZEN
+SYSTEM-ARCHITECTURE-V1.md        ▶ SIGUIENTE
+BUILD-PLAN-V1.md                 ⏸
+Backlog detallado                ⏸
+Plan de construcción diario      ⏸
+Nueva implementación             ⏸ hasta completar la secuencia anterior
+```
+
+El código ya existente se conserva como **trabajo adelantado**, pero no es autoridad sobre el producto. Cuando se cierre arquitectura y planificación, cada pieza existente deberá clasificarse como `CONSERVAR`, `ADAPTAR`, `REHACER` o `ELIMINAR`.
+
+Regla de proceso vigente:
+
+```text
+producto
+→ arquitectura
+→ plan de construcción
+→ backlog y dependencias
+→ plan diario
+→ código
+```
+
+No continuar agregando implementación por inercia antes de completar esta secuencia.
+
+---
+
+## Estado técnico heredado
 
 ```text
 F0–F3 ✅
 F4A contratos ✅
 F4B shortlist PT ✅
-F4C sandbox/contrato PT ▶ ACTIVO / bloqueo externo
+F4C sandbox/contrato PT ▶ bloqueo externo cuando corresponda ejecutar esa etapa
 F5A diseño pruebas/runbooks ✅
 F5B pruebas reales PT ⏸ depende F4C
 F6A core independiente PT ✅
@@ -16,8 +50,7 @@ F6C adapter real ⏸ depende F4C
 F7 readiness/piloto ⏸ depende F6C
 ```
 
-Rama principal consolidada: `dev` = `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d` al iniciar este corte F4C.  
-Rama de investigación actual: `research/f4c-public-evidence-2026-08-19`.
+Rama principal consolidada: `dev`.
 
 ## Producto
 
@@ -25,18 +58,24 @@ Rama de investigación actual: `research/f4c-public-evidence-2026-08-19`.
 POS → API-DIAN → 1 PT habilitado → DIAN
 ```
 
-No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
+Mercado inicial: comercios colombianos.  
+Consumidor técnico inicial: nuestro propio POS.  
+V1 no nace como API pública para terceros.
+
+No reabrir producto/alcance congelado salvo evidencia nueva suficientemente fuerte.
 
 ## Fuentes maestras
 
+- `docs/PRODUCT-DEFINITION-V1-FINAL.md` — autoridad de producto;
 - baseline F0;
 - `docs/v1-requisitos.md`;
-- ADR-003/004 arquitectura + side effects;
-- ADR-005/006 datos + seguridad;
-- ADR-007/008 contratos + PT gates;
-- ADR-009 pruebas/fault injection/kill switch;
+- ADR-003/004 arquitectura + side effects existentes;
+- ADR-005/006 datos + seguridad existentes;
+- ADR-007/008 contratos + PT gates existentes;
+- ADR-009 pruebas/fault injection/kill switch existente;
 - `docs/f4-matriz-seleccion-pt-v1.md`;
 - `docs/f4-prueba-ambiguedad-pt-v1.md`;
+- `docs/f4c-public-precheck-2026-08-19.md`;
 - `docs/f4c-evidencia-publica-2026-08-19.md`;
 - `docs/f4c-cuestionario-solicitud-sandbox-pt.md`;
 - `docs/f6-checkpoint-01-core-persistence.md`;
@@ -45,11 +84,14 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - `docs/f6-provider-contract-harness.md`;
 - `ROADMAP.md`.
 
-## Invariantes
+Los documentos técnicos existentes son insumos para la siguiente fase de arquitectura; no pueden ampliar silenciosamente el alcance definido por `PRODUCT-DEFINITION-V1-FINAL.md`.
 
-- PostgreSQL autoridad;
-- API HTTP persiste, no emite;
-- solo worker muta PT;
+## Invariantes ya identificados
+
+- `DESCONOCIDO != REEMITIR`;
+- PostgreSQL como autoridad en la implementación existente;
+- API HTTP persiste, no emite, en el diseño existente;
+- solo worker muta PT, en el diseño existente;
 - `provider_attempt` antes del side effect remoto;
 - ambigüedad → `UNKNOWN`;
 - `UNKNOWN` reconcilia antes de cualquier nuevo submit;
@@ -60,11 +102,13 @@ No reabrir producto/alcance cerrado salvo evidencia nueva fuerte.
 - API no tiene secreto PT;
 - API, worker y ops usan credenciales DB separadas;
 - kill switch de submit no pausa reconcile/read;
-- superusuario/app_migrator nunca es runtime normal, tampoco en desarrollo;
+- superusuario/app_migrator nunca es runtime normal;
 - `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba referenciada, no inferencia informal;
 - evidencia pública decide orden de prueba, **no** sustituye PASS contractual.
 
-## Contrato interno actual
+Excepto `DESCONOCIDO != REEMITIR`, que ya es invariante de producto, los detalles técnicos anteriores deberán ratificarse o ajustarse durante `SYSTEM-ARCHITECTURE-V1.md`.
+
+## Contrato interno implementado actualmente
 
 ```text
 POST /v1/fiscal-operations
@@ -73,9 +117,9 @@ Idempotency-Key: <key>
 schema_version = 1.0
 ```
 
-Tipos: FEV, CREDIT_NOTE, DEBIT_NOTE, ELECTRONIC_POS, POS_ADJUSTMENT.
+Tipos implementados/contemplados: FEV, CREDIT_NOTE, DEBIT_NOTE, ELECTRONIC_POS, POS_ADJUSTMENT.
 
-Hash:
+Hash existente:
 
 ```text
 validated DTO
@@ -84,9 +128,9 @@ validated DTO
 → SHA-256
 ```
 
-`FiscalProvider`: `submit`, `reconcile`, `getStatus`, `fetchXml`, `fetchPdf`; no `resend`.
+`FiscalProvider` existente: `submit`, `reconcile`, `getStatus`, `fetchXml`, `fetchPdf`; no `resend`.
 
-## F6A + F6B cerrados
+## Implementación adelantada existente
 
 Flujo ejecutable probado:
 
@@ -103,69 +147,32 @@ credential
 → reconcile
 ```
 
-Decisiones cerradas:
+Incluye actualmente:
 
-- cliente DB: `pg` / node-postgres;
-- SQL explícito en repositories;
-- Prisma retirado del scaffold activo;
-- API con login `app_api`;
-- worker con login `app_worker` distinto;
-- fake worker prohibido en producción;
-- crash en `SUBMITTING` → `UNKNOWN`, nunca segundo submit ciego;
-- `SUBMITTING → READY` exige último attempt `PROVEN_NOT_SENT`;
-- kill switch bloquea nuevos side effects pero permite reconciliación.
-
-## F6H cerrado
-
-### Operación/observabilidad
-
-- telemetría estructurada worker sin payloads/credenciales;
-- `app_ops` cross-tenant read-only limitado;
-- `app_ops_control` solo kill switches;
+- `pg` / node-postgres y SQL explícito en repositories;
+- logins separados `app_api`, `app_worker`, ops;
+- FakeFiscalProvider prohibido en producción;
+- crash en `SUBMITTING` → `UNKNOWN`;
+- kill switches;
+- telemetría estructurada;
 - `runtime_control_events` append-only;
-- reporte SQL operacional + runbook.
+- pruebas de concurrencia;
+- compose local PostgreSQL 15;
+- bootstrap PowerShell;
+- harness abstracto de contrato PT.
 
-Snapshot: `fb84c99be55694b3cd830a84d153ca3cf9b9bf12`.
+Pruebas históricas relevantes:
 
-### Concurrencia
-
-Consolidado: `77d2ac797747a0ac7075d2ae4ed9bd8f2fd75cda`, CI #66.
-
-- 32 requests same key → 1 operación/work/audit;
-- carrera semántica same key → un 202 + un 409;
-- 40 distintos simultáneos → 40 operaciones;
+- 32 requests misma idempotency key → 1 operación/work/audit;
+- carrera semántica misma key → un 202 + un 409;
+- 40 operaciones distintas simultáneas → 40 operaciones;
 - 42 claims paralelos → cada work una vez.
 
-### Infra local
+Este bloque **no autoriza continuar construyendo**. Se auditará contra la arquitectura definitiva cuando llegue esa fase.
 
-Consolidado: `99bd26383a299c24604c3a345ad0f7d573be682e`, árbol final CI #71.
+## F4C — evidencia pública disponible
 
-- compose solo PostgreSQL 15;
-- Redis/MinIO y runtime local superuser retirados;
-- bootstrap PowerShell validado;
-- logins separados API/worker/ops;
-- CI verifica memberships/privilegios;
-- worker prefiere `WORKER_DATABASE_URL`.
-
-### Harness abstracto PT
-
-Consolidado: `6fe0e01bbaba80dcd9c7f6dfee232e27b1ac049d`, árbol final CI #77.
-
-- fixtures requieren evidencia sanitizada;
-- `PROVEN_NOT_SENT` requiere prueba de no side effect;
-- `NOT_FOUND_CONCLUSIVE` requiere prueba concluyente de inexistencia;
-- artefactos por content type/tamaño/SHA-256;
-- no contiene semántica específica de ningún PT.
-
-## F4C — evidencia pública actualizada 2026-08-19
-
-La lista pública vigente de la DIAN mantiene a:
-
-- The Factory HKA Colombia;
-- DATAICO;
-- Facture S.A.S.
-
-La nueva evidencia oficial **no selecciona ganador**, pero sí define un orden racional de prueba:
+Orden racional de prueba actualmente documentado:
 
 ```text
 1. HKA
@@ -173,51 +180,23 @@ La nueva evidencia oficial **no selecciona ganador**, pero sí define un orden r
 3. Facture / ESTELA
 ```
 
-### HKA — probar primero
+Esto no constituye selección final de proveedor.
 
-La documentación pública localizada describe explícitamente:
+### HKA
 
-- intermitencia/timeouts DIAN;
-- estados no concluyentes/intermedios;
-- reconsulta/reconstrucción posterior;
-- necesidad de esperar estado definitivo;
-- proceso formal de integración con ambiente DEMO, credenciales, folios, documentación y especialista técnico.
+La evidencia pública localizada encaja mejor con el requisito de manejar estados no concluyentes/reconsulta, pero todavía no demuestra el mapping real de códigos ni un criterio contractual de `NOT_FOUND_CONCLUSIVE`.
 
-Esto encaja mejor con nuestra arquitectura `UNKNOWN → reconcile`, pero **todavía no demuestra** el mapping real de códigos ni un criterio contractual de `NOT_FOUND_CONCLUSIVE`.
+### DATAICO
 
-### DATAICO — segundo / paralelo administrativo
+Existe evidencia de API orientada a software/ERP/POS y estados pendientes/sincronización, pero `DIAN_NO_ENVIADO` no se mapeará por nombre a `PROVEN_NOT_SENT` y falta prueba contractual/sandbox de los criterios críticos.
 
-La documentación pública confirma:
+### Facture / ESTELA
 
-- API orientada a software/ERP/POS;
-- casos donde DIAN ya aceptó y Dataico sigue pendiente, con sincronización posterior;
-- estados/UUID/CUFE y reenvío de factura existente en ciertos estados;
-- POS y nota de ajuste visibles en documentación.
+Permanece como reserva hasta obtener paquete técnico privado comparable.
 
-Bloqueos:
+## Gate de selección/integración PT
 
-- `DIAN_NO_ENVIADO` no se mapeará por nombre a `PROVEN_NOT_SENT`;
-- no hay evidencia pública suficiente de `NOT_FOUND_CONCLUSIVE`;
-- confirmar sandbox, POS status/reconcile y contrato real.
-
-### Facture / ESTELA — reserva
-
-Continúa habilitado ante DIAN y ESTELA publica oferta FEV/documento equivalente, pero no encontramos documentación pública técnica comparable para auth, sandbox, correlación y ambigüedad. Solicitar paquete privado antes de invertir integración.
-
-## Ejecución inmediata F4C
-
-1. solicitar a HKA DEMO/sandbox, credenciales, docs FEV + POS, contacto técnico, contrato/SLA/precio;
-2. solicitar DATAICO en paralelo administrativo;
-3. solicitar Facture/ESTELA paquete técnico y sandbox;
-4. ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` primero con HKA;
-5. conservar evidencia sanitizada por caso;
-6. llenar `docs/f4-matriz-seleccion-pt-v1.md` **solo** con evidencia real;
-7. convertir casos PASS a fixtures de `docs/f6-provider-contract-harness.md`;
-8. un FAIL/INCONCLUSIVE crítico bloquea F6C con ese candidato.
-
-Cuestionario listo: `docs/f4c-cuestionario-solicitud-sandbox-pt.md`.
-
-## Gate mínimo de salida F4C
+Cuando el plan de construcción llegue a esa etapa, F4C requerirá como mínimo:
 
 ```text
 sandbox real
@@ -237,21 +216,23 @@ sandbox real
 
 Un 404 aislado nunca equivale a `NOT_FOUND_CONCLUSIVE`; un estado “no enviado” tampoco equivale a `PROVEN_NOT_SENT` por nombre.
 
-## Runtime/CI consolidado
+## Siguiente avance oficial
 
-- Node 24;
-- audit productivo;
-- compose + parser PowerShell;
-- build/lint/unit;
-- provider contract harness self-tests;
-- migraciones + verificaciones SQL;
-- provisioning local least-privilege;
-- ops control/report;
-- e2e API/worker;
-- concurrency gate.
+**No es construir más runtime ni contactar proveedores como sustituto de la planificación del producto.**
 
-## Siguiente avance real
+El siguiente entregable es:
 
-El desarrollo interno funcional independiente del PT está sustancialmente agotado. **No seguir construyendo capas especulativas.**
+```text
+SYSTEM-ARCHITECTURE-V1.md
+```
 
-El siguiente avance significativo requiere obtener acceso real F4C. Packaging productivo también queda pospuesto hasta F6C para no crear una falsa sensación de readiness alrededor de `FakeFiscalProvider`.
+Debe derivarse de `docs/PRODUCT-DEFINITION-V1-FINAL.md`, revisar críticamente la arquitectura ya implementada y decidir qué se conserva, ajusta o descarta.
+
+Después deberán producirse, en este orden:
+
+1. `BUILD-PLAN-V1.md`;
+2. backlog completo por fases/épicas/historias/tareas;
+3. mapa de dependencias;
+4. Definition of Done por unidad;
+5. plan diario de construcción;
+6. reanudación controlada del código.
