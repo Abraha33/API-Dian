@@ -1,6 +1,7 @@
 \set ON_ERROR_STOP on
 
 BEGIN TRANSACTION READ ONLY;
+SET LOCAL ROLE app_ops;
 
 \echo '=== runtime controls ==='
 SELECT
@@ -13,13 +14,13 @@ FROM app.runtime_controls
 WHERE singleton_id = 1;
 
 \echo '=== fiscal operations by state ==='
-SELECT status, count(*) AS total
+SELECT status, count(status) AS total
 FROM app.fiscal_operations
 GROUP BY status
 ORDER BY status;
 
 \echo '=== work queue by kind/status ==='
-SELECT kind, status, count(*) AS total
+SELECT kind, status, count(id) AS total
 FROM app.work_items
 GROUP BY kind, status
 ORDER BY kind, status;
