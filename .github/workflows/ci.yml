@@ -70,6 +70,10 @@ jobs:
         working-directory: apps/api
         run: npm test -- --runInBand
 
+      - name: Provider contract harness self-tests
+        working-directory: apps/api
+        run: timeout 30s npm run test:provider-contract-harness -- --verbose
+
       - name: Apply migrations and provision test identities
         env:
           PGPASSWORD: postgres
