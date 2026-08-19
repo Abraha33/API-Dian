@@ -32,6 +32,24 @@ jobs:
           cache: npm
           cache-dependency-path: apps/api/package-lock.json
 
+      - name: Validate local compose
+        run: docker compose -f docker-compose.dev.yml config --quiet
+
+      - name: Validate Windows bootstrap syntax
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'scripts/dev/bootstrap-local.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+
       - name: Install
         working-directory: apps/api
         run: npm ci
@@ -52,7 +70,7 @@ jobs:
         working-directory: apps/api
         run: npm test -- --runInBand
 
-      - name: Apply migrations and provision F6B test identities
+      - name: Apply migrations and provision test identities
         env:
           PGPASSWORD: postgres
         run: |
@@ -66,6 +84,13 @@ jobs:
             -f scripts/introspection/verify-f6-core.sql
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/verify-f6-behavior.sql
+          psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
+            --set=api_password=ci-local-api-2026 \
+            --set=worker_password=ci-local-worker-2026 \
+            --set=ops_password=ci-local-ops-2026 \
+            -f scripts/dev/provision-local-runtime.sql
+          psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
+            -f scripts/introspection/verify-local-runtime.sql
           psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \
             -f scripts/introspection/provision-f6b-ci.sql
 
