@@ -4,28 +4,24 @@ API fiscal interna para comercio colombiano.
 
 ## Estado
 
-**Corte:** 2026-08-18
+**Corte:** 2026-08-18/19  
+**Rama:** `dev`
 
-| Fase | Estado |
-|---|---|
-| F0 producto | ✅ |
-| F1 requisitos | ✅ |
-| F2 arquitectura | ✅ |
-| F3 datos + seguridad | ✅ |
-| F4 contratos + selección PT | ▶ siguiente |
+```text
+F0–F3  producto/requisitos/arquitectura/datos    ✅
+F4A/B  contratos + shortlist PT                   ✅
+F4C    sandbox/contrato PT                        ▶ bloqueo externo
+F5A    pruebas/runbooks genéricos                 ✅
+F6A    core SQL + canonicalización + fake         ✅
+F6B    auth/repos/worker fake vertical slice      ▶ siguiente
+```
 
-Rama: `dev`.
-
-Fuentes autoritativas:
+Fuentes principales:
 
 - [`docs/f0-producto-v1-validado-2026-08-18.md`](./docs/f0-producto-v1-validado-2026-08-18.md)
 - [`docs/v1-requisitos.md`](./docs/v1-requisitos.md)
-- [`ADR/ADR-003-arquitectura-v1-monolito-postgres.md`](./ADR/ADR-003-arquitectura-v1-monolito-postgres.md)
-- [`ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md`](./ADR/ADR-004-protocolo-side-effect-idempotencia-reconciliacion.md)
-- [`ADR/ADR-005-modelo-datos-tenancy-v1.md`](./ADR/ADR-005-modelo-datos-tenancy-v1.md)
-- [`ADR/ADR-006-seguridad-auth-threat-model-v1.md`](./ADR/ADR-006-seguridad-auth-threat-model-v1.md)
-- [`docs/f3-modelo-datos-v1.md`](./docs/f3-modelo-datos-v1.md)
-- [`docs/f3-threat-model-v1.md`](./docs/f3-threat-model-v1.md)
+- ADR-003..009
+- [`docs/f6-checkpoint-01-core-persistence.md`](./docs/f6-checkpoint-01-core-persistence.md)
 - [`ROADMAP.md`](./ROADMAP.md)
 
 ## Producto V1
@@ -36,15 +32,13 @@ POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIA
 
 No es API pública comercial V1.
 
-## Regla crítica
+Regla crítica:
 
 ```text
 DESCONOCIDO != REEMITIR
 ```
 
-La garantía no es distributed exactly-once. Es idempotencia persistida, un solo camino de mutación, evidencia por intento y reconciliación antes de repetir.
-
-## Arquitectura resumida
+## Arquitectura V1
 
 ```text
 POS
@@ -54,35 +48,44 @@ API role ──▶ PostgreSQL administrado ◀── Worker role ──▶ PT
                          └──── metadata ──▶ Object storage privado
 ```
 
-- monolito modular;
-- Node 24 LTS + TypeScript/NestJS/Fastify al implementar;
-- PostgreSQL autoridad;
+- monolito modular NestJS/Fastify/TypeScript;
+- Node 24;
+- PostgreSQL es autoridad;
 - trabajo durable en PostgreSQL;
 - sin Redis/BullMQ productivo;
 - solo worker muta PT;
 - tenant context + RLS;
-- DB roles separados api/worker/migrator;
-- object storage no es autoridad de workflow.
+- roles DB `app_api` / `app_worker` / `app_migrator`;
+- object storage no gobierna workflow.
 
-## Modelo de datos núcleo
+## F6A ya implementado
 
-`tenants`, `api_credentials`, `fiscal_operations`, `provider_attempts`, `work_items`, `evidence_records`, `artifacts`, `audit_events`.
+El repo contiene la primera espina dorsal ejecutable:
 
-Payload original + idempotency + semantic hash son inmutables. Evidencia/audit son append-only. Referencias usan tenant-safe FKs.
+- schema `app` y tablas fiscales núcleo;
+- RLS/FORCE RLS + tenant-safe FKs;
+- constraints de idempotencia y guards de estados;
+- queue durable con `SKIP LOCKED`;
+- kill switches fail-closed;
+- canonicalización/hash V1;
+- `FiscalProvider` mínimo;
+- `FakeFiscalProvider` con fault injection;
+- tests TypeScript y verificaciones PostgreSQL de comportamiento;
+- CI Node 24 con audit de dependencias productivas, build, lint, unit, e2e y migraciones.
 
-## Seguridad
+Detalle: [`docs/f6-checkpoint-01-core-persistence.md`](./docs/f6-checkpoint-01-core-persistence.md).
 
-Credencial propia por instalación POS, scoped a un tenant; tenant nunca se toma del body. Runtime normal no usa superuser/service-role/BYPASSRLS. PT secret solo existe en worker. Buckets privados y logs minimizados.
+## Gate PT
 
-## Siguiente: F4
+Shortlist: The Factory HKA, DATAICO; Facture como reserva.
 
-Definir contrato interno y `FiscalProvider`, después investigar y probar PTs habilitados vigentes. La capacidad de correlacionar/reconciliar un timeout ambiguo es gate de selección, no feature opcional.
+No se implementa adapter real hasta disponer de sandbox/contrato y demostrar cómo se reconcilia un resultado ambiguo. Un 404 por sí solo no autoriza reemitir.
 
-No construir lógica fiscal productiva contra un PT antes de cerrar F4.
+## Siguiente trabajo
 
-## Setup local existente
+F6B construye el flujo completo **contra `FakeFiscalProvider`**: auth por credential, tenant context, recepción atómica/idempotente, worker, attempts, `UNKNOWN` y reconciliación. La primera decisión es el cliente PostgreSQL/repository layer mínimo; SQL/RLS seguirá siendo la fuente de verdad.
 
-La app base está en `apps/api/`. El compose histórico puede contener Redis/MinIO; no representa producción V1.
+## Setup local
 
 ```bash
 cd apps/api
@@ -98,3 +101,5 @@ Health:
 curl http://localhost:3000/health
 curl http://localhost:3000/ready
 ```
+
+Infra local histórica puede incluir Redis/MinIO; eso no representa la topología de producción V1.

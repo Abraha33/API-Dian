@@ -1,6 +1,6 @@
 # Roadmap API-DIAN
 
-**Corte:** 2026-08-18  
+**Corte:** 2026-08-18/19  
 **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 ```text
@@ -12,105 +12,87 @@ Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin
 ## Estado actual
 
 ```text
-F0   Baseline producto                         ✅ Cerrado
-F1   Requisitos V1                             ✅ Cerrado
-F2   Arquitectura                              ✅ Cerrado
-F3   Datos + seguridad                         ✅ Cerrado
-F4A  Contratos internos                        ✅ Cerrado
-F4B  Shortlist/evidencia pública PT            ✅ Cerrado
+F0   Baseline producto                         ✅
+F1   Requisitos V1                             ✅
+F2   Arquitectura                              ✅
+F3   Datos + seguridad                         ✅
+F4A  Contratos internos                        ✅
+F4B  Shortlist/evidencia pública PT            ✅
 F4C  Sandbox + contrato + selección PT         ▶ Bloqueante externo
-F5A  Pruebas adversariales genéricas/runbooks  ✅ Diseño cerrado
-F5B  Contingencias + contract tests PT         ⏸ Depende de F4C
-F6   Implementación incremental                ⏸ Pendiente
-F7   Readiness + piloto                         ⏸ Pendiente
-F8   Estabilización + V1.1                      ⏸ Pendiente
+F5A  Pruebas adversariales genéricas/runbooks  ✅
+F5B  Contingencias + contract tests PT         ⏸ depende F4C
+F6A  Core SQL + c14n + fake provider           ✅
+F6B  Auth/repos/worker + fake vertical slice   ▶ Siguiente interno
+F6C  Adapter PT real                           ⏸ depende F4C
+F7   Readiness + piloto                         ⏸
+F8   Estabilización + V1.1                      ⏸
 ```
 
-## F0–F3
+## Salidas cerradas F0–F5A
 
-Fuentes maestras: baseline, requisitos y ADR-003..006. No reabrir salvo evidencia fuerte.
+- baseline: `docs/f0-producto-v1-validado-2026-08-18.md`;
+- requisitos: `docs/v1-requisitos.md`;
+- arquitectura/side effects: ADR-003/004;
+- datos/seguridad: ADR-005/006 + docs F3;
+- contrato/idempotencia/PT gates: ADR-007/008 + docs F4;
+- pruebas/fault injection/kill switch: ADR-009 + docs F5.
 
-## F4A — Contratos internos
+## F6A — Core independiente del PT
 
-Salidas:
+**Estado: ✅ Cerrado**
 
-- ADR-007;
-- `docs/f4-contrato-pos-api-v1.md`.
+Salida: `docs/f6-checkpoint-01-core-persistence.md`.
 
-Decisiones: endpoint mutante único, tenant por credential, idempotency key, semantic hash/canonicalización versionados, estados/errores propios, `FiscalProvider` mínimo y sin `resend()`.
+Implementado y verificado:
 
-## F4B/C — Proveedor Tecnológico
+- schema `app`, tablas núcleo, roles/RLS/FK tenant-safe;
+- guards DB para inmutabilidad/transiciones;
+- queue durable PostgreSQL/`SKIP LOCKED`;
+- kill switches fail-closed;
+- canonicalización/hash semántico;
+- `FiscalProvider` mínimo + `FakeFiscalProvider`;
+- Node 24;
+- supply-chain gate de dependencias productivas;
+- CI con migraciones y pruebas PostgreSQL de comportamiento.
 
-Salidas públicas:
+No hay adapter PT real.
 
-- ADR-008;
-- `docs/f4-matriz-seleccion-pt-v1.md`;
-- `docs/f4-prueba-ambiguedad-pt-v1.md`.
+## F6B — Vertical slice interno con fake provider
 
-Orden de prueba actual:
-
-1. The Factory HKA.
-2. DATAICO.
-3. Facture como reserva.
-
-F4C requiere credenciales sandbox, contrato, prueba de timeout/reconciliación, multiempresa, certificado, contingencias, SLA/límites/datos y precio API real.
-
-`INCONCLUSIVE` en reconciliación bloquea selección.
-
-## F5A — Pruebas adversariales genéricas
-
-**Estado: ✅ Diseño cerrado**
-
-Salidas:
-
-- ADR-009;
-- `docs/f5-plan-pruebas-adversariales-v1.md`;
-- `docs/f5-runbooks-base-v1.md`.
-
-Decisiones:
-
-- fault injection obligatorio;
-- FakeFiscalProvider antes del adapter real;
-- contract suite común a cualquier PT;
-- dos kill switches: aceptación y mutación remota;
-- reconcile/read sigue funcionando al pausar submit;
-- llamadas en vuelo se tratan como potencialmente ejecutadas;
-- restore/PITR obliga reconciliar ventana divergente;
-- kill switch no equivale a contingencia fiscal.
-
-## F5B — Provider/regulación
-
-Después de F4C:
-
-1. ejecutar contract tests contra sandbox;
-2. cerrar matriz regulatoria vigente FEV/DEE POS;
-3. modelar contingencias por causa;
-4. fijar backoff/rate limits según PT;
-5. completar runbooks con endpoints/canales reales;
-6. fijar SLO internos;
-7. probar recuperación de XML/PDF;
-8. probar kill switch con adapter real.
-
-Fuentes regulatorias deben ser oficiales DIAN y mantenerse separadas de recomendaciones del PT.
-
-## F6 — Implementación incremental
-
-Puede comenzar **solo la infraestructura interna independiente del PT** cuando se decida abrir F6. El adapter productivo queda bloqueado hasta F4C.
+**Estado: ▶ Siguiente interno**
 
 Orden:
 
-1. migraciones/roles/RLS;
-2. auth tenant;
-3. operation/idempotencia/canonicalización;
-4. queue/worker;
-5. FakeFiscalProvider + fault injection;
-6. operational controls/kill switch;
-7. adapter seleccionado + FEV sandbox;
-8. notas;
-9. DEE POS/ajustes;
-10. estado/artefactos;
-11. contingencias/reconciliación;
-12. hardening.
+1. decidir cliente PostgreSQL/repository layer mínimo; SQL/RLS sigue siendo autoridad;
+2. conexión y transacciones tenant-aware (`SET LOCAL`/equivalente seguro);
+3. auth de credential POS;
+4. recepción atómica `operation + idempotency + audit + work`;
+5. GET operation tenant-safe;
+6. worker/lease + persistencia de `provider_attempt`;
+7. `FakeFiscalProvider.submit`;
+8. `UNKNOWN → reconcile`;
+9. runtime kill switches;
+10. pruebas concurrentes/adversariales DB end-to-end.
+
+F6B no usa un PT real y debe poder demostrar el protocolo completo mediante fault injection.
+
+## F4C / F5B / F6C — Gate externo PT
+
+Shortlist actual:
+
+1. The Factory HKA;
+2. DATAICO;
+3. Facture como reserva.
+
+No hay selección definitiva hasta ejecutar `docs/f4-prueba-ambiguedad-pt-v1.md` y confirmar contrato/sandbox real. Un 404 aislado nunca equivale automáticamente a `NOT_FOUND_CONCLUSIVE`.
+
+Solo después:
+
+- contract tests reales;
+- contingencias según causa;
+- límites/backoff reales;
+- XML/PDF reales;
+- adapter seleccionado.
 
 ## F7 — Readiness/piloto
 
@@ -120,6 +102,16 @@ Ejecutar todos los gates, limitar empresas/volumen y demostrar operación uniper
 
 Expandir solo por evidencia real.
 
-## Regla de control de alcance
+## Reglas permanentes
 
-Una tarea entra V1 solo si soporta documento V1, evita pérdida/duplicación/ambigüedad, protege seguridad/auditoría/recuperación o es requisito indispensable del PT.
+- PostgreSQL es autoridad.
+- API HTTP persiste; no emite.
+- Solo worker muta PT.
+- `provider_attempt` existe antes del HTTP mutante.
+- `UNKNOWN` nunca reemite directamente.
+- No retry HTTP transparente de mutaciones.
+- Tenant deriva de credential + RLS.
+- Evidencia es append-only.
+- API runtime no posee secreto PT.
+- Kill switch de mutaciones no apaga reconciliación/read.
+- Ninguna dependencia o infraestructura entra por inercia: debe justificar riesgo/coste V1.
