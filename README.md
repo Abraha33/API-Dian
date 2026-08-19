@@ -150,11 +150,10 @@ En otra PowerShell:
 
 ```powershell
 cd apps\api
-$env:DATABASE_URL=$env:WORKER_DATABASE_URL
 npm run start:worker
 ```
 
-Si la nueva terminal no heredó las variables del `.env`, puede cargar `WORKER_DATABASE_URL` desde su entorno local o iniciar el proceso mediante una herramienta que cargue `apps/api/.env`. **No use el login de API para el worker.**
+El proceso worker carga el mismo `.env`, pero **prefiere `WORKER_DATABASE_URL` sobre `DATABASE_URL`**. Así el worker usa `api_dian_worker_dev` aunque la API use `api_dian_dev`. En despliegues donde cada proceso recibe un secreto independiente, `DATABASE_URL` sigue funcionando como fallback.
 
 El worker con `FakeFiscalProvider` rechaza `NODE_ENV=production`. El adapter real pertenece a F6C y no debe simularse con URLs o respuestas inventadas.
 
