@@ -6,6 +6,7 @@ import {
   Headers,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Req,
   UnauthorizedException,
@@ -52,7 +53,8 @@ export class FiscalOperationsController {
   @Get(':operationId')
   get(
     @Req() request: FiscalRequest,
-    @Param('operationId') operationId: string,
+    @Param('operationId', new ParseUUIDPipe({ version: '4' }))
+    operationId: string,
   ) {
     const principal = request.fiscalPrincipal;
     if (!principal) throw new UnauthorizedException('Invalid credential');

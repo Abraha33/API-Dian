@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -11,6 +12,7 @@ import {
 import type { FiscalPrincipal } from '../auth/fiscal-principal';
 import type { CreateFiscalOperationDto } from './dto/create-fiscal-operation.dto';
 import {
+  FiscalOperationRecord,
   FiscalOperationsRepository,
   IdempotencyConflictError,
   IntakePausedError,
@@ -35,7 +37,12 @@ export class FiscalOperationsService {
     command: CreateFiscalOperationDto;
     correlationId?: string;
   }): Promise<FiscalOperationResponse> {
-    const canonical = canonicalizeFiscalCommand(params.command);
+    let canonical;
+    try {
+      canonical = canonicalizeFiscalCommand(params.command);
+    } catch {
+      throw new BadRequestException({ error: 'INVALID_FISCAL_COMMAND' });
+    }
 
     try {
       const result = await this.repository.createOrReplay({
@@ -80,11 +87,7 @@ export class FiscalOperationsService {
   }
 
   private toResponse(
-    operation: Awaited<
-      ReturnType<FiscalOperationsRepository['findById']>
-    > extends infer T
-      ? NonNullable<T>
-      : never,
+    operation: FiscalOperationRecord,
     replayed?: boolean,
   ): FiscalOperationResponse {
     return {
