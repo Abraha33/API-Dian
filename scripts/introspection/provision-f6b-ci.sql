@@ -9,10 +9,12 @@ BEGIN
     CREATE ROLE ci_worker LOGIN PASSWORD 'ci_worker' IN ROLE app_worker;
   END IF;
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'ci_ops') THEN
-    CREATE ROLE ci_ops LOGIN PASSWORD 'ci_ops' IN ROLE app_ops;
+    CREATE ROLE ci_ops LOGIN PASSWORD 'ci_ops';
   END IF;
 END
 $$;
+
+GRANT app_ops, app_ops_control TO ci_ops;
 
 INSERT INTO app.tenants(id, external_ref)
 VALUES
