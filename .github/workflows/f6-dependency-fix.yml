@@ -1,0 +1,49 @@
+name: F6 dependency lock remediation
+
+on:
+  push:
+    branches: [agent/f6-dependency-fix]
+
+permissions:
+  contents: write
+
+jobs:
+  remediate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/f6-dependency-fix
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install current lock
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Refresh safe dependency locks
+        working-directory: apps/api
+        run: npm audit fix --package-lock-only
+
+      - name: Reinstall remediated lock
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Commit remediated lock
+        run: |
+          if ! git diff --quiet -- apps/api/package-lock.json apps/api/package.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add apps/api/package-lock.json apps/api/package.json
+            git commit -m "fix: refresh vulnerable dependency locks [skip ci]"
+            git push origin HEAD:agent/f6-dependency-fix
+          fi
+
+      - name: Audit production dependencies
+        working-directory: apps/api
+        run: npm audit --omit=dev --audit-level=high
