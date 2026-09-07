@@ -16,7 +16,7 @@ Una fase solo puede estar en `PASS` si tiene evidencia reproducible enlazada.
 
 | Fase | En palabras simples | Qué tiene que quedar demostrado | Estado | Evidencia |
 |---|---|---|---|---|
-| 0. Aislamiento + harness | Crear el “laboratorio” donde Astra puede trabajar sin tocar lo estable | branch aislada, reglas, comandos, límites, plan de loops, evidencia y rollback del experimento | IN PROGRESS | Este directorio + branch experimental |
+| 0. Aislamiento + harness | Crear el “laboratorio” donde Astra puede trabajar sin tocar lo estable | branch aislada, reglas, límites, plan de loops, evidencia y seguimiento | PASS | `README.md`, `EVIDENCE-RULES.md`, `EXPERIMENT-GOAL.md`, `status.json`, branch experimental |
 | 1. Conceptualización ejecutable | Convertir todo lo ya diseñado en instrucciones exactas que el código y los tests puedan comprobar | contratos, estados, invariantes, errores, OpenAPI, esquema de datos, dependencias y gates sin contradicciones | NOT STARTED | — |
 | 2. Testeo/aceptación | Definir cómo sabremos que cada comportamiento es correcto antes de declararlo listo | suites/criterios para happy path, errores, concurrencia, aislamiento, idempotencia, fallos y contratos | NOT STARTED | — |
 | 3. Construcción local | Construir de verdad la API V1 en la máquina local | API, DB, worker, core fiscal, auth, multitenancy, idempotencia, estados, artifacts, webhooks, usage y fake provider ejecutables | NOT STARTED | — |
