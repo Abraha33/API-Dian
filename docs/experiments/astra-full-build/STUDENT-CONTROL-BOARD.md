@@ -17,13 +17,13 @@ Una fase solo puede estar en `PASS` si tiene evidencia reproducible enlazada.
 | Fase | En palabras simples | Qué tiene que quedar demostrado | Estado | Evidencia |
 |---|---|---|---|---|
 | 0. Aislamiento + harness | Crear el “laboratorio” donde Astra puede trabajar sin tocar lo estable | branch aislada, reglas, límites, plan de loops, evidencia y seguimiento | PASS | `README.md`, `EVIDENCE-RULES.md`, `EXPERIMENT-GOAL.md`, `status.json`, branch experimental |
-| 1. Conceptualización ejecutable | Convertir todo lo ya diseñado en instrucciones exactas que el código y los tests puedan comprobar | contratos, estados, invariantes, errores, OpenAPI, esquema de datos, dependencias y gates sin contradicciones | NOT STARTED | — |
-| 2. Testeo/aceptación | Definir cómo sabremos que cada comportamiento es correcto antes de declararlo listo | suites/criterios para happy path, errores, concurrencia, aislamiento, idempotencia, fallos y contratos | NOT STARTED | — |
-| 3. Construcción local | Construir de verdad la API V1 en la máquina local | API, DB, worker, core fiscal, auth, multitenancy, idempotencia, estados, artifacts, webhooks, usage y fake provider ejecutables | NOT STARTED | — |
-| 4. Integración E2E local | Hacer que todo el sistema funcione conectado, sin PT real | flujo completo desde request hasta estado/artefacto/webhook con FakeFiscalProvider | NOT STARTED | — |
-| 5. Runner + containers + CI | Conseguir que otro checkout limpio reproduzca y pruebe el sistema automáticamente | containers, migraciones, runner local, Actions/CI, tests y artefactos reproducibles | NOT STARTED | — |
-| 6. Fallos + seguridad + capacidad | Intentar romper el sistema y medir cuánto aguanta | cero duplicados, cero cross-tenant, recovery, restore, observabilidad, benchmarks y primera saturación medida | NOT STARTED | — |
-| 7. Ready for PT Integration | Demostrar que todo lo posible sin PT real ya está verde | fases 0–6 PASS y lista exacta de inputs externos requeridos | BLOCKED | depende de fases 0–6 |
+| 1. Conceptualización ejecutable | Convertir arquitectura en contratos trazables | matriz requisito → implementación → prueba | PASS | `PHASE-1-TRACEABILITY.md` |
+| 2. Testeo/aceptación | Demostrar comportamientos e invariantes | suites unitarias, provider, E2E y concurrencia | PASS | `PHASE-2-ACCEPTANCE-PLAN.md`, `LOCAL-EVIDENCE-2026-09-07.md` |
+| 3. Construcción local | Construir la API V1 local | API, DB, worker y FakeFiscalProvider ejecutados | PASS | `LOCAL-EVIDENCE-2026-09-07.md`, `test/app.e2e-spec.ts` |
+| 4. Integración E2E local | Conectar el flujo completo sin PT real | 11 pruebas E2E PASS con FakeFiscalProvider | PASS | `LOCAL-EVIDENCE-2026-09-07.md` |
+| 5. Runner + containers + CI | Reproducir checkout, DB, migraciones y tests | Docker local y migraciones PASS; build/runner limpio pendiente | IN PROGRESS | `LOCAL-EVIDENCE-2026-09-07.md`, `.github/workflows/ci.yml` |
+| 6. Fallos + seguridad + capacidad | Atacar, recuperar y medir el sistema | concurrencia/crash cubiertos; restore y benchmark pendientes | IN PROGRESS | `PHASE-2-ACCEPTANCE-PLAN.md`, `LOCAL-EVIDENCE-2026-09-07.md` |
+| 7. Ready for PT Integration | Cerrar solo con Fases 0–6 PASS | bloqueada por Fases 5–6 | BLOCKED | depende de Fases 5–6 |
 | 8. Integración PT real | Reemplazar el PT falso por el proveedor real sin cambiar la API pública | adapter real, sandbox, errores reales, reconciliación y contingencias PT | BLOCKED | requiere owner/PT |
 | 9. Validación externa | Demostrar comportamiento con sistemas y condiciones reales | pruebas aplicables PT/DIAN, habilitación, piloto controlado | BLOCKED | requiere mundo externo |
 | 10. Production readiness | Decidir responsablemente si se puede usar con documentos reales de clientes | todos los gates finales PASS + autorización del owner | BLOCKED | requiere fases previas |
