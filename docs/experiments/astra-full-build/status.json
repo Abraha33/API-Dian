@@ -69,7 +69,8 @@
                        "name":  "Runner + containers + CI",
                        "status":  "IN PROGRESS",
                        "evidence":  [
-                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md"
+                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
+                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md"
                                     ]
                    },
                    {
@@ -77,7 +78,8 @@
                        "name":  "Fallos + seguridad + capacidad",
                        "status":  "IN PROGRESS",
                        "evidence":  [
-                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md"
+                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
+                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md"
                                     ]
                    },
                    {
@@ -85,7 +87,8 @@
                        "name":  "Ready for PT Integration",
                        "status":  "BLOCKED",
                        "evidence":  [
-                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md"
+                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
+                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md"
                                     ]
                    },
                    {

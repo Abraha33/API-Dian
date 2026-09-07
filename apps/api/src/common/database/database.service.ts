@@ -1,10 +1,11 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
 import type { PoolClient, QueryResult, QueryResultRow } from 'pg';
 
 @Injectable()
 export class DatabaseService implements OnModuleDestroy {
+  private readonly logger = new Logger(DatabaseService.name);
   private readonly pool: Pool;
 
   constructor(config: ConfigService) {
@@ -15,6 +16,9 @@ export class DatabaseService implements OnModuleDestroy {
       connectionString,
       max,
       application_name: 'api-dian',
+    });
+    this.pool.on('error', (error: Error) => {
+      this.logger.error(`PostgreSQL pool error: ${error.message}`);
     });
   }
 
