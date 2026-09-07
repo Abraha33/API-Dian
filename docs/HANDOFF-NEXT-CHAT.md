@@ -10,6 +10,7 @@
 - `PRODUCTION READY: BLOCKED` por gates de implementación, no por falta de arquitectura.
 - Selección de PT: **DEFERRED BY OWNER**. No reabrir producto/arquitectura por este punto; retomar desde `docs/provider-selection/PT-SELECTION-DEFERRED.md` cuando corresponda.
 - Cobertura comercial: el producto completo debe cubrir, como mínimo, todas las familias/capacidades fiscales mostradas públicamente por Factus al 2026-09-07, sin copiar su contrato ni depender de Factus. Referencia: `docs/product/FACTUS-COVERAGE-BASELINE.md`.
+- Salud, transporte y demás verticales no comerciales: **PENDING SECTOR RESEARCH**. Son capacidad futura prevista, pero sus necesidades fiscales concretas no se consideran cerradas hasta investigación oficial específica. Referencia: `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
 
 ## Leer primero
 
@@ -18,8 +19,9 @@
 3. `docs/service-catalog/RELEASE-ROADMAP.md`.
 4. `docs/architecture/final/README.md` y los documentos enlazados.
 5. `docs/product/FACTUS-COVERAGE-BASELINE.md` para el baseline comercial de cobertura funcional.
-6. `docs/provider-selection/PT-SELECTION-DEFERRED.md` si la tarea involucra selección/contratación de PT.
-7. ADR-010..014.
+6. `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md` antes de definir salud, transporte u otro vertical regulado.
+7. `docs/provider-selection/PT-SELECTION-DEFERRED.md` si la tarea involucra selección/contratación de PT.
+8. ADR-010..014.
 
 Los documentos anteriores al 2026-09-07 que digan API interna/POS-first son históricos y están supersedidos.
 
@@ -30,6 +32,8 @@ FEV, nota crédito, nota débito, contingencia mínima aplicable, estado/artefac
 La identidad concreta del PT **no forma parte de la definición cerrada del producto**. La API pública y el núcleo fiscal deben permanecer neutrales al proveedor.
 
 La API contempla **emisión/envío** de documentos hacia el ciclo DIAN desde V1. La **recepción de documentos y eventos del adquirente** está en V1.2. El producto completo también debe cubrir entrega de XML/PDF al adquirente, factura de mandato y las demás capacidades documentadas en `docs/product/FACTUS-COVERAGE-BASELINE.md`, respetando el roadmap y sin reabrir la arquitectura base.
+
+Los verticales de salud, transporte y otros sectores **no deben presentarse como funcionalmente cerrados**. Antes de implementarlos se debe completar la investigación de actores, documentos, eventos, autoridades externas, datos, validaciones, dependencias PT, seguridad/retención y demanda comercial definida en `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
 
 ## Próxima ejecución
 
