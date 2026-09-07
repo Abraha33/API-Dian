@@ -11,17 +11,20 @@
 - Selección de PT: **DEFERRED BY OWNER**. No reabrir producto/arquitectura por este punto; retomar desde `docs/provider-selection/PT-SELECTION-DEFERRED.md` cuando corresponda.
 - Cobertura comercial: el producto completo debe cubrir, como mínimo, todas las familias/capacidades fiscales mostradas públicamente por Factus al 2026-09-07, sin copiar su contrato ni depender de Factus. Referencia: `docs/product/FACTUS-COVERAGE-BASELINE.md`.
 - Salud, transporte y demás verticales no comerciales: **PENDING SECTOR RESEARCH**. Son capacidad futura prevista, pero sus necesidades fiscales concretas no se consideran cerradas hasta investigación oficial específica. Referencia: `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
+- Restricción operativa: la primera etapa comercial debe ser mantenible por **una sola persona**. Envolvente objetivo inicial: hasta ~100 clientes directos, ~250–500 organizaciones fiscales y ~3 M documentos/mes; 3–5 M es stretch sujeto a benchmark, no promesa comercial.
+- Checkpoint más reciente: `docs/checkpoints/2026-09-07-PRE-IMPLEMENTATION-CHECKPOINT.md`.
 
 ## Leer primero
 
-1. `docs/PROJECT-CONSOLIDATED-PLAN.md`.
-2. `docs/service-catalog/MASTER-FISCAL-SERVICE-CATALOG.md`.
-3. `docs/service-catalog/RELEASE-ROADMAP.md`.
-4. `docs/architecture/final/README.md` y los documentos enlazados.
-5. `docs/product/FACTUS-COVERAGE-BASELINE.md` para el baseline comercial de cobertura funcional.
-6. `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md` antes de definir salud, transporte u otro vertical regulado.
-7. `docs/provider-selection/PT-SELECTION-DEFERRED.md` si la tarea involucra selección/contratación de PT.
-8. ADR-010..014.
+1. `docs/checkpoints/2026-09-07-PRE-IMPLEMENTATION-CHECKPOINT.md`.
+2. `docs/PROJECT-CONSOLIDATED-PLAN.md`.
+3. `docs/service-catalog/MASTER-FISCAL-SERVICE-CATALOG.md`.
+4. `docs/service-catalog/RELEASE-ROADMAP.md`.
+5. `docs/architecture/final/README.md` y los documentos enlazados.
+6. `docs/product/FACTUS-COVERAGE-BASELINE.md` para el baseline comercial de cobertura funcional.
+7. `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md` antes de definir salud, transporte u otro vertical regulado.
+8. `docs/provider-selection/PT-SELECTION-DEFERRED.md` si la tarea involucra selección/contratación de PT.
+9. ADR-010..014.
 
 Los documentos anteriores al 2026-09-07 que digan API interna/POS-first son históricos y están supersedidos.
 
@@ -44,7 +47,8 @@ No reabrir arquitectura. Crear una branch de implementación desde la autoridad 
 3. migraciones para organizations, applications, credentials/grants, document resources, webhooks, usage/quotas;
 4. adaptación del core/worker/fake provider conservando invariantes existentes;
 5. IaC de sandbox y pipeline;
-6. selección PT y adapter real solo cuando el owner reactive esa decisión y exista evidencia comercial/técnica suficiente.
+6. tests de carga/fallos con objetivo inicial de hasta ~3 M docs/mes y bursts ~50 docs/s, conservando la restricción de operación por una sola persona;
+7. selección PT y adapter real solo cuando el owner reactive esa decisión y exista evidencia comercial/técnica suficiente.
 
 ## No negociar
 
@@ -54,3 +58,4 @@ No reabrir arquitectura. Crear una branch de implementación desde la autoridad 
 - secreto de API se muestra una vez y se almacena como hash.
 - sandbox y producción no comparten proyectos, DB, bucket, llaves ni credenciales PT.
 - producción requiere pentest, carga, restore y regulatory diff.
+- 30 M / 300 M docs/mes son escenarios técnicos/futuros, no promesa de operación por una sola persona sin nueva evidencia y evolución operacional.
