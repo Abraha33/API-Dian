@@ -12,7 +12,7 @@
     "production_requires_owner": true
   },
   "phases": [
-    {"id": 0, "name": "Aislamiento + harness", "status": "IN PROGRESS", "evidence": ["docs/experiments/astra-full-build/README.md", "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md", "docs/experiments/astra-full-build/EVIDENCE-RULES.md"]},
+    {"id": 0, "name": "Aislamiento + harness", "status": "PASS", "evidence": ["docs/experiments/astra-full-build/README.md", "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md", "docs/experiments/astra-full-build/EVIDENCE-RULES.md", "docs/experiments/astra-full-build/EXPERIMENT-GOAL.md", "experiment/astra-full-api-dian-v1"]},
     {"id": 1, "name": "Conceptualización ejecutable", "status": "NOT STARTED", "evidence": []},
     {"id": 2, "name": "Testeo y aceptación", "status": "NOT STARTED", "evidence": []},
     {"id": 3, "name": "Construcción local V1", "status": "NOT STARTED", "evidence": []},
