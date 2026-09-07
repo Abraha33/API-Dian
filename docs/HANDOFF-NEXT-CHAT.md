@@ -1,71 +1,142 @@
-# API-DIAN — Handoff de implementación V1
+# API-DIAN — Handoff canónico de construcción V1
 
 ## Estado canónico
 
 - Repositorio: `Abraha33/API-Dian`.
-- Branch: `draft/architecture-product-v1`.
+- Base de arquitectura: `draft/architecture-product-v1`.
+- Plan oficial de construcción: `draft/official-construction-plan-v1`.
+- No modificar `dev` directamente.
 - Producto: API fiscal pública multitenant para software de terceros.
 - Nuestro POS: un cliente posible, nunca el núcleo.
+- `PRODUCT DEFINITION: PASS`.
+- `SERVICE CATALOG: PASS`.
 - `ARCHITECTURE FINAL: PASS`.
-- `PRODUCTION READY: BLOCKED` por gates de implementación, no por falta de arquitectura.
-- `CAPACITY READY: BLOCKED` hasta benchmark real; 3 M docs/mes y ~50 docs/s son objetivos a demostrar, no capacidad certificada.
-- Selección de PT: **DEFERRED BY OWNER**. No reabrir producto/arquitectura por este punto; retomar desde `docs/provider-selection/PT-SELECTION-DEFERRED.md` cuando corresponda.
-- Cobertura comercial: el producto completo debe cubrir, como mínimo, todas las familias/capacidades fiscales mostradas públicamente por Factus al 2026-09-07, sin copiar su contrato ni depender de Factus. Referencia: `docs/product/FACTUS-COVERAGE-BASELINE.md`.
-- Salud, transporte y demás verticales no comerciales: **PENDING SECTOR RESEARCH**. Son capacidad futura prevista, pero sus necesidades fiscales concretas no se consideran cerradas hasta investigación oficial específica. Referencia: `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
-- Restricción operativa: la primera etapa comercial debe ser mantenible por **una sola persona**. Envolvente objetivo inicial: hasta ~100 clientes directos, ~250–500 organizaciones fiscales y ~3 M documentos/mes; 3–5 M es stretch sujeto a benchmark, no promesa comercial.
-- Checkpoint más reciente: `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md`.
-- Checkpoint de contexto previo: `docs/checkpoints/2026-09-07-PRE-IMPLEMENTATION-CHECKPOINT.md`.
+- `OFFICIAL CONSTRUCTION PLAN: PASS`.
+- `CONCEPTUALIZATION: READY TO START`.
+- `ISOLATED TESTING: PENDING`.
+- `LOCAL INTEGRATION: PENDING`.
+- `LOCAL PLATFORM/CI: PENDING`.
+- `CAPACITY READY: BLOCKED` hasta benchmark real.
+- `PRODUCTION READY: BLOCKED`.
+
+## Nueva decisión canónica de construcción
+
+El proyecto se construirá como **12 mini-proyectos explorables de forma independiente**.
+
+El orden de aprendizaje no es el orden de integración.
+
+Un módulo puede conceptualizarse y probarse sin que sus dependencias reales estén listas, usando mocks/fakes explícitos. La integración real se hace en una fase posterior.
+
+## Fases oficiales
+
+0. Producto y arquitectura — PASS.
+1. Conceptualización modular.
+2. Testeo aislado/laboratorio.
+3. Implementación e integración local.
+4. Plataforma local reproducible: containers + self-hosted runner + CI + GitHub Actions.
+5. Integraciones externas controladas.
+6. Hardening, seguridad, recuperación y capacidad.
+7. Piloto controlado.
+8. Producción comercial.
+
+## Mini-proyectos oficiales
+
+- MP01 Contrato API pública.
+- MP02 Modelo de datos PostgreSQL.
+- MP03 Multitenancy e identidad organizacional.
+- MP04 Seguridad y credenciales.
+- MP05 Núcleo fiscal.
+- MP06 Idempotencia, estados y reconciliación.
+- MP07 Outbox, cola y workers.
+- MP08 Puerto/adaptador PT.
+- MP09 Webhooks, artefactos y auditoría.
+- MP10 Metering, cuotas y primitivas comerciales.
+- MP11 Contingencias y observabilidad.
+- MP12 Capacidad y performance.
 
 ## Leer primero
 
-1. `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md`.
-2. `docs/checkpoints/2026-09-07-PRE-IMPLEMENTATION-CHECKPOINT.md`.
-3. `docs/PROJECT-CONSOLIDATED-PLAN.md`.
-4. `docs/service-catalog/MASTER-FISCAL-SERVICE-CATALOG.md`.
-5. `docs/service-catalog/RELEASE-ROADMAP.md`.
-6. `docs/architecture/final/README.md` y los documentos enlazados.
-7. `docs/product/FACTUS-COVERAGE-BASELINE.md` para el baseline comercial de cobertura funcional.
-8. `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md` antes de definir salud, transporte u otro vertical regulado.
-9. `docs/provider-selection/PT-SELECTION-DEFERRED.md` si la tarea involucra selección/contratación de PT.
-10. ADR-010..014.
+1. `GOAL.md`.
+2. `docs/construction-v1/README.md`.
+3. `docs/construction-v1/OFFICIAL-CONSTRUCTION-PLAN.md`.
+4. `docs/construction-v1/MINI-PROJECTS.md`.
+5. `docs/construction-v1/STAGES-AND-GATES.md`.
+6. `docs/construction-v1/LOCAL-RUNNER-AND-CI.md`.
+7. `docs/construction-v1/modules/`.
+8. `docs/PROJECT-CONSOLIDATED-PLAN.md`.
+9. `docs/architecture/final/`.
+10. `docs/service-catalog/`.
+11. `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md`.
 
-Los documentos anteriores al 2026-09-07 que digan API interna/POS-first son históricos y están supersedidos.
+Para estudiar los mini-proyectos en un chat separado usar:
+`docs/construction-v1/PROMPT-MINI-PROJECTS-CHAT.md`.
 
-## V1 cerrada
+## Runner local
 
-FEV, nota crédito, nota débito, contingencia mínima aplicable, estado/artefactos, idempotencia, reconciliación, app auth, scopes/grants, sandbox, webhooks, cuotas, uso y auditoría. Un PT inicial, sin filtrar su contrato al público.
+El owner dispone de un **self-hosted runner local**.
 
-La identidad concreta del PT **no forma parte de la definición cerrada del producto**. La API pública y el núcleo fiscal deben permanecer neutrales al proveedor.
+Decisión:
+- Fase 1 no exige containers/CI/Actions.
+- Fase 2 usa pruebas locales mínimas y fakes.
+- Fase 3 integra localmente.
+- Fase 4 consolida containers, Docker Compose, self-hosted runner, CI y GitHub Actions.
 
-La API contempla **emisión/envío** de documentos hacia el ciclo DIAN desde V1. La **recepción de documentos y eventos del adquirente** está en V1.2. El producto completo también debe cubrir entrega de XML/PDF al adquirente, factura de mandato y las demás capacidades documentadas en `docs/product/FACTUS-COVERAGE-BASELINE.md`, respetando el roadmap y sin reabrir la arquitectura base.
+Esto evita introducir infraestructura antes de comprender/probar el dominio.
 
-Los verticales de salud, transporte y otros sectores **no deben presentarse como funcionalmente cerrados**. Antes de implementarlos se debe completar la investigación de actores, documentos, eventos, autoridades externas, datos, validaciones, dependencias PT, seguridad/retención y demanda comercial definida en `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
+## Producto/arquitectura que no se reabre
 
-## Próxima ejecución
+- API pública multitenant.
+- REST/HTTP + JSON + OpenAPI 3.1.
+- PostgreSQL autoridad.
+- API y worker separados.
+- outbox/cola durable.
+- provider-neutral.
+- object storage para XML/PDF/evidencia.
+- `UNKNOWN != REEMITIR`.
+- tenant + organization + application + environment.
+- primera etapa comercial operable por una sola persona.
 
-No reabrir arquitectura. Crear una branch de implementación desde la autoridad que indique el proyecto y ejecutar:
+## Capacidad
 
-1. diff del schema actual contra `DATA-AND-MULTITENANCY.md`;
-2. OpenAPI 3.1 completo y tests de contrato;
-3. migraciones para organizations, applications, credentials/grants, document resources, webhooks, usage/quotas;
-4. adaptación del core/worker/fake provider conservando invariantes existentes;
-5. IaC de sandbox y pipeline;
-6. tests de carga/fallos con objetivo inicial de hasta ~3 M docs/mes y bursts ~50 docs/s, conservando la restricción de operación por una sola persona;
-7. demostrar capacidad con margen antes de venderla; idealmente probar significativamente por encima del límite comercial objetivo;
-8. completar gates de seguridad, restore, observabilidad, rollback, piloto y operación por una sola persona;
-9. selección PT y adapter real solo cuando el owner reactive esa decisión y exista evidencia comercial/técnica suficiente.
+Objetivo inicial a demostrar, no capacidad certificada:
+- hasta ~3 M documentos/mes;
+- ~50 docs/s burst comercial;
+- hasta ~100 clientes directos y ~250–500 organizaciones como envelope operativo propuesto.
 
-## Modelo financiero exploratorio
+`CAPACITY READY` requiere benchmark reproducible con configuración exacta. Para vender 50 docs/s se debe probar con margen por encima y sin duplicados/cross-tenant.
 
-Existe un escenario conservador de aprendizaje en `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md` basado en clientes directos, organizaciones derivadas y documentos promedio. **No es pricing aprobado ni forecast oficial.** Debe recalcularse con cotización real del PT, costos cloud medidos y validación contable/tributaria.
+## Dependencias externas pendientes
 
-## No negociar
+### PT
+`DEFERRED BY OWNER`.
+No construir adapter real basándose en supuestos. Usar `FakeFiscalProvider` hasta contar con selección, contrato y sandbox.
 
-- `UNKNOWN` prohíbe retry ciego.
-- PostgreSQL es autoridad.
-- aislamiento tenant+organization+environment en todas las capas.
-- secreto de API se muestra una vez y se almacena como hash.
-- sandbox y producción no comparten proyectos, DB, bucket, llaves ni credenciales PT.
-- producción requiere pentest, carga, restore y regulatory diff.
-- 30 M / 300 M docs/mes son escenarios técnicos/futuros, no promesa de operación por una sola persona sin nueva evidencia y evolución operacional.
-- 3 M docs/mes / ~50 docs/s son objetivos de diseño y benchmark, **no capacidad demostrada** hasta `CAPACITY READY: PASS`.
+### Cloud real
+Google Cloud es referencia arquitectónica; Terraform será IaC. No provisionar gasto real sin autorización.
+
+### Salud/transporte
+`PENDING SECTOR RESEARCH`. No presentar sus flujos futuros como cerrados.
+
+## Autorizaciones manuales futuras
+
+Se requiere owner para:
+- seleccionar/contratar PT;
+- aprobar precios/planes;
+- gastar en cloud/servicios;
+- usar credenciales/certificados reales;
+- piloto con clientes reales;
+- producción;
+- merge final a ramas protegidas;
+- alcance final de verticales sectoriales.
+
+## Próxima ejecución principal
+
+La próxima fase oficial es **Fase 1 — Conceptualización modular**.
+
+Puede ejecutarse mini-proyecto por mini-proyecto. No es necesario seguir el orden recomendado si el objetivo es aprendizaje.
+
+Cuando un módulo obtenga `CONCEPT READY: PASS`, preparar su `ISOLATED TEST PLAN` y avanzar a Fase 2 para ese módulo sin bloquearse por los demás.
+
+## Goal para Codex
+
+Usar `GOAL.md` como misión completa. Codex debe avanzar autónomamente por trabajo local/reversible y detener únicamente acciones externas reales que requieran autorización.
