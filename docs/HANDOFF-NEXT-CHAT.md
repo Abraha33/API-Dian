@@ -1,71 +1,140 @@
-# API-DIAN — Handoff de implementación V1
+# API-DIAN — Handoff de construcción V1
 
 ## Estado canónico
 
 - Repositorio: `Abraha33/API-Dian`.
-- Branch: `draft/architecture-product-v1`.
+- Branch arquitectónica base: `draft/architecture-product-v1`.
+- Branch de organización del plan oficial: `plan/official-build-v1`.
 - Producto: API fiscal pública multitenant para software de terceros.
 - Nuestro POS: un cliente posible, nunca el núcleo.
+- `PRODUCT DEFINITION: PASS`.
+- `SERVICE CATALOG: PASS`.
 - `ARCHITECTURE FINAL: PASS`.
-- `PRODUCTION READY: BLOCKED` por gates de implementación, no por falta de arquitectura.
+- `BUILD PLAN V1: OFFICIAL`.
 - `CAPACITY READY: BLOCKED` hasta benchmark real; 3 M docs/mes y ~50 docs/s son objetivos a demostrar, no capacidad certificada.
-- Selección de PT: **DEFERRED BY OWNER**. No reabrir producto/arquitectura por este punto; retomar desde `docs/provider-selection/PT-SELECTION-DEFERRED.md` cuando corresponda.
-- Cobertura comercial: el producto completo debe cubrir, como mínimo, todas las familias/capacidades fiscales mostradas públicamente por Factus al 2026-09-07, sin copiar su contrato ni depender de Factus. Referencia: `docs/product/FACTUS-COVERAGE-BASELINE.md`.
-- Salud, transporte y demás verticales no comerciales: **PENDING SECTOR RESEARCH**. Son capacidad futura prevista, pero sus necesidades fiscales concretas no se consideran cerradas hasta investigación oficial específica. Referencia: `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
-- Restricción operativa: la primera etapa comercial debe ser mantenible por **una sola persona**. Envolvente objetivo inicial: hasta ~100 clientes directos, ~250–500 organizaciones fiscales y ~3 M documentos/mes; 3–5 M es stretch sujeto a benchmark, no promesa comercial.
-- Checkpoint más reciente: `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md`.
-- Checkpoint de contexto previo: `docs/checkpoints/2026-09-07-PRE-IMPLEMENTATION-CHECKPOINT.md`.
+- `PRODUCTION READY: BLOCKED` por implementación y gates externos/finales.
+- Selección de PT: **DEFERRED BY OWNER**.
+- Salud, transporte y otros verticales: **PENDING SECTOR RESEARCH**.
+- Restricción operativa: primera etapa comercial mantenible por **una sola persona**.
 
-## Leer primero
+## Nuevo plan oficial de construcción
 
-1. `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md`.
-2. `docs/checkpoints/2026-09-07-PRE-IMPLEMENTATION-CHECKPOINT.md`.
-3. `docs/PROJECT-CONSOLIDATED-PLAN.md`.
-4. `docs/service-catalog/MASTER-FISCAL-SERVICE-CATALOG.md`.
-5. `docs/service-catalog/RELEASE-ROADMAP.md`.
-6. `docs/architecture/final/README.md` y los documentos enlazados.
-7. `docs/product/FACTUS-COVERAGE-BASELINE.md` para el baseline comercial de cobertura funcional.
-8. `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md` antes de definir salud, transporte u otro vertical regulado.
-9. `docs/provider-selection/PT-SELECTION-DEFERRED.md` si la tarea involucra selección/contratación de PT.
-10. ADR-010..014.
+La construcción se organiza mediante:
 
-Los documentos anteriores al 2026-09-07 que digan API interna/POS-first son históricos y están supersedidos.
+1. `GOAL.md` — misión para Codex.
+2. `AGENTS.md` — reglas del repositorio para agentes.
+3. `docs/build/README.md` — índice canónico.
+4. `docs/build/OFFICIAL-CONSTRUCTION-PLAN-V1.md` — 8 fases funcionales.
+5. `docs/build/INDEPENDENT-MODULES-V1.md` — 12 módulos independientes.
+6. `docs/build/LOCAL-FIRST-EXECUTION-MODEL.md` — estrategia local-first, runner y Actions.
+7. `docs/build/PRODUCTION-READINESS-GATES-V1.md` — gates objetivos.
+8. `docs/learning/MINI-PROJECTS-CHAT-PROMPT.md` — ruta educativa separada.
+
+Si un plan de construcción anterior contradice estos documentos, el nuevo directorio `docs/build/` + `GOAL.md` + `AGENTS.md` tiene prioridad, siempre subordinado a la arquitectura final y al catálogo/roadmap canónicos.
+
+## Modelo de trabajo acordado
+
+Cada capacidad empieza así:
+
+```text
+ETAPA A — conceptualización
+          ↓
+ETAPA B — implementación + testeo local
+          ↓
+ETAPA C — integración local
+          ↓
+ETAPA D — automatización / contenedores / runner / GitHub Actions
+          ↓
+ETAPA E — PT/DIAN sandbox
+          ↓
+ETAPA F — seguridad / capacidad / restore / operación
+          ↓
+ETAPA G — piloto / producción
+```
+
+El owner dispone de runner local. Los módulos deben poder ejecutarse desde terminal antes de depender de GitHub Actions.
+
+El workflow existente `.github/workflows/ci.yml` es preexistente y debe auditarse en Etapa D antes de considerarlo estrategia CI canónica.
+
+## 8 fases funcionales
+
+1. F1 Fundación técnica y entorno local.
+2. F2 Identidad, multitenancy y seguridad.
+3. F3 Núcleo fiscal V1.
+4. F4 Procesamiento durable, idempotencia y reconciliación.
+5. F5 Provider boundary y ciclo PT/DIAN.
+6. F6 Producto API comercial.
+7. F7 Seguridad, capacidad, recuperación y operación.
+8. F8 Piloto y producción.
+
+## 12 módulos independientes
+
+M01 API pública / OpenAPI
+M02 PostgreSQL y modelo de datos
+M03 Multitenancy
+M04 Seguridad/API credentials
+M05 Núcleo fiscal
+M06 Idempotencia/estado/reconciliación
+M07 Worker/outbox/cola durable
+M08 Provider Adapter/FakeProvider
+M09 Webhooks
+M10 Quotas/usage
+M11 Contingencias/fault injection
+M12 Observabilidad/capacidad/operación
+
+Pueden explorarse de forma aislada usando mocks/fakes, pero producción exige integración completa.
 
 ## V1 cerrada
 
-FEV, nota crédito, nota débito, contingencia mínima aplicable, estado/artefactos, idempotencia, reconciliación, app auth, scopes/grants, sandbox, webhooks, cuotas, uso y auditoría. Un PT inicial, sin filtrar su contrato al público.
+FEV, nota crédito, nota débito, contingencia mínima aplicable, estado/artefactos, idempotencia, reconciliación, app auth, scopes/grants, sandbox, webhooks, cuotas, uso y auditoría. Un PT inicial detrás de una frontera neutral al proveedor.
 
-La identidad concreta del PT **no forma parte de la definición cerrada del producto**. La API pública y el núcleo fiscal deben permanecer neutrales al proveedor.
+La API pública es HTTP/REST-style + JSON + OpenAPI 3.1.
 
-La API contempla **emisión/envío** de documentos hacia el ciclo DIAN desde V1. La **recepción de documentos y eventos del adquirente** está en V1.2. El producto completo también debe cubrir entrega de XML/PDF al adquirente, factura de mandato y las demás capacidades documentadas en `docs/product/FACTUS-COVERAGE-BASELINE.md`, respetando el roadmap y sin reabrir la arquitectura base.
+La recepción de documentos y eventos del adquirente está en V1.2 según roadmap.
 
-Los verticales de salud, transporte y otros sectores **no deben presentarse como funcionalmente cerrados**. Antes de implementarlos se debe completar la investigación de actores, documentos, eventos, autoridades externas, datos, validaciones, dependencias PT, seguridad/retención y demanda comercial definida en `docs/product/SECTOR-FISCAL-REQUIREMENTS-PENDING.md`.
+## Próxima ejecución de Codex
 
-## Próxima ejecución
+Usar `GOAL.md`.
 
-No reabrir arquitectura. Crear una branch de implementación desde la autoridad que indique el proyecto y ejecutar:
+Antes de código nuevo:
 
-1. diff del schema actual contra `DATA-AND-MULTITENANCY.md`;
-2. OpenAPI 3.1 completo y tests de contrato;
-3. migraciones para organizations, applications, credentials/grants, document resources, webhooks, usage/quotas;
-4. adaptación del core/worker/fake provider conservando invariantes existentes;
-5. IaC de sandbox y pipeline;
-6. tests de carga/fallos con objetivo inicial de hasta ~3 M docs/mes y bursts ~50 docs/s, conservando la restricción de operación por una sola persona;
-7. demostrar capacidad con margen antes de venderla; idealmente probar significativamente por encima del límite comercial objetivo;
-8. completar gates de seguridad, restore, observabilidad, rollback, piloto y operación por una sola persona;
-9. selección PT y adapter real solo cuando el owner reactive esa decisión y exista evidencia comercial/técnica suficiente.
+1. leer autoridades;
+2. auditar el código existente contra F1–F8 y M01–M12;
+3. clasificar `KEEP / ADAPT / REWRITE / REMOVE`;
+4. producir `docs/build/CURRENT-IMPLEMENTATION-MAP.md`;
+5. ejecutar baseline local;
+6. crear/usar branch de implementación `build/v1-local` desde la autoridad canónica vigente;
+7. comenzar F1;
+8. no avanzar declarativamente de fase sin evidencia PASS.
 
-## Modelo financiero exploratorio
+## Capacidad
 
-Existe un escenario conservador de aprendizaje en `docs/checkpoints/2026-09-07-DAWN-CHECKPOINT.md` basado en clientes directos, organizaciones derivadas y documentos promedio. **No es pricing aprobado ni forecast oficial.** Debe recalcularse con cotización real del PT, costos cloud medidos y validación contable/tributaria.
+Objetivo actual:
+
+- hasta ~3 M documentos/mes;
+- ~50 docs/s burst comercial;
+- idealmente demostrar margen por encima del objetivo;
+- una sola persona como operador inicial.
+
+Esto sigue siendo objetivo de benchmark, no capacidad certificada.
+
+## Decisiones que siguen requiriendo owner
+
+- escoger/contratar PT;
+- precios/planes finales;
+- gastos cloud reales;
+- credenciales productivas;
+- piloto con clientes reales;
+- producción/go-live;
+- merge a ramas protegidas;
+- salud/transporte/otros verticales.
 
 ## No negociar
 
-- `UNKNOWN` prohíbe retry ciego.
+- `UNKNOWN != REEMITIR`.
 - PostgreSQL es autoridad.
-- aislamiento tenant+organization+environment en todas las capas.
-- secreto de API se muestra una vez y se almacena como hash.
-- sandbox y producción no comparten proyectos, DB, bucket, llaves ni credenciales PT.
-- producción requiere pentest, carga, restore y regulatory diff.
-- 30 M / 300 M docs/mes son escenarios técnicos/futuros, no promesa de operación por una sola persona sin nueva evidencia y evolución operacional.
-- 3 M docs/mes / ~50 docs/s son objetivos de diseño y benchmark, **no capacidad demostrada** hasta `CAPACITY READY: PASS`.
+- aislamiento tenant + organization + environment en todas las capas.
+- secretos se muestran una vez y se almacenan de forma segura, no en plaintext.
+- sandbox y producción aislados.
+- no introducir complejidad distribuida sin medición que la justifique.
+- capacidad se demuestra, no se supone.
