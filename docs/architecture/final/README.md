@@ -1,7 +1,7 @@
 # Arquitectura final — Public Fiscal API V1
 
-> Gate: **ARCHITECTURE FINAL: PASS**  
-> Fecha de revisión: 2026-09-07  
+> Gate: **ARCHITECTURE FINAL: PASS**
+> Fecha de revisión: 2026-09-07
 > Alcance: arquitectura lista para planificación de implementación; producción conserva gates de PT, regulación, seguridad, carga y restauración.
 
 ## Decisión central

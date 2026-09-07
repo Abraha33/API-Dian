@@ -1,5 +1,7 @@
 # ADR-003: Arquitectura V1 — monolito modular, PostgreSQL autoritativo y topología mínima
 
+> **Estado actual:** parcialmente supersedido por ADR-010..014. Monolito/PostgreSQL/integridad siguen aceptados; la frontera internal-only/POS-first no.
+
 - **Estado:** Aprobado
 - **Fecha:** 2026-08-18
 - **Reemplaza en arquitectura V1:** partes sustantivas de ADR-001 y ADR-002
@@ -7,10 +9,10 @@
 
 ## Contexto
 
-V1 es infraestructura fiscal interna del POS propio:
+Corrección ADR-010: V1 es infraestructura fiscal pública para aplicaciones de terceros:
 
 ```text
-POS propio → API fiscal propia → 1 PT habilitado → DIAN
+Software tercero / POS propio → API fiscal pública → 1 PT habilitado → DIAN
 ```
 
 Una sola persona desarrolla, mantiene y opera inicialmente el sistema. Los riesgos dominantes son duplicación fiscal, resultado remoto ambiguo, fuga entre tenants, pérdida de evidencia, dependencia del PT y complejidad operacional innecesaria.

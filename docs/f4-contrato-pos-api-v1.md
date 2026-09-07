@@ -1,7 +1,9 @@
 # F4 — Contrato POS → API fiscal V1
 
-**Fecha:** 2026-08-18  
-**Estado:** Cerrado para implementación posterior  
+> **SUPERSEDIDO COMO CONTRATO PÚBLICO el 2026-09-07.** Es referencia histórica del payload fiscal. La autoridad externa es `docs/architecture/final/PUBLIC-API-CONTRACT.md`; nuestro POS usa ese mismo contrato como cualquier aplicación.
+
+**Fecha:** 2026-08-18
+**Estado:** Cerrado para implementación posterior
 **Autoridad:** ADR-007 + `docs/v1-requisitos.md`
 
 ## 1. Objetivo

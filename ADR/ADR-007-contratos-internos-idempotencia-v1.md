@@ -1,5 +1,7 @@
 # ADR-007: Contratos internos V1 e idempotencia semántica
 
+> **Estado actual:** contrato externo supersedido por ADR-010/013 y `docs/architecture/final/PUBLIC-API-CONTRACT.md`; invariantes de idempotencia continúan.
+
 - **Estado:** Aprobado
 - **Fecha:** 2026-08-18
 - **Depende de:** ADR-003, ADR-004, ADR-005, ADR-006
@@ -15,7 +17,7 @@ La semántica fiscal interna no puede depender de nombres de campos, códigos de
 
 ### 1. Superficie HTTP mínima
 
-V1 expone únicamente la superficie necesaria al POS:
+V1 expone la superficie pública común a POS, ERP, SaaS e integradores:
 
 ```text
 POST /v1/fiscal-operations

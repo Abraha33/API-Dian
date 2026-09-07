@@ -1,6 +1,6 @@
 # Architecture Correction — Public API V1
 
-> **Status:** CANONICAL CORRECTION TO CURRENT DRAFT ARCHITECTURE  
+> **Status:** RESOLVED / INCORPORATED INTO FINAL ARCHITECTURE
 > **Branch:** `draft/architecture-product-v1`
 
 ## Why this file exists
@@ -37,7 +37,7 @@ Any earlier statement that says or implies one of the following is superseded:
 
 ## Required architecture refactor
 
-Before architecture is promoted from DRAFT to final, the design must model these V1 requirements explicitly:
+The final architecture now models these V1 requirements explicitly:
 
 1. **Public API boundary** with stable/versioned contracts.
 2. **Client application identity** separate from human users.
@@ -80,7 +80,7 @@ Our POS ───────────────┤
 
 ## Current architecture status
 
-The architecture remains useful as a technical draft for:
+The former architecture remains useful as historical technical input for:
 
 - modular-monolith direction;
 - PostgreSQL;
@@ -94,10 +94,16 @@ The architecture remains useful as a technical draft for:
 
 But its product boundary is not final until the service catalog is complete and the public-API refactor is performed.
 
+## Resolution
+
+The required catalog, roadmap and refactor were completed on 2026-09-07 in:
+
+- `docs/service-catalog/`;
+- `docs/architecture/final/`;
+- ADR-010..014.
+
 ## Gate
 
-`ARCHITECTURE FINAL: BLOCKED`
+`ARCHITECTURE FINAL: PASS`
 
-Reason:
-
-> Complete fiscal service catalog and public-API architecture refactor are still required.
+Production remains blocked by implementation-time PT, regulatory, security, load and restore gates; those are not unresolved architecture decisions.

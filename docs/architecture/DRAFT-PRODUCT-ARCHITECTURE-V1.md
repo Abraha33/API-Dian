@@ -1,7 +1,9 @@
 # API DIAN + POS — Draft Product Architecture V1
 
-> **Status:** DRAFT / NON-BINDING  
-> **Purpose:** Preserve the current architecture direction for review before Phase 6 detailed design.  
+> **SUPERSEDIDO el 2026-09-07** por `docs/architecture/final/`. Se conserva solo para trazabilidad.
+
+> **Status:** DRAFT / NON-BINDING
+> **Purpose:** Preserve the current architecture direction for review before Phase 6 detailed design.
 > **Rule:** This document is not a final implementation decision. It may be replaced after detailed validation.
 
 ## 1. Product this architecture must support

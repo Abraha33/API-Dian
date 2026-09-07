@@ -1,7 +1,9 @@
 # API-DIAN — Auditoría del código existente contra el plan V1
 
-**Fecha:** 2026-08-19  
-**Estado:** FROZEN / baseline de auditoría pre-implementación  
+> **BASE HISTÓRICA.** Reutilizar su evidencia técnica, pero reclasificar alcance contra ADR-010..014 antes de implementar la API pública.
+
+**Fecha:** 2026-08-19
+**Estado:** FROZEN / baseline de auditoría pre-implementación
 **Autoridades:** `PRODUCT-DEFINITION-V1-FINAL.md` → `SYSTEM-ARCHITECTURE-V1.md` → `BUILD-PLAN-V1.md` → `BACKLOG-V1.md` → `DEFINITION-OF-DONE-V1.md` → `DAILY-BUILD-PLAN-V1.md`
 
 ## 1. Propósito

@@ -37,11 +37,22 @@
 | Capacidad no medida | Medio | benchmark antes de piloto/SLA |
 | Restore no ejecutado en cloud final | Alto | restore drill antes de producción |
 | Pentest no ejecutado | Alto | pentest antes de API pública producción |
+| Auditoría npm: `fast-uri` alto y Fastify moderado (2026-09-07) | Alto | actualizar árbol compatible, repetir audit/tests; no usar `--force` sin migración revisada |
 | RPO/RTO y soporte 24/7 limitados por una persona | Medio | SLA conservador, managed services y escalamiento humano según ventas |
 
 Estos riesgos bloquean producción cuando su gate aplica, pero no dejan indefinida la arquitectura.
 
+## Evidencia ejecutada en esta revisión
+
+- `npm test -- --runInBand`: 3 suites, 9 pruebas, PASS.
+- `npm run test:provider-contract-harness`: 1 suite, 6 pruebas, PASS.
+- `npm run build`: PASS.
+- ESLint sin autofix: PASS.
+- enlaces relativos de los 24 documentos autoritativos: PASS.
+- `git diff --check`: PASS.
+- E2E/concurrencia PostgreSQL: no ejecutable en este entorno porque no dispone de Docker/PostgreSQL; permanece como gate CI/implementación.
+- `npm audit --omit=dev`: halló 1 vulnerabilidad alta y 2 moderadas; producción bloqueada hasta remediación compatible.
+
 ## Criterio final
 
 No hay SPOF lógico sin recuperación definida, acceso cross-tenant aceptado, side effect ambiguo sin protocolo, dominio crítico sin dueño ni componente injustificado para lanzamiento. Por ello la definición arquitectónica puede pasar; los gates de implementación siguen visibles.
-

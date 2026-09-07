@@ -1,6 +1,8 @@
 # F3 — Threat model V1 API-DIAN
 
-**Estado:** cerrado para F4; revalidar antes del piloto  
+> **AMPLIADO el 2026-09-07** por `docs/architecture/final/SECURITY-ARCHITECTURE.md`. Las amenazas existentes siguen; API pública añade app credentials, grants, cuotas, WAF y webhooks/SSRF.
+
+**Estado:** cerrado para F4; revalidar antes del piloto
 **Fecha:** 2026-08-18
 
 ## 1. Activos críticos

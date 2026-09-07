@@ -1,8 +1,10 @@
 # API DIAN — Consolidated Product Vision and Plan
 
-> **Status:** CONSOLIDATED WORKING PLAN / DRAFT  
-> **Branch:** `draft/architecture-product-v1`  
+> **Status:** FINAL PRODUCT AND ARCHITECTURE PLAN
+> **Branch:** `draft/architecture-product-v1`
 > **Canonical product direction:** this document supersedes earlier POS-first or internal-only interpretations.
+> **Architecture authority:** `docs/architecture/final/`
+> **Service authority:** `docs/service-catalog/`
 
 ---
 
@@ -240,11 +242,11 @@ Our platform should own the canonical internal fiscal state even when the PT per
 
 ---
 
-# 9. Architecture direction currently under evaluation
+# 9. Final architecture direction
 
-Current draft principles remain useful:
+The final V1 architecture is:
 
-- managed modular monolith initially;
+- managed NestJS/Fastify modular monolith;
 - PostgreSQL;
 - strict multi-tenancy;
 - public API boundary from V1;
@@ -255,18 +257,10 @@ Current draft principles remain useful:
 - PT adapter boundary;
 - no microservices at launch unless measured evidence requires them;
 - no Kubernetes/Kafka at launch;
-- managed infrastructure wherever practical;
+- managed Google Cloud reference deployment via Terraform;
 - operable by one person initially.
 
-However, the detailed architecture files were written before the public third-party API decision was fully clarified.
-
-Therefore they remain **DRAFT and partially superseded** where they describe the product as POS-centric or say a public third-party API is out of scope.
-
-Canonical correction:
-
-> **The commercial V1 is a public fiscal API for third-party software. Our own POS is only one possible API consumer.**
-
-Existing draft architecture must be refactored around this boundary before it can become final.
+The complete decision, data model, API contract, processing, security, infrastructure, scaling, costs, failures and validation are authoritative in `docs/architecture/final/`. Earlier Phase 6 and POS-centric architecture files are historical/superseded.
 
 ---
 
@@ -302,9 +296,7 @@ The product must emerge from the fiscal services the market and regulation requi
 
 # 11. Immediate next phase
 
-The next task is **not coding**.
-
-Build the **complete evidence-based fiscal service catalog** for the platform.
+The service catalog and architecture work described below are complete. The next task is implementation planning and execution from the final OpenAPI/data contracts, without reopening product scope.
 
 Cover:
 
@@ -389,7 +381,7 @@ OTHER SECTORS
 └── added according to regulation and demand
 ```
 
-The exact ordering must still be established through research.
+The exact ordering is now established in `docs/service-catalog/RELEASE-ROADMAP.md`.
 
 ---
 
@@ -423,25 +415,22 @@ The exact ordering must still be established through research.
 - multi-tenant direction;
 - PT adapter principle.
 
-## Still required
+## Still required for production, not architecture
 
-- complete fiscal service catalog;
-- evidence-based release ordering;
-- health scope;
-- transportation scope;
-- other-sector scope;
-- architecture refactor around public multi-tenant API;
-- final PT responsibility boundary;
-- technical/regulatory validation.
+- select and contract one PT and validate its sandbox/capability map;
+- implement the final public contracts and new tenancy hierarchy;
+- execute regulatory diff, pentest, load benchmark and restore drill;
+- run a controlled pilot.
 
 ## Status
 
-> **PRODUCT VISION: DEFINED**  
-> **PUBLIC API V1 DIRECTION: DEFINED**  
-> **CORE FISCAL MVP: DEFINED AT HIGH LEVEL**  
-> **COMPLETE SERVICE CATALOG: NOT YET COMPLETE**  
-> **FINAL ARCHITECTURE: NOT YET FINAL**  
-> **BUILD READY: NO**
+> **PRODUCT VISION: PASS**
+> **PUBLIC API V1 SCOPE: PASS**
+> **COMPLETE SERVICE CATALOG: PASS**
+> **ROADMAP: PASS**
+> **ARCHITECTURE FINAL: PASS**
+> **IMPLEMENTATION READY: PASS WITH PREREQUISITES**
+> **PRODUCTION READY: BLOCKED**
 
 ---
 
@@ -466,4 +455,4 @@ Planning/design is complete only when we can answer with evidence:
 15. Can one person operate the first production stage?
 16. What must be technically validated before build begins?
 
-Only after these questions are closed should architecture be promoted from draft to final and full implementation begin.
+These questions were closed on 2026-09-07; architecture is final and implementation planning may begin.

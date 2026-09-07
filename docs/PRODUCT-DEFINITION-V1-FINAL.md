@@ -1,8 +1,10 @@
 # API-DIAN — Definición definitiva de producto V1
 
-**Estado:** FROZEN / baseline de producto  
-**Fecha:** 2026-08-19  
-**Autoridad:** este documento define qué producto se construye en V1.  
+> **SUPERSEDIDO el 2026-09-07.** Conservado como evidencia histórica. La autoridad actual es `docs/PROJECT-CONSOLIDATED-PLAN.md`, `docs/service-catalog/` y ADR-010. Toda frase internal-only/POS-first de este archivo es inválida.
+
+**Estado:** FROZEN / baseline de producto
+**Fecha:** 2026-08-19
+**Autoridad:** este documento define qué producto se construye en V1.
 
 > Si una decisión técnica, implementación existente o documento anterior contradice este baseline de producto, primero se debe revisar la contradicción contra este documento antes de continuar construyendo.
 
@@ -36,11 +38,11 @@ El producto no se limita a "enviar una factura". Su valor está en hacer **prede
 
 ### Cliente comercial inicial
 
-Comercios colombianos que utilizan nuestro POS de venta rápida.
+Comercios colombianos y proveedores de software que consumen la API pública.
 
 ### Consumidor técnico inicial
 
-Nuestro propio POS.
+POS, ERP, SaaS, integradores y nuestro propio POS.
 
 ### Expansión futura posible
 
@@ -81,7 +83,7 @@ La API podrá convertirse más adelante en producto independiente si existe dema
 
 ## 5. Alcance funcional V1
 
-V1 cubre únicamente el núcleo fiscal necesario para operar desde nuestro POS:
+Corrección vigente: V1 cubre el núcleo fiscal público necesario para POS, ERP, SaaS e integradores:
 
 1. Factura Electrónica de Venta — FEV.
 2. Nota Crédito.
@@ -394,7 +396,7 @@ fácil de operar
 
 ## 20. Criterio de terminación de V1
 
-V1 estará funcionalmente terminada cuando sea posible demostrar, desde nuestro POS y con un PT real, el ciclo fiscal previsto para los documentos incluidos y cuando las pruebas controladas demuestren que las operaciones no desaparecen ni se duplican ante los principales fallos previsibles.
+V1 estará funcionalmente terminada cuando una aplicación externa y nuestro cliente de referencia puedan demostrar con un PT real el ciclo fiscal previsto, sin pérdida, duplicación ni acceso cruzado.
 
 Además, debe ser posible recuperar posteriormente el estado y los soportes correspondientes.
 
@@ -406,7 +408,7 @@ La existencia de endpoints o una respuesta HTTP exitosa por sí sola **no** sign
 
 ```text
 V1
-POS propio + API fiscal + 1 PT
+Software tercero / POS propio + API fiscal pública + 1 PT
         ↓
 V1.x
 más comercios + mejor operación + automatización
@@ -442,8 +444,8 @@ No se debe presentar comercialmente como "API oficial DIAN" ni insinuar que el p
 No reabrir durante V1 salvo evidencia nueva fuerte:
 
 1. mercado inicial: comercios colombianos;
-2. consumidor técnico inicial: nuestro POS;
-3. V1 no es API pública;
+2. consumidores técnicos iniciales: aplicaciones de terceros y nuestro POS bajo el mismo contrato;
+3. V1 es API pública multitenant;
 4. V1 usa un Proveedor Tecnológico habilitado;
 5. exactamente un PT inicialmente;
 6. no seremos PT inicialmente;

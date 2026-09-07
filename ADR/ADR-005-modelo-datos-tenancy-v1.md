@@ -1,5 +1,7 @@
 # ADR-005: Modelo de datos, tenancy e invariantes de persistencia V1
 
+> **Estado actual:** modelo ampliado/supersedido por ADR-011 y `docs/architecture/final/DATA-AND-MULTITENANCY.md`.
+
 - **Estado:** Aprobado
 - **Fecha:** 2026-08-18
 - **Depende de:** ADR-003 y ADR-004

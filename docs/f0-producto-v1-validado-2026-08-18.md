@@ -1,17 +1,19 @@
 # F0 — Baseline validado de producto API-DIAN
 
-**Fecha de corte:** 2026-08-18  
-**Estado:** definición y validación de producto cerradas para continuar diseño.  
+> **SUPERSEDIDO el 2026-09-07.** La conclusión internal-only/POS-first es histórica y no debe implementarse. Autoridad: `docs/PROJECT-CONSOLIDATED-PLAN.md` y ADR-010.
+
+**Fecha de corte:** 2026-08-18
+**Estado:** definición y validación de producto cerradas para continuar diseño.
 **Autoridad:** este documento consolida las decisiones derivadas de cinco rondas de investigación: producto/mercado, auditoría adversarial, regulación, competencia y operabilidad para una sola persona.
 
 ## 1. Decisión de producto
 
-El producto inicial es una **API fiscal interna para comercio colombiano**, cuyo primer consumidor será el POS de venta rápida construido en paralelo.
+Corrección vigente: el producto inicial es una **API fiscal pública multitenant para software de terceros**; el POS propio es un consumidor opcional.
 
 Flujo inicial:
 
 ```text
-POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
+Software tercero / POS propio → API fiscal pública → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
 La API debe diseñarse como un componente reutilizable e independiente del POS, pero **no se lanzará inicialmente como producto comercial externo**. La apertura a desarrolladores, ERP, POS y software houses queda condicionada a evidencia de demanda pagada y capacidad operativa.
@@ -19,7 +21,7 @@ La API debe diseñarse como un componente reutilizable e independiente del POS, 
 ## 2. Prioridades cerradas
 
 1. Mercado inicial: **comercio colombiano**.
-2. Primer consumidor técnico: **POS propio de venta rápida**.
+2. Consumidores técnicos: **POS, ERP, SaaS, integradores y nuestro POS en igualdad contractual**.
 3. Segundo mercado futuro: desarrolladores, casas de software, ERP, POS y e-commerce.
 4. Una sola persona desarrolla, mantiene y opera inicialmente.
 5. No convertirse inicialmente en Proveedor Tecnológico.
@@ -254,7 +256,7 @@ Documento maestro de entrada: docs/f0-producto-v1-validado-2026-08-18.md
 
 No reconstruyas la definición del producto desde cero ni vuelvas a debatir decisiones cerradas salvo evidencia nueva fuerte. Lee también README.md, ROADMAP.md, docs/session-context.md y los ADR vigentes para detectar contradicciones.
 
-Estado: producto V1 definido y validado mediante cinco rondas independientes (producto/mercado, adversarial, jurídica, comercial y técnica/operativa). La API será inicialmente infraestructura interna del POS de comercio, usará un solo Proveedor Tecnológico habilitado y no será pública en V1.
+Conclusión histórica invalidada. La decisión vigente es API pública multitenant desde V1 con un PT inicial; véase ADR-010 y la arquitectura final.
 
 Continúa con el siguiente proceso: reconciliar el roadmap existente con este baseline y después cerrar los requisitos V1 antes de diseñar la arquitectura formal. Mantén como restricción principal que una sola persona desarrollará, mantendrá y operará inicialmente el sistema, con seguridad e integridad fiscal por encima de velocidad.
 ```

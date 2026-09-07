@@ -1,6 +1,6 @@
 # F4C — Cuestionario para solicitar sandbox y evidencia al PT
 
-**Corte:** 2026-08-19  
+**Corte:** 2026-08-19
 **Uso:** enviar el mismo núcleo de preguntas a HKA, DATAICO y Facture/ESTELA para comparar evidencia equivalente.
 
 ## Regla
@@ -13,7 +13,7 @@ Indicar al proveedor:
 
 ```text
 Somos una casa de software/integrador en Colombia.
-Estamos construyendo un POS propio para comercios y una capa fiscal interna.
+Estamos construyendo una API fiscal pública multitenant para POS, ERP, SaaS e integradores; nuestro POS será un consumidor más.
 V1 utilizará un solo Proveedor Tecnológico habilitado.
 Necesitamos Factura Electrónica de Venta y Documento Equivalente Electrónico POS, con sus notas/ajustes aplicables.
 La prioridad es evitar duplicidad fiscal ante timeouts, respuestas perdidas o estados no concluyentes.
@@ -137,7 +137,7 @@ Confirmar vía API:
 - nota de ajuste/anulación;
 - comportamiento de ambigüedad equivalente al de FEV.
 
-Un PT no pasa F4C si solo resuelve bien FEV y deja POS fuera del flujo integrable requerido por V1.
+Un PT no pasa F4C si no resuelve el alcance V1 contratado; DEE POS se evalúa como capacidad V1.1 independiente.
 
 ## 9. Seguridad y certificado
 
@@ -234,7 +234,7 @@ La evidencia cruda con secretos no entra a Git.
 ```text
 Asunto: Integración casa de software — sandbox FEV + POS electrónico
 
-Estamos construyendo un POS propio y una capa fiscal interna para comercios en Colombia. Buscamos integrar un único Proveedor Tecnológico en V1 y queremos evaluar The Factory HKA como primera opción.
+Estamos construyendo una API fiscal pública multitenant para software de terceros en Colombia. Buscamos integrar un único Proveedor Tecnológico en V1 y queremos evaluar The Factory HKA como primera opción.
 
 Necesitamos acceso al ambiente DEMO, credenciales y documentación actual para FEV y Documento Equivalente Electrónico POS, incluyendo consultas de estado posteriores al submit. Nuestro gate principal es validar el comportamiento ante timeouts o respuestas perdidas y cómo se reconcilia un documento antes de cualquier reenvío.
 
@@ -246,7 +246,7 @@ Necesitamos acceso al ambiente DEMO, credenciales y documentación actual para F
 ```text
 Asunto: Integración API — sandbox/pruebas FEV + POS electrónico
 
-Estamos construyendo un POS propio y una capa fiscal interna para comercios en Colombia. Estamos evaluando un único Proveedor Tecnológico para V1 y DATAICO está en nuestra shortlist.
+Estamos construyendo una API fiscal pública multitenant para software de terceros en Colombia. Estamos evaluando un único Proveedor Tecnológico para V1 y DATAICO está en nuestra shortlist.
 
 Ya revisamos la documentación pública de API y necesitamos confirmar el ambiente de prueba para FEV y POS electrónico, además del protocolo para reconciliar timeouts/estados pendientes antes de reenviar un documento.
 
@@ -258,7 +258,7 @@ Ya revisamos la documentación pública de API y necesitamos confirmar el ambien
 ```text
 Asunto: Evaluación de integración técnica — Facture/ESTELA Colombia
 
-Estamos construyendo un POS propio y una capa fiscal interna para comercios en Colombia y evaluamos a Facture/ESTELA como Proveedor Tecnológico para V1.
+Estamos construyendo una API fiscal pública multitenant para software de terceros en Colombia y evaluamos a Facture/ESTELA como Proveedor Tecnológico para V1.
 
 Necesitamos paquete técnico/API, sandbox, credenciales y documentación para FEV y Documento Equivalente Electrónico POS, en especial consulta/reconciliación de documentos cuyo resultado inicial sea ambiguo.
 

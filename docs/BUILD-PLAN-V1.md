@@ -1,9 +1,11 @@
 # API-DIAN — Plan maestro de construcción V1
 
-**Estado:** FROZEN / baseline de construcción  
-**Fecha:** 2026-08-19  
-**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`  
-**Autoridad de arquitectura:** `docs/SYSTEM-ARCHITECTURE-V1.md`  
+> **SUPERSEDIDO PARA PLANIFICACIÓN el 2026-09-07.** Este plan describe el baseline interno anterior. Use `ROADMAP.md` y `docs/HANDOFF-NEXT-CHAT.md`; regenere las épicas desde la arquitectura final antes de implementar.
+
+**Estado:** FROZEN / baseline de construcción
+**Fecha:** 2026-08-19
+**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`
+**Autoridad de arquitectura:** `docs/SYSTEM-ARCHITECTURE-V1.md`
 **Propósito:** definir el orden en que se construye V1, sus dependencias y gates, sin convertir todavía cada bloque en tareas diarias.
 
 > Este documento describe cómo debe construirse V1. No declara que una fase esté terminada porque exista código adelantado. El código existente será auditado posteriormente contra este plan y se clasificará como `CONSERVAR`, `ADAPTAR`, `REHACER` o `ELIMINAR`.

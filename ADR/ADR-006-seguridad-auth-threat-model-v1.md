@@ -1,5 +1,7 @@
 # ADR-006: Seguridad V1 — autenticación POS, secretos y trust boundaries
 
+> **Estado actual:** autenticación POS-first supersedida por ADR-013; controles de amenaza reutilizables permanecen.
+
 - **Estado:** Aprobado
 - **Fecha:** 2026-08-18
 - **Depende de:** ADR-003, ADR-004, ADR-005

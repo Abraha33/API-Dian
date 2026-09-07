@@ -1,5 +1,7 @@
 # Phase 6 — Architecture Design Status
 
+> **HISTÓRICO.** El bloqueo descrito aquí fue cerrado el 2026-09-07. Estado actual: `docs/architecture/final/ARCHITECTURE-STATUS.md`.
+
 > **Status:** `PASS WITH RISKS / PRODUCT-BOUNDARY CORRECTION REQUIRED`
 > **Nature:** DRAFT / NON-BINDING
 > **Branch:** `draft/architecture-product-v1`
@@ -64,7 +66,7 @@ The POS-specific sales, inventory, purchases, cash and offline design should be 
 
 ## Gate
 
-`ARCHITECTURE FINAL: BLOCKED`
+`HISTORICAL ARCHITECTURE GATE: CLOSED BY FINAL PASS ON 2026-09-07`
 
 The technical draft is useful, but architecture must not be promoted to final until the service catalog and public-API refactor are completed.
 

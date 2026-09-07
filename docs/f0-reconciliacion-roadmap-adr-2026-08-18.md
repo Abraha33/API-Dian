@@ -1,7 +1,9 @@
 # F0 — Reconciliación ROADMAP y ADR con baseline validado
 
-**Fecha:** 2026-08-18  
-**Estado:** Cerrado  
+> **SUPERSEDIDO el 2026-09-07.** Esta reconciliación fue reemplazada por la decisión de API pública multitenant de ADR-010.
+
+**Fecha:** 2026-08-18
+**Estado:** Cerrado
 **Baseline:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 ## Objetivo

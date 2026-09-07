@@ -1,17 +1,19 @@
 # Requisitos V1 — API-DIAN
 
-**Fecha de corte:** 2026-08-18  
-**Estado:** Cerrado para arquitectura  
+> **SUPERSEDIDO COMO FRONTERA DE PRODUCTO el 2026-09-07.** Use `docs/architecture/final/`, el catálogo y ADR-010..014. Los invariantes de idempotencia/evidencia siguen vigentes; la exclusión de terceros no.
+
+**Fecha de corte:** 2026-08-18
+**Estado:** Cerrado para arquitectura
 **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 > “Cerrado para arquitectura” significa que el alcance funcional y los invariantes de V1 están suficientemente definidos para diseñar la arquitectura. No autoriza producción: existen gates regulatorios, contractuales, de seguridad y recuperación que deben cerrarse antes del piloto.
 
 ## 1. Propósito y frontera
 
-V1 es una API fiscal interna para comercio colombiano cuyo primer consumidor es el POS propio.
+V1 es una API fiscal pública multitenant para software de terceros; el POS propio es un consumidor posible.
 
 ```text
-POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
+Software tercero / POS propio → API fiscal pública → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
 La API propia controla el contrato interno, autenticación, tenant, validación previa, idempotencia, estado, evidencia, reconciliación y observabilidad. El PT ejecuta las funciones fiscales reguladas contratadas.
@@ -20,13 +22,13 @@ V1 no intenta reemplazar al PT ni convertirse en un proxy ciego.
 
 ## 2. Actores V1
 
-- **POS propio:** consumidor técnico primario.
+- **Aplicación cliente:** POS, ERP, SaaS, integrador o nuestro POS autenticado con identidad propia.
 - **Empresa/tenant:** sujeto lógico que origina y consulta operaciones fiscales.
 - **API fiscal propia:** autoridad del estado interno y evidencia de integración.
 - **Proveedor Tecnológico:** único proveedor fiscal externo de V1.
 - **Operador:** inicialmente una sola persona; por ello el sistema debe minimizar intervención manual y ambigüedad operativa.
 
-No existe “integrador público externo” como actor V1.
+Los integradores públicos externos, POS, ERP, SaaS y nuestro POS son actores V1 de primera clase mediante aplicaciones y credenciales aisladas.
 
 ## 3. Alcance fiscal V1
 

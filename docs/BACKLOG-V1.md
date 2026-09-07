@@ -1,9 +1,11 @@
 # API-DIAN — Backlog maestro V1
 
-**Estado:** FROZEN / baseline de backlog  
-**Fecha:** 2026-08-19  
-**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`  
-**Autoridad de arquitectura:** `docs/SYSTEM-ARCHITECTURE-V1.md`  
+> **SUPERSEDIDO PARA EJECUCIÓN el 2026-09-07.** No ejecutar tareas POS-first como alcance del núcleo. Debe reconciliarse con ADR-010..014 y `docs/architecture/final/`.
+
+**Estado:** FROZEN / baseline de backlog
+**Fecha:** 2026-08-19
+**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`
+**Autoridad de arquitectura:** `docs/SYSTEM-ARCHITECTURE-V1.md`
 **Orden de construcción:** `docs/BUILD-PLAN-V1.md`
 
 > Este backlog descompone el Build Plan en unidades concretas de trabajo. No declara terminado el código existente. Más adelante cada ítem se auditará contra el repositorio y se marcará `CONSERVAR`, `ADAPTAR`, `REHACER` o `ELIMINAR` antes de volver a implementar.

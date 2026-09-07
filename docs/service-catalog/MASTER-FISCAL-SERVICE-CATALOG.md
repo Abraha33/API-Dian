@@ -1,7 +1,7 @@
 # Catálogo maestro de servicios fiscales
 
-> Estado: **CERRADO PARA DISEÑO DE ARQUITECTURA**  
-> Corte regulatorio: 2026-09-07  
+> Estado: **CERRADO PARA DISEÑO DE ARQUITECTURA**
+> Corte regulatorio: 2026-09-07
 > Regla: antes de implementar cada familia se debe volver a comprobar la norma y el anexo técnico vigente.
 
 ## 1. Alcance del catálogo
@@ -43,7 +43,7 @@ Escalas: dificultad técnica/regulatoria y riesgo: B=baja, M=media, A=alta. Volu
 
 El calendario oficial enumera doce perfiles ya implementados: tiquete POS; servicios públicos domiciliarios; tiquete de transporte de pasajeros; extracto; tiquete aéreo; juegos de suerte y azar no localizados; juegos localizados; peajes; liquidación de operaciones de bolsa de valores; operaciones de bolsa agropecuaria/commodities; espectáculos públicos; y cine. Fuente: [calendario DIAN](https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/calendario-de-implementacion/).
 
-No se implementan doce módulos aislados. Se diseña un motor DEE común y perfiles versionados. Solo POS entra temprano por demanda general; los demás se activan con cliente y evidencia de mercado.
+No se implementan doce módulos aislados. Se diseña un motor DEE común y perfiles versionados. El perfil DEE POS entra temprano por demanda general; los demás se activan con cliente y evidencia de mercado.
 
 ## 4. Capacidades transversales incluidas desde V1
 
@@ -76,4 +76,3 @@ No se implementan doce módulos aislados. Se diseña un motor DEE común y perfi
 ## 6. Cierre del catálogo
 
 El catálogo está cerrado para escoger arquitectura, no congelado para siempre. Una nueva resolución produce un cambio versionado de regla/perfil; no obliga a rediseñar tenancy, API, pipeline ni almacenamiento.
-

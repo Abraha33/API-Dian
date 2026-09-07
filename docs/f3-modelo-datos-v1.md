@@ -1,7 +1,9 @@
 # F3 — Modelo de datos V1
 
-**Estado:** cerrado para contratos F4  
-**Fecha:** 2026-08-18  
+> **SUPERSEDIDO/AMPLIADO el 2026-09-07** por `docs/architecture/final/DATA-AND-MULTITENANCY.md`. Las tablas/invariantes existentes se adaptan, pero tenant ya no equivale por sí solo a emisor o aplicación.
+
+**Estado:** cerrado para contratos F4
+**Fecha:** 2026-08-18
 **Autoridad:** ADR-003, ADR-004 y ADR-005
 
 Este documento define el modelo conceptual/relacional antes de escribir migraciones productivas. No define todavía campos UBL/PT específicos.

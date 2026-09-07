@@ -1,5 +1,7 @@
 # API DIAN + POS — Phase 6 Detailed Architecture Design
 
+> **SUPERSEDIDO el 2026-09-07** por `docs/architecture/final/`. Sus invariantes fiscales reutilizables se incorporaron; su frontera POS-first no tiene autoridad.
+
 > **Status:** DRAFT / NON-BINDING
 > **Branch:** `draft/architecture-product-v1`
 > **Purpose:** Translate the approved product direction into a detailed architecture blueprint before implementation.
@@ -37,7 +39,7 @@ The system is **not** initially:
 - an ecommerce platform;
 - a payment processor;
 - a multi-PT routing platform;
-- a public third-party API product.
+- the final public third-party API boundary (this omission was corrected in `docs/architecture/final/`).
 
 ---
 

@@ -1,7 +1,9 @@
 # API-DIAN — Secuencia diaria de construcción V1
 
-**Estado:** FROZEN / secuencia de referencia  
-**Fecha:** 2026-08-19  
+> **SUPERSEDIDO PARA EJECUCIÓN el 2026-09-07.** Conservado como historia; la próxima secuencia está en `docs/HANDOFF-NEXT-CHAT.md`.
+
+**Estado:** FROZEN / secuencia de referencia
+**Fecha:** 2026-08-19
 **Fuentes:** `BUILD-PLAN-V1.md`, `BACKLOG-V1.md`, `DEPENDENCY-MAP-V1.md`, `DEFINITION-OF-DONE-V1.md`
 
 > Estas son **jornadas de trabajo**, no promesas de duración de calendario. Una jornada representa una unidad pequeña que debe cerrarse con evidencia. Si una unidad resulta demasiado grande, se divide antes de implementarla. Después de auditar el código existente, muchas jornadas podrán marcarse `CONSERVAR`, `ADAPTAR`, `REHACER` o `PENDIENTE`.

@@ -1,8 +1,10 @@
 # API-DIAN — Arquitectura definitiva del sistema V1
 
-**Estado:** FROZEN / baseline de arquitectura  
-**Fecha:** 2026-08-19  
-**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`  
+> **SUPERSEDIDO el 2026-09-07.** Se reutilizan invariantes técnicos, pero la arquitectura autoritativa es `docs/architecture/final/`. POS es un cliente; tenant, organization y application siguen ADR-010/011.
+
+**Estado:** FROZEN / baseline de arquitectura
+**Fecha:** 2026-08-19
+**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`
 **Propósito:** definir cómo se construirá V1 sin ampliar el producto congelado.
 
 > Si una implementación existente contradice este documento, la implementación debe revisarse. Si este documento contradice `PRODUCT-DEFINITION-V1-FINAL.md`, prevalece el producto y la arquitectura debe corregirse.
@@ -328,7 +330,7 @@ La identidad de cajero/operador puede viajar como metadata de auditoría pero no
 
 ---
 
-## 11. Contrato POS → API
+## 11. Contrato público → API (POS como consumidor de ejemplo)
 
 Superficie V1 mínima:
 

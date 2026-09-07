@@ -28,9 +28,9 @@
 | PT selected/contracted/sandbox proven | BLOCKED |
 | Regulatory release check | BLOCKED hasta cada release |
 | Security/pentest | BLOCKED hasta implementación |
+| Dependency security | BLOCKED: remediar `fast-uri`/Fastify y repetir audit |
 | Load benchmark | BLOCKED hasta implementación |
 | Restore drill | BLOCKED hasta infraestructura |
 | Production ready | BLOCKED |
 
 El próximo trabajo es convertir la arquitectura en épicas, OpenAPI y migraciones; no otra ronda de definición.
-

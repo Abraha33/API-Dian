@@ -1,7 +1,9 @@
 # API-DIAN — Mapa de dependencias V1
 
-**Estado:** FROZEN / baseline de dependencias  
-**Fecha:** 2026-08-19  
+> **SUPERSEDIDO COMO MAPA DE PRODUCTO el 2026-09-07.** Use `docs/service-catalog/SERVICE-DEPENDENCY-MAP.md` y la arquitectura final. Invariantes técnicos históricos pueden reutilizarse tras reconciliación.
+
+**Estado:** FROZEN / baseline de dependencias
+**Fecha:** 2026-08-19
 **Fuente:** `docs/BACKLOG-V1.md`
 
 ## 1. Camino principal
