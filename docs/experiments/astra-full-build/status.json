@@ -1,0 +1,27 @@
+{
+  "experiment": "astra-full-api-dian-v1",
+  "branch": "experiment/astra-full-api-dian-v1",
+  "base": "draft/official-construction-plan-v1",
+  "updated": "2026-09-07",
+  "rules": {
+    "pass_requires_evidence": true,
+    "protect_dev": true,
+    "protect_architecture_branch": true,
+    "protect_official_plan_branch": true,
+    "real_pt_requires_owner": true,
+    "production_requires_owner": true
+  },
+  "phases": [
+    {"id": 0, "name": "Aislamiento + harness", "status": "IN PROGRESS", "evidence": ["docs/experiments/astra-full-build/README.md", "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md", "docs/experiments/astra-full-build/EVIDENCE-RULES.md"]},
+    {"id": 1, "name": "Conceptualización ejecutable", "status": "NOT STARTED", "evidence": []},
+    {"id": 2, "name": "Testeo y aceptación", "status": "NOT STARTED", "evidence": []},
+    {"id": 3, "name": "Construcción local V1", "status": "NOT STARTED", "evidence": []},
+    {"id": 4, "name": "Integración E2E local", "status": "NOT STARTED", "evidence": []},
+    {"id": 5, "name": "Runner + containers + CI", "status": "NOT STARTED", "evidence": []},
+    {"id": 6, "name": "Fallos + seguridad + capacidad", "status": "NOT STARTED", "evidence": []},
+    {"id": 7, "name": "Ready for PT Integration", "status": "BLOCKED", "evidence": []},
+    {"id": 8, "name": "Integración PT real", "status": "BLOCKED", "evidence": []},
+    {"id": 9, "name": "Validación externa DIAN/PT + piloto", "status": "BLOCKED", "evidence": []},
+    {"id": 10, "name": "Production readiness", "status": "BLOCKED", "evidence": []}
+  ]
+}
