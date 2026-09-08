@@ -35,6 +35,19 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO app.api_credentials(
+  id, tenant_id, secret_digest, digest_version, label, status
+)
+VALUES (
+  'bbbbbbbb-0000-4000-8000-000000000002',
+  'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2',
+  decode('90bc8b7e1a9f2272059a3fbc046dace8df8472f99c609af1e28629f8c7292479', 'hex'),
+  'hmac-sha256-v1',
+  'f6b-webhooks-tenant-b',
+  'ACTIVE'
+)
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO app.fiscal_operations(
   id, tenant_id, idempotency_key, semantic_hash, hash_version,
   document_type, contract_version, request_payload, status

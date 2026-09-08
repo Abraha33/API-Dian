@@ -6,12 +6,14 @@ import {
   FISCAL_PROVIDER,
   type FiscalProvider,
 } from '../provider/fiscal-provider';
+import { WebhookDeliveryRepository } from '../webhooks/webhook-delivery.repository';
 import { FiscalWorkerRepository } from './fiscal-worker.repository';
 import { FiscalWorkerService } from './fiscal-worker.service';
 
 @Module({
   providers: [
     PinoLoggerService,
+    WebhookDeliveryRepository,
     FiscalWorkerRepository,
     {
       provide: FISCAL_PROVIDER,

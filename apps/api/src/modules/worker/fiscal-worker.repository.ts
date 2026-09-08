@@ -8,6 +8,8 @@ import type {
   ProviderReconciliationResult,
   ProviderSubmissionResult,
 } from '../provider/fiscal-provider';
+import { WebhookDeliveryRepository } from '../webhooks/webhook-delivery.repository';
+import type { WebhookEventType } from '../webhooks/webhook-events';
 
 export interface ClaimedWorkItem extends QueryResultRow {
   id: string;
@@ -51,7 +53,10 @@ export interface PreparedReconciliation {
 
 @Injectable()
 export class FiscalWorkerRepository {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly webhooks: WebhookDeliveryRepository,
+  ) {}
 
   async claimNext(
     workerId: string,
@@ -301,6 +306,29 @@ export class FiscalWorkerRepository {
         toState: target,
         reasonCode: outcomeCode,
       });
+
+      if (
+        target === 'ACCEPTED' ||
+        target === 'REJECTED_REMOTE' ||
+        target === 'UNKNOWN'
+      ) {
+        const eventType: WebhookEventType =
+          target === 'ACCEPTED'
+            ? 'document.accepted'
+            : target === 'REJECTED_REMOTE'
+              ? 'document.rejected'
+              : 'document.unknown';
+        await this.webhooks.enqueueForEvent(client, {
+          tenantId: job.tenant_id,
+          operationId: job.operation_id,
+          eventType,
+          data: {
+            document_id: job.operation_id,
+            status: target,
+            outcome_code: outcomeCode,
+          },
+        });
+      }
     });
   }
 
@@ -397,6 +425,16 @@ export class FiscalWorkerRepository {
             toState: 'NEEDS_ATTENTION',
             reasonCode: 'RECONCILIATION_EXHAUSTED',
           });
+          await this.webhooks.enqueueForEvent(client, {
+            tenantId: job.tenant_id,
+            operationId: job.operation_id,
+            eventType: 'document.reconciled',
+            data: {
+              document_id: job.operation_id,
+              status: 'NEEDS_ATTENTION',
+              outcome_code: 'RECONCILIATION_EXHAUSTED',
+            },
+          });
           return;
         }
 
@@ -445,6 +483,19 @@ export class FiscalWorkerRepository {
         toState: target,
         reasonCode: outcomeCode,
       });
+
+      if (target === 'ACCEPTED' || target === 'REJECTED_REMOTE') {
+        await this.webhooks.enqueueForEvent(client, {
+          tenantId: job.tenant_id,
+          operationId: job.operation_id,
+          eventType: 'document.reconciled',
+          data: {
+            document_id: job.operation_id,
+            status: target,
+            outcome_code: outcomeCode,
+          },
+        });
+      }
     });
   }
 

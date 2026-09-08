@@ -9,6 +9,7 @@ import { validateEnv } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { FiscalOperationsModule } from './modules/fiscal-operations/fiscal-operations.module';
 import { HealthModule } from './modules/health/health.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HealthModule } from './modules/health/health.module';
     AuthModule,
     HealthModule,
     FiscalOperationsModule,
+    WebhooksModule,
   ],
   providers: [
     PinoLoggerService,
