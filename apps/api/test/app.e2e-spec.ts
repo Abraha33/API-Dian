@@ -284,6 +284,45 @@ describe('API-DIAN F6B (e2e)', () => {
     expect(await countAttempts(created.operation_id)).toBe(1);
   });
 
+  it('invariant: UNKNOWN never resubmits (UNKNOWN != REEMITIR)', async () => {
+    fakeProvider.setScenario('AMBIGUOUS_TIMEOUT');
+    const created = await postOperation(
+      'f6b-invariant-unknown-no-resubmit',
+      'sale:worker:invariant-unknown',
+    );
+
+    expect(await worker.processNext()).toBe('SUBMITTED');
+    const afterAmbiguous = await readOperation(created.operation_id);
+    expect(afterAmbiguous.status).toBe('UNKNOWN');
+    expect(await countAttempts(created.operation_id)).toBe(1);
+
+    // Direct attempt to "reemitir" (resubmit) an UNKNOWN operation by forcing
+    // it back to READY must be rejected by the DB guard trigger. UNKNOWN may
+    // only ever move to RECONCILING, never straight back to READY/SUBMITTING
+    // — that would be an uncontrolled resubmission with an already-ambiguous
+    // remote side effect.
+    await expect(
+      adminPool.query(
+        `UPDATE app.fiscal_operations
+         SET status = 'READY', state_version = state_version + 1
+         WHERE id = $1::uuid`,
+        [created.operation_id],
+      ),
+    ).rejects.toThrow(/invalid fiscal state transition/);
+
+    // The illegal attempt must not have mutated state or created a second
+    // provider attempt (no silent resubmission occurred).
+    expect((await readOperation(created.operation_id)).status).toBe('UNKNOWN');
+    expect(await countAttempts(created.operation_id)).toBe(1);
+
+    // The only legal path out of UNKNOWN is reconciliation, and it must not
+    // create a second provider attempt (fiscal duplicates = 0).
+    fakeProvider.setScenario('ACCEPT');
+    expect(await worker.processNext()).toBe('RECONCILED');
+    expect((await readOperation(created.operation_id)).status).toBe('ACCEPTED');
+    expect(await countAttempts(created.operation_id)).toBe(1);
+  });
+
   it('retries read-only reconciliation during delayed provider visibility', async () => {
     fakeProvider.setScenario('DELAYED_VISIBILITY');
     const created = await postOperation(
