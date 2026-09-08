@@ -70,7 +70,11 @@
                        "status":  "IN PROGRESS",
                        "evidence":  [
                                         "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md"
+                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md",
+                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md"
+                                    ],
+                       "blockers":  [
+                                        "No hay ejecución real disparada en GitHub Actions (self-hosted o hospedado); solo equivalente local reproducido dos veces."
                                     ]
                    },
                    {
@@ -79,7 +83,13 @@
                        "status":  "IN PROGRESS",
                        "evidence":  [
                                         "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md"
+                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md",
+                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md"
+                                    ],
+                       "blockers":  [
+                                        "Webhooks no implementados en apps/api/src (grep sin resultados); el punto B del mandato de Fase 6 no se puede probar hasta que exista el módulo.",
+                                        "Faltan specs de fault-injection para lease expirado, crash de worker, backlog drain y rollback de deployment.",
+                                        "Benchmark no migrado a scripts/ del repo ni corrido en progresión 10/25/50/75/100 req/s con métricas de sistema."
                                     ]
                    },
                    {
