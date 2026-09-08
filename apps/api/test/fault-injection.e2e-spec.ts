@@ -348,6 +348,16 @@ describe('API-DIAN fault injection: worker lease/crash, backlog, idempotency, fo
     // At most one request could have been the "winner"; the rest must be
     // replays of the same row.
     expect(replayedCount).toBeGreaterThanOrEqual(concurrency - 1);
+
+    // Drain the one SUBMIT work item this test created — this file shares
+    // its database with test/fiscal-concurrency.concurrency-spec.ts in CI
+    // (same job, same "ci" database, run back-to-back), and an undrained
+    // PENDING work item here would be older than that spec's own freshly
+    // created ones, so it would win FIFO claim ordering and make that
+    // spec's exact-set-of-claimed-operation-ids assertion fail non-
+    // deterministically. This bit us for real on hosted CI (run
+    // 34186141238) before this drain was added.
+    await drainWith(workerA.service, 50);
   });
 
   // ---------------------------------------------------------------------
