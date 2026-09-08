@@ -241,11 +241,29 @@ describe('API-DIAN fault injection: worker lease/crash, backlog, idempotency, fo
   it('backlog drain: N operations queued concurrently all reach ACCEPTED exactly once, no loss or duplication', async () => {
     fakeProvider.setScenario('ACCEPT');
     const total = 40;
-    const created = await Promise.all(
-      Array.from({ length: total }, (_, i) =>
-        postOperation(`fault-backlog-${i}`, `sale:fault:backlog:${i}`),
-      ),
-    );
+    // Queue creation in bounded batches rather than one 40-way Promise.all:
+    // the point of this test is draining an already-built backlog without
+    // loss/duplication, not stress-testing the HTTP intake path itself (the
+    // dedicated benchmark script covers that) — a single 40-way burst
+    // against supertest's in-process fastify server was observed to
+    // intermittently ECONNRESET on a constrained hosted CI runner.
+    const batchSize = 8;
+    const created: OperationBody[] = [];
+    for (let start = 0; start < total; start += batchSize) {
+      const batch = await Promise.all(
+        Array.from(
+          { length: Math.min(batchSize, total - start) },
+          (_, offset) => {
+            const i = start + offset;
+            return postOperation(
+              `fault-backlog-${i}`,
+              `sale:fault:backlog:${i}`,
+            );
+          },
+        ),
+      );
+      created.push(...batch);
+    }
     expect(created).toHaveLength(total);
     for (const c of created) expect(c.status).toBe('READY');
 

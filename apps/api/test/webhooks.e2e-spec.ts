@@ -648,10 +648,24 @@ describe('API-DIAN webhooks (e2e, fault injection)', () => {
     const failingDelivery = await deliveryForEndpoint(operationId, failingId);
     expect(healthyDelivery.id).not.toBe(failingDelivery.id);
 
-    const outcomes = new Set<string>();
-    outcomes.add(await processNextForDelivery(healthyDelivery.id));
-    outcomes.add(await processNextForDelivery(failingDelivery.id));
-    expect(outcomes).toEqual(new Set(['DELIVERED', 'RETRY_SCHEDULED']));
+    // Drive the worker until BOTH deliveries have left PENDING — do not
+    // call processNextForDelivery twice in sequence for these two: the
+    // first call's draining loop may claim *either* one first as a side
+    // effect (claim order is FIFO by available_at, not by which id we
+    // pass in), so by the time a second explicit call targets the other
+    // one, it can already be RETRY-scheduled 60s into the future and
+    // therefore genuinely unclaimable right now — that is not a bug, it
+    // just means "both processed independently" has to be verified by
+    // final state, not by two sequential per-id claims.
+    for (let i = 0; i < 10; i += 1) {
+      const [h, f] = await Promise.all([
+        deliverySnapshot(healthyDelivery.id),
+        deliverySnapshot(failingDelivery.id),
+      ]);
+      if (h.status !== 'PENDING' && f.status !== 'PENDING') break;
+      const outcome = await webhookWorker.processNext();
+      if (outcome === 'IDLE') break;
+    }
 
     const rows = await adminPool.query<{ id: string; status: string }>(
       `SELECT id, status FROM app.webhook_deliveries WHERE id = ANY($1::uuid[])`,
