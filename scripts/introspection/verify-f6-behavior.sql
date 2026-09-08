@@ -100,8 +100,16 @@ DECLARE
   first_id uuid;
   second_id uuid;
 BEGIN
-  SELECT id INTO first_id FROM app.claim_work_item('verify-worker-1', 30);
-  SELECT id INTO second_id FROM app.claim_work_item('verify-worker-2', 30);
+  -- Lease deliberately long (not the usual 30s): these two rows are left
+  -- CLAIMED on purpose to prove claim exclusivity, and this script runs
+  -- early in the CI pipeline (before E2E, concurrency, etc.) — a short
+  -- lease was observed to expire before later steps ran (more E2E specs
+  -- landed in Phase 6, pushing total pipeline time past 30s), making the
+  -- concurrency gate's exact-work-item-count assertions flaky by picking
+  -- up these unrelated rows as "newly available" work. 3600s comfortably
+  -- outlives the whole CI job.
+  SELECT id INTO first_id FROM app.claim_work_item('verify-worker-1', 3600);
+  SELECT id INTO second_id FROM app.claim_work_item('verify-worker-2', 3600);
 
   IF first_id IS NULL OR second_id IS NULL OR first_id = second_id THEN
     RAISE EXCEPTION 'work claim did not return two distinct jobs';
