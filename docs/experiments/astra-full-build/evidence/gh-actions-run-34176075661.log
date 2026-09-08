@@ -1,0 +1,983 @@
+ci	Set up job	﻿2026-09-08T01:16:10.3422326Z Current runner version: '2.337.0'
+ci	Set up job	2026-09-08T01:16:10.3450294Z ##[group]Runner Image Provisioner
+ci	Set up job	2026-09-08T01:16:10.3451266Z Hosted Compute Agent
+ci	Set up job	2026-09-08T01:16:10.3452067Z Version: 20260828.587
+ci	Set up job	2026-09-08T01:16:10.3452930Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+ci	Set up job	2026-09-08T01:16:10.3453713Z Build Date: 2026-08-28T16:44:25Z
+ci	Set up job	2026-09-08T01:16:10.3454537Z Worker ID: {2cbf28c4-41bc-47cc-a832-e2d3d85fcec5}
+ci	Set up job	2026-09-08T01:16:10.3455319Z Azure Region: westus2
+ci	Set up job	2026-09-08T01:16:10.3455973Z ##[endgroup]
+ci	Set up job	2026-09-08T01:16:10.3457742Z ##[group]Operating System
+ci	Set up job	2026-09-08T01:16:10.3458498Z Ubuntu
+ci	Set up job	2026-09-08T01:16:10.3459161Z 24.04.4
+ci	Set up job	2026-09-08T01:16:10.3459966Z LTS
+ci	Set up job	2026-09-08T01:16:10.3460659Z ##[endgroup]
+ci	Set up job	2026-09-08T01:16:10.3461340Z ##[group]Runner Image
+ci	Set up job	2026-09-08T01:16:10.3462024Z Image: ubuntu-24.04
+ci	Set up job	2026-09-08T01:16:10.3462702Z Version: 20260831.293.1
+ci	Set up job	2026-09-08T01:16:10.3463865Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260831.293/images/ubuntu/Ubuntu2404-Readme.md
+ci	Set up job	2026-09-08T01:16:10.3465837Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260831.293
+ci	Set up job	2026-09-08T01:16:10.3466891Z ##[endgroup]
+ci	Set up job	2026-09-08T01:16:10.3468222Z ##[group]GITHUB_TOKEN Permissions
+ci	Set up job	2026-09-08T01:16:10.3470705Z Contents: read
+ci	Set up job	2026-09-08T01:16:10.3471544Z Metadata: read
+ci	Set up job	2026-09-08T01:16:10.3472257Z Packages: read
+ci	Set up job	2026-09-08T01:16:10.3472935Z ##[endgroup]
+ci	Set up job	2026-09-08T01:16:10.3475788Z Secret source: Actions
+ci	Set up job	2026-09-08T01:16:10.3477038Z Prepare workflow directory
+ci	Set up job	2026-09-08T01:16:10.4039297Z Prepare all required actions
+ci	Set up job	2026-09-08T01:16:10.4089275Z Getting action download info
+ci	Set up job	2026-09-08T01:16:10.7877410Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+ci	Set up job	2026-09-08T01:16:10.9296288Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+ci	Set up job	2026-09-08T01:16:11.1384708Z Complete job name: ci
+ci	Initialize containers	﻿2026-09-08T01:16:11.2024266Z ##[group]Checking docker version
+ci	Initialize containers	2026-09-08T01:16:11.2038042Z ##[command]/usr/bin/docker version --format '{{.Server.APIVersion}}'
+ci	Initialize containers	2026-09-08T01:16:11.3225197Z '1.48'
+ci	Initialize containers	2026-09-08T01:16:11.3237117Z Docker daemon API version: '1.48'
+ci	Initialize containers	2026-09-08T01:16:11.3238011Z ##[command]/usr/bin/docker version --format '{{.Client.APIVersion}}'
+ci	Initialize containers	2026-09-08T01:16:11.3431125Z '1.48'
+ci	Initialize containers	2026-09-08T01:16:11.3445283Z Docker client API version: '1.48'
+ci	Initialize containers	2026-09-08T01:16:11.3452149Z ##[endgroup]
+ci	Initialize containers	2026-09-08T01:16:11.3456578Z ##[group]Clean up resources from previous jobs
+ci	Initialize containers	2026-09-08T01:16:11.3462818Z ##[command]/usr/bin/docker ps --all --quiet --no-trunc --filter "label=432b4e"
+ci	Initialize containers	2026-09-08T01:16:11.3633635Z ##[command]/usr/bin/docker network prune --force --filter "label=432b4e"
+ci	Initialize containers	2026-09-08T01:16:11.3777250Z ##[endgroup]
+ci	Initialize containers	2026-09-08T01:16:11.3777862Z ##[group]Create local container network
+ci	Initialize containers	2026-09-08T01:16:11.3789045Z ##[command]/usr/bin/docker network create --label 432b4e github_network_023acc28863942a9b309f651d11bcbae
+ci	Initialize containers	2026-09-08T01:16:11.4453785Z 00f2b098fc77c1325b8efd2bcf718418c8265d5444a161aebb3c57de3b2bd457
+ci	Initialize containers	2026-09-08T01:16:11.4481933Z ##[endgroup]
+ci	Initialize containers	2026-09-08T01:16:11.4509865Z ##[group]Starting postgres service container
+ci	Initialize containers	2026-09-08T01:16:11.4533762Z ##[command]/usr/bin/docker pull postgres:15
+ci	Initialize containers	2026-09-08T01:16:12.4204971Z 15: Pulling from library/postgres
+ci	Initialize containers	2026-09-08T01:16:12.7028830Z 6310eb16bf42: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7031333Z 639367129460: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7032629Z 248bdcd6e955: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7033396Z 8d2f3610bf84: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7034331Z 22bf49630d7e: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7035329Z d523576e6b46: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7036325Z d522ad15b8c1: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7037400Z 876153b11224: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7038369Z 04913c3958ed: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7039101Z a849d36c92a3: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7040012Z d6430d172c75: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7040696Z b86905d46631: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7041476Z 2659259e5615: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7042714Z 8f6bdf8e7ebe: Pulling fs layer
+ci	Initialize containers	2026-09-08T01:16:12.7043469Z 22bf49630d7e: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7044157Z d523576e6b46: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7044829Z d522ad15b8c1: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7045497Z a849d36c92a3: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7046158Z d6430d172c75: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7046816Z b86905d46631: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7047482Z 876153b11224: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7048274Z 04913c3958ed: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7049128Z 2659259e5615: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7050228Z 8f6bdf8e7ebe: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.7051266Z 8d2f3610bf84: Waiting
+ci	Initialize containers	2026-09-08T01:16:12.9656584Z 639367129460: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:12.9659220Z 639367129460: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.0605470Z 248bdcd6e955: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.0607057Z 248bdcd6e955: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.1278033Z 6310eb16bf42: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.1279056Z 6310eb16bf42: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.2736636Z 8d2f3610bf84: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.2738699Z 8d2f3610bf84: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.4161283Z 22bf49630d7e: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.4162955Z 22bf49630d7e: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.4202567Z d523576e6b46: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.4204018Z d523576e6b46: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.5257840Z d522ad15b8c1: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.5258611Z d522ad15b8c1: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.6487447Z 876153b11224: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.6497119Z 876153b11224: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.7716391Z a849d36c92a3: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.7717754Z a849d36c92a3: Download complete
+ci	Initialize containers	2026-09-08T01:16:13.8938774Z d6430d172c75: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:13.8939439Z d6430d172c75: Download complete
+ci	Initialize containers	2026-09-08T01:16:14.0070882Z b86905d46631: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:14.0077255Z b86905d46631: Download complete
+ci	Initialize containers	2026-09-08T01:16:14.1000172Z 04913c3958ed: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:14.1000876Z 04913c3958ed: Download complete
+ci	Initialize containers	2026-09-08T01:16:14.1368214Z 2659259e5615: Download complete
+ci	Initialize containers	2026-09-08T01:16:14.2593017Z 8f6bdf8e7ebe: Verifying Checksum
+ci	Initialize containers	2026-09-08T01:16:14.2593605Z 8f6bdf8e7ebe: Download complete
+ci	Initialize containers	2026-09-08T01:16:14.2654192Z 6310eb16bf42: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.0753483Z 639367129460: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.2605695Z 248bdcd6e955: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.3114126Z 8d2f3610bf84: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.6301464Z 22bf49630d7e: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.7177675Z d523576e6b46: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.7306513Z d522ad15b8c1: Pull complete
+ci	Initialize containers	2026-09-08T01:16:17.7432497Z 876153b11224: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.7348382Z 04913c3958ed: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.7527138Z a849d36c92a3: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.7643799Z d6430d172c75: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.7756026Z b86905d46631: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.7872148Z 2659259e5615: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.7965859Z 8f6bdf8e7ebe: Pull complete
+ci	Initialize containers	2026-09-08T01:16:20.8007537Z Digest: sha256:9b1d34adbce1dd07ee6e94b4a2cf698884b89bd44a6c9c12f5da8f3acbfe4957
+ci	Initialize containers	2026-09-08T01:16:20.8033956Z Status: Downloaded newer image for postgres:15
+ci	Initialize containers	2026-09-08T01:16:20.8051414Z docker.io/library/postgres:15
+ci	Initialize containers	2026-09-08T01:16:20.8115290Z ##[command]/usr/bin/docker create --name 7f29c0d38f6241b894be86ae3e979aaf_postgres15_515711 --label 432b4e --network github_network_023acc28863942a9b309f651d11bcbae --network-alias postgres -p 5432:5432 --health-cmd "pg_isready -U postgres -d ci" --health-interval 5s --health-timeout 5s --health-retries 10 -e "POSTGRES_USER=postgres" -e "POSTGRES_PASSWORD=postgres" -e "POSTGRES_DB=ci" -e GITHUB_ACTIONS=true -e CI=true postgres:15
+ci	Initialize containers	2026-09-08T01:16:20.8414772Z 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:20.8439610Z ##[command]/usr/bin/docker start 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:21.2037994Z 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:21.2073550Z ##[command]/usr/bin/docker ps --all --filter id=5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935 --filter status=running --no-trunc --format "{{.ID}} {{.Status}}"
+ci	Initialize containers	2026-09-08T01:16:21.2218392Z 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935 Up Less than a second (health: starting)
+ci	Initialize containers	2026-09-08T01:16:21.2240747Z ##[command]/usr/bin/docker port 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:21.2403477Z 5432/tcp -> 0.0.0.0:5432
+ci	Initialize containers	2026-09-08T01:16:21.2404205Z 5432/tcp -> [::]:5432
+ci	Initialize containers	2026-09-08T01:16:21.2464793Z ##[endgroup]
+ci	Initialize containers	2026-09-08T01:16:21.2476737Z ##[group]Waiting for all services to be ready
+ci	Initialize containers	2026-09-08T01:16:21.2495796Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:21.2639068Z starting
+ci	Initialize containers	2026-09-08T01:16:21.2665021Z postgres service is starting, waiting 2 seconds before checking again.
+ci	Initialize containers	2026-09-08T01:16:23.2666241Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:23.2824638Z starting
+ci	Initialize containers	2026-09-08T01:16:23.2838858Z postgres service is starting, waiting 4 seconds before checking again.
+ci	Initialize containers	2026-09-08T01:16:27.5762237Z ##[command]/usr/bin/docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Initialize containers	2026-09-08T01:16:27.5914549Z healthy
+ci	Initialize containers	2026-09-08T01:16:27.5921757Z postgres service is healthy.
+ci	Initialize containers	2026-09-08T01:16:27.5922619Z ##[endgroup]
+ci	Run actions/checkout@v4	﻿2026-09-08T01:16:27.6299376Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6308208Z ##[group]Run actions/checkout@v4
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6308654Z with:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6308879Z   repository: Abraha33/API-Dian
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6312216Z   token: ***
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6312439Z   ssh-strict: true
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6312654Z   ssh-user: git
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6312866Z   persist-credentials: true
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6313117Z   clean: true
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6313336Z   sparse-checkout-cone-mode: true
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6313595Z   fetch-depth: 1
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6313800Z   fetch-tags: false
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6314008Z   show-progress: true
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6314214Z   lfs: false
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6314404Z   submodules: false
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6314672Z   set-safe-directory: true
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6314918Z   allow-unsafe-pr-checkout: false
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.6315489Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7418704Z Syncing repository: Abraha33/API-Dian
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7420996Z ##[group]Getting Git version info
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7421682Z Working directory is '/home/runner/work/API-Dian/API-Dian'
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7422615Z [command]/usr/bin/git version
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7491849Z git version 2.55.0
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7516461Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7532779Z Temporarily overriding HOME='/home/runner/work/_temp/ead90117-6d1a-4440-8570-5a875a013d08' before making global git config changes
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7534230Z Adding repository directory to the temporary git global config as a safe directory
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7538193Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/API-Dian/API-Dian
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7600749Z Deleting the contents of '/home/runner/work/API-Dian/API-Dian'
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7605955Z ##[group]Initializing the repository
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7611919Z [command]/usr/bin/git init /home/runner/work/API-Dian/API-Dian
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7737749Z hint: Using 'master' as the name for the initial branch. This default branch name
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7738904Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7740527Z hint: to use in all of your new repositories, which will suppress this warning,
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7741359Z hint: call:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7741789Z hint:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7742330Z hint: 	git config --global init.defaultBranch <name>
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7742930Z hint:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7743493Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7744420Z hint: 'development'. The just-created branch can be renamed via this command:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7745221Z hint:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7745608Z hint: 	git branch -m <name>
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7746016Z hint:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7746572Z hint: Disable this message with "git config set advice.defaultBranchName false"
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7747603Z Initialized empty Git repository in /home/runner/work/API-Dian/API-Dian/.git/
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7761425Z [command]/usr/bin/git remote add origin https://github.com/Abraha33/API-Dian
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7828307Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7829013Z ##[group]Disabling automatic garbage collection
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7834467Z [command]/usr/bin/git config --local gc.auto 0
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7872858Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7873307Z ##[group]Setting up auth
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7882952Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.7928715Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.8388643Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.8431618Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.8681893Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.8725170Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.8972492Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.9019078Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.9019924Z ##[group]Fetching the repository
+ci	Run actions/checkout@v4	2026-09-08T01:16:27.9030344Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +2ec1e718dae9ba0e7aff44327df11b260edc43aa:refs/remotes/origin/experiment/astra-full-api-dian-v1
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3325769Z From https://github.com/Abraha33/API-Dian
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3327329Z  * [new ref]         2ec1e718dae9ba0e7aff44327df11b260edc43aa -> origin/experiment/astra-full-api-dian-v1
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3332296Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3333260Z ##[group]Determining the checkout info
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3336003Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3344130Z [command]/usr/bin/git sparse-checkout disable
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3418093Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3447803Z ##[group]Checking out the ref
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3455146Z [command]/usr/bin/git checkout --progress --force -B experiment/astra-full-api-dian-v1 refs/remotes/origin/experiment/astra-full-api-dian-v1
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3693992Z Switched to a new branch 'experiment/astra-full-api-dian-v1'
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3699136Z branch 'experiment/astra-full-api-dian-v1' set up to track 'origin/experiment/astra-full-api-dian-v1'.
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3706250Z ##[endgroup]
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3760446Z [command]/usr/bin/git log -1 --format=%H
+ci	Run actions/checkout@v4	2026-09-08T01:16:28.3794296Z 2ec1e718dae9ba0e7aff44327df11b260edc43aa
+ci	Run actions/setup-node@v4	﻿2026-09-08T01:16:28.4070635Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4072999Z ##[group]Run actions/setup-node@v4
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4073273Z with:
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4073467Z   node-version: 24
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4073679Z   cache: npm
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4073942Z   cache-dependency-path: apps/api/package-lock.json
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4074269Z   always-auth: false
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4074487Z   check-latest: false
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4077249Z   token: ***
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.4077453Z ##[endgroup]
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.5574703Z Found in cache @ /opt/hostedtoolcache/node/24.20.0/x64
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.5579263Z (node:2665) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.5580941Z (Use `node --trace-deprecation ...` to show where the warning was created)
+ci	Run actions/setup-node@v4	2026-09-08T01:16:28.5583470Z ##[group]Environment details
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.0124475Z node: v24.20.0
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.0124799Z npm: 11.19.0
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.0125007Z yarn: 1.22.22
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.0125964Z ##[endgroup]
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.0149329Z [command]/opt/hostedtoolcache/node/24.20.0/x64/bin/npm config get cache
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.1430039Z /home/runner/.npm
+ci	Run actions/setup-node@v4	2026-09-08T01:16:29.3997390Z npm cache is not found
+ci	Validate local compose	﻿2026-09-08T01:16:29.4144684Z ##[group]Run docker compose -f docker-compose.dev.yml config --quiet
+ci	Validate local compose	2026-09-08T01:16:29.4145276Z [36;1mdocker compose -f docker-compose.dev.yml config --quiet[0m
+ci	Validate local compose	2026-09-08T01:16:29.4202801Z shell: /usr/bin/bash -e {0}
+ci	Validate local compose	2026-09-08T01:16:29.4203138Z ##[endgroup]
+ci	Validate Windows bootstrap syntax	﻿2026-09-08T01:16:32.1622187Z ##[group]Run $tokens = $null
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1622517Z [36;1m$tokens = $null[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1622742Z [36;1m$errors = $null[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1623074Z [36;1m[System.Management.Automation.Language.Parser]::ParseFile([0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1623525Z [36;1m  (Resolve-Path 'scripts/dev/bootstrap-local.ps1'),[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1623883Z [36;1m  [ref]$tokens,[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1624102Z [36;1m  [ref]$errors[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1624317Z [36;1m) | Out-Null[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1624546Z [36;1mif ($errors.Count -gt 0) {[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1624886Z [36;1m  $errors | ForEach-Object { Write-Error $_.Message }[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1625211Z [36;1m  exit 1[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1625407Z [36;1m}[0m
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1668709Z shell: /usr/bin/pwsh -command ". '{0}'"
+ci	Validate Windows bootstrap syntax	2026-09-08T01:16:32.1669027Z ##[endgroup]
+ci	Install	﻿2026-09-08T01:16:36.7425247Z ##[group]Run npm ci
+ci	Install	2026-09-08T01:16:36.7425531Z [36;1mnpm ci[0m
+ci	Install	2026-09-08T01:16:36.7465541Z shell: /usr/bin/bash -e {0}
+ci	Install	2026-09-08T01:16:36.7465841Z ##[endgroup]
+ci	Install	2026-09-08T01:16:39.4658124Z npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+ci	Install	2026-09-08T01:16:40.0692958Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+ci	Install	2026-09-08T01:16:41.7370201Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+ci	Install	2026-09-08T01:16:41.8161432Z npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+ci	Install	2026-09-08T01:16:43.3794476Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+ci	Install	2026-09-08T01:16:43.3885463Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+ci	Install	2026-09-08T01:16:43.3987935Z npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+ci	Install	2026-09-08T01:16:48.0877586Z 
+ci	Install	2026-09-08T01:16:48.0878512Z added 735 packages, and audited 736 packages in 11s
+ci	Install	2026-09-08T01:16:48.0902175Z 
+ci	Install	2026-09-08T01:16:48.0903163Z 164 packages are looking for funding
+ci	Install	2026-09-08T01:16:48.0903736Z   run `npm fund` for details
+ci	Install	2026-09-08T01:16:48.0942330Z 
+ci	Install	2026-09-08T01:16:48.0942999Z 2 moderate severity vulnerabilities
+ci	Install	2026-09-08T01:16:48.0943396Z 
+ci	Install	2026-09-08T01:16:48.0943798Z To address all issues (including breaking changes), run:
+ci	Install	2026-09-08T01:16:48.0944465Z   npm audit fix --force
+ci	Install	2026-09-08T01:16:48.0944714Z 
+ci	Install	2026-09-08T01:16:48.0944923Z Run `npm audit` for details.
+ci	Install	2026-09-08T01:16:48.0956513Z npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+ci	Install	2026-09-08T01:16:48.0958389Z npm warn install-scripts   @nestjs/core@11.1.18 (postinstall: opencollective || exit 0)
+ci	Install	2026-09-08T01:16:48.0960528Z npm warn install-scripts   unrs-resolver@1.11.1 (postinstall: napi-postinstall unrs-resolver 1.11.1 check)
+ci	Install	2026-09-08T01:16:48.0961934Z npm warn install-scripts
+ci	Install	2026-09-08T01:16:48.0963293Z npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+ci	Production dependency audit	﻿2026-09-08T01:16:48.1647389Z ##[group]Run npm audit --omit=dev --audit-level=high
+ci	Production dependency audit	2026-09-08T01:16:48.1647830Z [36;1mnpm audit --omit=dev --audit-level=high[0m
+ci	Production dependency audit	2026-09-08T01:16:48.1687713Z shell: /usr/bin/bash -e {0}
+ci	Production dependency audit	2026-09-08T01:16:48.1688012Z ##[endgroup]
+ci	Production dependency audit	2026-09-08T01:16:48.7439427Z # npm audit report
+ci	Production dependency audit	2026-09-08T01:16:48.7440507Z 
+ci	Production dependency audit	2026-09-08T01:16:48.7440972Z fastify  <=5.12.0
+ci	Production dependency audit	2026-09-08T01:16:48.7441401Z Severity: moderate
+ci	Production dependency audit	2026-09-08T01:16:48.7442735Z fastify vulnerable to schema validation bypass via root primitive coercion mismatch - https://github.com/advisories/GHSA-w2qp-rph6-63g4
+ci	Production dependency audit	2026-09-08T01:16:48.7444671Z fastify vulnerable to X-Forwarded-* spoofing under trustProxy hop-count - https://github.com/advisories/GHSA-3m5p-2c4r-xxw2
+ci	Production dependency audit	2026-09-08T01:16:48.7445821Z fix available via `npm audit fix --force`
+ci	Production dependency audit	2026-09-08T01:16:48.7446653Z Will install @nestjs/platform-fastify@12.0.1, which is a breaking change
+ci	Production dependency audit	2026-09-08T01:16:48.7447337Z node_modules/fastify
+ci	Production dependency audit	2026-09-08T01:16:48.7447802Z   @nestjs/platform-fastify  <=12.0.0-alpha.7
+ci	Production dependency audit	2026-09-08T01:16:48.7448479Z   Depends on vulnerable versions of fastify
+ci	Production dependency audit	2026-09-08T01:16:48.7449073Z   node_modules/@nestjs/platform-fastify
+ci	Production dependency audit	2026-09-08T01:16:48.7449403Z 
+ci	Production dependency audit	2026-09-08T01:16:48.7449976Z 2 moderate severity vulnerabilities
+ci	Production dependency audit	2026-09-08T01:16:48.7450310Z 
+ci	Production dependency audit	2026-09-08T01:16:48.7450695Z To address all issues (including breaking changes), run:
+ci	Production dependency audit	2026-09-08T01:16:48.7451269Z   npm audit fix --force
+ci	Build	﻿2026-09-08T01:16:48.7594037Z ##[group]Run npm run build
+ci	Build	2026-09-08T01:16:48.7594569Z [36;1mnpm run build[0m
+ci	Build	2026-09-08T01:16:48.7634533Z shell: /usr/bin/bash -e {0}
+ci	Build	2026-09-08T01:16:48.7634804Z ##[endgroup]
+ci	Build	2026-09-08T01:16:48.8898680Z 
+ci	Build	2026-09-08T01:16:48.8899487Z > api@0.0.1 build
+ci	Build	2026-09-08T01:16:48.8900371Z > nest build
+ci	Build	2026-09-08T01:16:48.8900663Z 
+ci	Lint check	﻿2026-09-08T01:16:52.2791548Z ##[group]Run npx eslint "{src,apps,libs,test}/**/*.ts"
+ci	Lint check	2026-09-08T01:16:52.2792290Z [36;1mnpx eslint "{src,apps,libs,test}/**/*.ts"[0m
+ci	Lint check	2026-09-08T01:16:52.2835574Z shell: /usr/bin/bash -e {0}
+ci	Lint check	2026-09-08T01:16:52.2835862Z ##[endgroup]
+ci	Unit tests	﻿2026-09-08T01:16:57.9581784Z ##[group]Run npm test -- --runInBand
+ci	Unit tests	2026-09-08T01:16:57.9582286Z [36;1mnpm test -- --runInBand[0m
+ci	Unit tests	2026-09-08T01:16:57.9619235Z shell: /usr/bin/bash -e {0}
+ci	Unit tests	2026-09-08T01:16:57.9619517Z ##[endgroup]
+ci	Unit tests	2026-09-08T01:16:58.0780514Z 
+ci	Unit tests	2026-09-08T01:16:58.0781115Z > api@0.0.1 test
+ci	Unit tests	2026-09-08T01:16:58.0781651Z > jest --runInBand
+ci	Unit tests	2026-09-08T01:16:58.0781906Z 
+ci	Unit tests	2026-09-08T01:16:58.8779351Z PASS src/common/fiscal/canonicalization.spec.ts
+ci	Unit tests	2026-09-08T01:16:58.9547530Z PASS src/modules/provider/fake-fiscal-provider.spec.ts
+ci	Unit tests	2026-09-08T01:16:59.1836879Z [31m[Nest] 2996  - [39m09/08/2026, 1:16:59 AM [31m  ERROR[39m [38;5;3m[DatabaseService] [39m[31mPostgreSQL pool error: database connection dropped[39m
+ci	Unit tests	2026-09-08T01:16:59.1881336Z PASS src/common/database/database.service.spec.ts
+ci	Unit tests	2026-09-08T01:16:59.3687063Z PASS src/config/worker-env.validation.spec.ts
+ci	Unit tests	2026-09-08T01:16:59.3698841Z 
+ci	Unit tests	2026-09-08T01:16:59.3708194Z Test Suites: 4 passed, 4 total
+ci	Unit tests	2026-09-08T01:16:59.3708910Z Tests:       10 passed, 10 total
+ci	Unit tests	2026-09-08T01:16:59.3709418Z Snapshots:   0 total
+ci	Unit tests	2026-09-08T01:16:59.3710008Z Time:        0.982 s
+ci	Unit tests	2026-09-08T01:16:59.3710346Z Ran all test suites.
+ci	Provider contract harness self-tests	﻿2026-09-08T01:16:59.4992447Z ##[group]Run timeout 30s npm run test:provider-contract-harness -- --verbose
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.4993055Z [36;1mtimeout 30s npm run test:provider-contract-harness -- --verbose[0m
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.5031126Z shell: /usr/bin/bash -e {0}
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.5031411Z ##[endgroup]
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.6126255Z 
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.6126890Z > api@0.0.1 test:provider-contract-harness
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.6127943Z > jest --config ./test/jest-provider-contract.json --runInBand --verbose
+ci	Provider contract harness self-tests	2026-09-08T01:16:59.6128498Z 
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4241721Z PASS test/provider-contract/provider-contract-harness.spec.ts
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4300887Z   provider contract evidence harness
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4330443Z     ✓ executes an evidence-backed conclusive submit case (4 ms)
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4331844Z     ✓ rejects PROVEN_NOT_SENT without explicit evidence-backed proof (10 ms)
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4342804Z     ✓ allows PROVEN_NOT_SENT only when its proof references known evidence (1 ms)
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4343980Z     ✓ rejects NOT_FOUND_CONCLUSIVE without explicit conclusive-not-found proof (1 ms)
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4345464Z     ✓ verifies sanitized artifact integrity by content type, size and SHA-256 (1 ms)
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4346651Z     ✓ rejects fixtures with no evidence before arranging transport (1 ms)
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4370321Z 
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4377742Z Test Suites: 1 passed, 1 total
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4378554Z Tests:       6 passed, 6 total
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4379070Z Snapshots:   0 total
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4379468Z Time:        0.514 s
+ci	Provider contract harness self-tests	2026-09-08T01:17:00.4380144Z Ran all test suites.
+ci	Apply migrations and provision test identities	﻿2026-09-08T01:17:00.4716603Z ##[group]Run for migration in supabase/migrations/*.sql; do
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4717115Z [36;1mfor migration in supabase/migrations/*.sql; do[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4717478Z [36;1m  if [ -s "$migration" ]; then[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4717768Z [36;1m    echo "Applying $migration"[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4718176Z [36;1m    psql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 -f "$migration"[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4718587Z [36;1m  fi[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4718807Z [36;1mdone[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4719091Z [36;1mpsql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4719518Z [36;1m  -f scripts/introspection/verify-f6-core.sql[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4720831Z [36;1mpsql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4721486Z [36;1m  -f scripts/introspection/verify-f6-behavior.sql[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4721915Z [36;1mpsql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4722315Z [36;1m  --set=api_password=ci-local-api-2026 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4722718Z [36;1m  --set=worker_password=ci-local-worker-2026 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4723061Z [36;1m  --set=ops_password=ci-local-ops-2026 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4723401Z [36;1m  -f scripts/dev/provision-local-runtime.sql[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4723786Z [36;1mpsql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4724193Z [36;1m  -f scripts/introspection/verify-local-runtime.sql[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4724795Z [36;1mpsql -h localhost -U postgres -d ci -v ON_ERROR_STOP=1 \[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4725191Z [36;1m  -f scripts/introspection/provision-f6b-ci.sql[0m
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4762571Z shell: /usr/bin/bash -e {0}
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4762845Z env:
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4763055Z   PGPASSWORD: postgres
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4763293Z ##[endgroup]
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.4829275Z Applying supabase/migrations/20260819041000_create_f6_core_schema.sql
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5937769Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5943744Z CREATE SCHEMA
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5946687Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5952751Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5961573Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5965394Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.5969329Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6068135Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6100097Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6149598Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6201667Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6212926Z CREATE INDEX
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6253315Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6264635Z CREATE INDEX
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6275860Z CREATE INDEX
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6319282Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6357951Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6392231Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6415949Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6422010Z INSERT 0 1
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6428309Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6433058Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6436371Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6444186Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6447287Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6450961Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6457418Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6461896Z CREATE TRIGGER
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6467413Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6471777Z CREATE TRIGGER
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6476329Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6480472Z CREATE TRIGGER
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6485068Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6490268Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6494190Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6498278Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6502458Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6506628Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6510620Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6514219Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6518458Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6522599Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6526542Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6530356Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6534376Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6538244Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6546038Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6566112Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6566783Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6567422Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6567879Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6568263Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6572836Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6576855Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6581368Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6585780Z CREATE POLICY
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6595744Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6599994Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6603854Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6607300Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6610817Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6613853Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6618162Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6621642Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6625002Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6628140Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6631486Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6634582Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6639866Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6643072Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.6657823Z Applying supabase/migrations/20260819042000_harden_f6_runtime_roles.sql
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7037066Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7040616Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7045837Z ALTER SCHEMA
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7054243Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7059309Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7065526Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7072560Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7078409Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7083796Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7088991Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7094721Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7100182Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7103722Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7107553Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7111979Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7116268Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7119631Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7123099Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7125182Z ALTER DEFAULT PRIVILEGES
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7126748Z ALTER DEFAULT PRIVILEGES
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7131761Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7135002Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7138324Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7154588Z Applying supabase/migrations/20260819043000_guard_proven_not_sent_retry.sql
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7545524Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7548015Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7553096Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7567211Z Applying supabase/migrations/20260819121500_add_ops_readonly_role.sql
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7972089Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7982793Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.7983214Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8016163Z CREATE TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8021387Z ALTER TABLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8025844Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8032332Z CREATE FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8036457Z ALTER FUNCTION
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8040454Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8044553Z psql:supabase/migrations/20260819121500_add_ops_readonly_role.sql:78: NOTICE:  trigger "runtime_controls_audit_update" for relation "app.runtime_controls" does not exist, skipping
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8046046Z DROP TRIGGER
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8049175Z CREATE TRIGGER
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8059153Z INSERT 0 1
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8067942Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8080034Z REVOKE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8085389Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8089809Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8096319Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8101143Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8104207Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8108167Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8112906Z GRANT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8117453Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8120767Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8124361Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8127129Z COMMENT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8540792Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8545518Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8559750Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8565556Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8572825Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8577374Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8584074Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8595567Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8603333Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8605487Z               result              
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8606109Z ----------------------------------
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8606726Z  F6 core schema verification PASS
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8607222Z (1 row)
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8607453Z 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.8998144Z INSERT 0 2
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9015110Z INSERT 0 2
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9026890Z INSERT 0 2
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9027950Z BEGIN
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9030885Z SET
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9035071Z               set_config              
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9035722Z --------------------------------------
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9036575Z  00000000-0000-4000-8000-000000000001
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9036980Z (1 row)
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9037143Z 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9048865Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9050822Z RESET
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9052087Z COMMIT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9053834Z BEGIN
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9055969Z SET
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9058356Z               set_config              
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9058954Z --------------------------------------
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9059449Z  00000000-0000-4000-8000-000000000001
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9060084Z (1 row)
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9060209Z 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9063646Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9074250Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9079252Z UPDATE 1
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9081317Z RESET
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9084465Z COMMIT
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9086185Z SET
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9104986Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9106670Z RESET
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9109233Z              result              
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9110193Z ---------------------------------
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9125215Z  F6 behavioral verification PASS
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9125819Z (1 row)
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9126134Z 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9538295Z CREATE ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9575927Z ALTER ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9581051Z psql:scripts/dev/provision-local-runtime.sql:31: WARNING:  role "api_dian_dev" is not a member of role "app_worker"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9581895Z REVOKE ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9583162Z psql:scripts/dev/provision-local-runtime.sql:31: WARNING:  role "api_dian_dev" is not a member of role "app_ops"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9585496Z psql:scripts/dev/provision-local-runtime.sql:31: WARNING:  role "api_dian_dev" is not a member of role "app_ops_control"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9586485Z GRANT ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9587321Z psql:scripts/dev/provision-local-runtime.sql:31: WARNING:  role "api_dian_dev" is not a member of role "app_migrator"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9625579Z CREATE ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9666037Z ALTER ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9670297Z psql:scripts/dev/provision-local-runtime.sql:46: WARNING:  role "api_dian_worker_dev" is not a member of role "app_api"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9672063Z psql:scripts/dev/provision-local-runtime.sql:46: WARNING:  role "api_dian_worker_dev" is not a member of role "app_ops"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9673195Z psql:scripts/dev/provision-local-runtime.sql:46: WARNING:  role "api_dian_worker_dev" is not a member of role "app_ops_control"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9674713Z psql:scripts/dev/provision-local-runtime.sql:46: WARNING:  role "api_dian_worker_dev" is not a member of role "app_migrator"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9675641Z REVOKE ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9675946Z GRANT ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9716650Z CREATE ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9754151Z ALTER ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9758422Z psql:scripts/dev/provision-local-runtime.sql:61: WARNING:  role "api_dian_ops_dev" is not a member of role "app_api"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9760552Z psql:scripts/dev/provision-local-runtime.sql:61: WARNING:  role "api_dian_ops_dev" is not a member of role "app_worker"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9762493Z psql:scripts/dev/provision-local-runtime.sql:61: WARNING:  role "api_dian_ops_dev" is not a member of role "app_migrator"
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9763536Z REVOKE ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9763919Z GRANT ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9770427Z        rolname       | rolsuper | rolcreatedb | rolcreaterole | rolbypassrls 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9771847Z ---------------------+----------+-------------+---------------+--------------
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9773030Z  api_dian_dev        | f        | f           | f             | f
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9773612Z  api_dian_ops_dev    | f        | f           | f             | f
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9774127Z  api_dian_worker_dev | f        | f           | f             | f
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9774513Z (3 rows)
+ci	Apply migrations and provision test identities	2026-09-08T01:17:00.9774641Z 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0179905Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0185990Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0190815Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0193321Z                 result                
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0215498Z --------------------------------------
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0216116Z  Local runtime role verification PASS
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0217086Z (1 row)
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0217263Z 
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0702103Z DO
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0706238Z GRANT ROLE
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0714217Z INSERT 0 2
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0723342Z INSERT 0 1
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0730877Z INSERT 0 1
+ci	Apply migrations and provision test identities	2026-09-08T01:17:01.0739250Z UPDATE 1
+ci	Kill-switch control as constrained ops login	﻿2026-09-08T01:17:01.0789933Z ##[group]Run psql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 <<'SQL'
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0790858Z [36;1mpsql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 <<'SQL'[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0791271Z [36;1mBEGIN;[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0791493Z [36;1mSET LOCAL ROLE app_ops_control;[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0791787Z [36;1mUPDATE app.runtime_controls[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0792070Z [36;1mSET reason = 'CI ops control check',[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0792368Z [36;1m    updated_at = now(),[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0792634Z [36;1m    updated_by = session_user[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0792923Z [36;1mWHERE singleton_id = 1;[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0793161Z [36;1mCOMMIT;[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0793352Z [36;1mSQL[0m
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0830376Z shell: /usr/bin/bash -e {0}
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0830692Z env:
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0830904Z   PGPASSWORD: ci_ops
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.0831127Z ##[endgroup]
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.1258379Z BEGIN
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.1260388Z SET
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.1281843Z UPDATE 1
+ci	Kill-switch control as constrained ops login	2026-09-08T01:17:01.1286159Z COMMIT
+ci	Operational report as constrained ops login	﻿2026-09-08T01:17:01.1329392Z ##[group]Run psql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 \
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1330460Z [36;1mpsql -h localhost -U ci_ops -d ci -v ON_ERROR_STOP=1 \[0m
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1330862Z [36;1m  -f scripts/ops/fiscal-ops-report.sql[0m
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1367347Z shell: /usr/bin/bash -e {0}
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1367601Z env:
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1367803Z   PGPASSWORD: ci_ops
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1368026Z ##[endgroup]
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1792036Z BEGIN
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1793849Z SET
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1794273Z === runtime controls ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1804207Z  accept_new_operations | provider_mutations_enabled |        reason        |          updated_at           | updated_by 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1805855Z -----------------------+----------------------------+----------------------+-------------------------------+------------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1807043Z  t                     | t                          | CI ops control check | 2026-09-08 01:17:01.125566+00 | ci_ops
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1807753Z (1 row)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1808069Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1808285Z === recent runtime control changes ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1810455Z  previous_accept_new_operations | previous_provider_mutations_enabled | accept_new_operations | provider_mutations_enabled |           reason           |    changed_by    |          created_at           
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1813614Z --------------------------------+-------------------------------------+-----------------------+----------------------------+----------------------------+------------------+-------------------------------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1816172Z  t                              | t                                   | t                     | t                          | CI ops control check       | ci_ops           | 2026-09-08 01:17:01.125566+00
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1817928Z  f                              | f                                   | t                     | t                          | F6B CI only                | provision-f6b-ci | 2026-09-08 01:17:01.073124+00
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1819616Z  f                              | f                                   | f                     | f                          | operational audit baseline | migration        | 2026-09-08 01:17:00.804865+00
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1820935Z (3 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1821140Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1821421Z === fiscal operations by state ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1821904Z   status   | total 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1826008Z -----------+-------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1826388Z  ACCEPTED  |     1
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1826807Z  PERSISTED |     1
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1827179Z  READY     |     1
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1827522Z (3 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1827702Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1827968Z === work queue by kind/status ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1828477Z   kind  | status  | total 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1828917Z --------+---------+-------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1829349Z  SUBMIT | CLAIMED |     2
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1830035Z (1 row)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1830244Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1830460Z === oldest runnable work ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1834107Z  id | tenant_id | operation_id | kind | status | attempt_count | available_at | waiting_for | last_error_code 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1835594Z ----+-----------+--------------+------+--------+---------------+--------------+-------------+-----------------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1836353Z (0 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1836472Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1836593Z === expired claims ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1837593Z  id | tenant_id | operation_id | kind | lease_owner | lease_until | lease_expired_by | attempt_count 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1838934Z ----+-----------+--------------+------+-------------+-------------+------------------+---------------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1840001Z (0 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1840217Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1840521Z === ambiguous/reconciling operations ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1841419Z  id | tenant_id | document_type | status | state_version | updated_at | state_age 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1843005Z ----+-----------+---------------+--------+---------------+------------+-----------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1844239Z (0 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1844451Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1845006Z === operations requiring human attention ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1845894Z  id | tenant_id | document_type | status | state_version | updated_at | state_age 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1846886Z ----+-----------+---------------+--------+---------------+------------+-----------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1847524Z (0 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1847723Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1848009Z === open/ambiguous provider attempts ===
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1852391Z  id | tenant_id | operation_id | attempt_no | status | outcome_code | started_at | finished_at | attempt_age 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1853796Z ----+-----------+--------------+------------+--------+--------------+------------+-------------+-------------
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1854509Z (0 rows)
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1854684Z 
+ci	Operational report as constrained ops login	2026-09-08T01:17:01.1854820Z COMMIT
+ci	E2E tests as separated API and worker DB logins	﻿2026-09-08T01:17:01.1905137Z ##[group]Run npm run test:e2e -- --runInBand
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1905504Z [36;1mnpm run test:e2e -- --runInBand[0m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1941549Z shell: /usr/bin/bash -e {0}
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1941828Z env:
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1942014Z   NODE_ENV: test
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1942828Z   DATABASE_URL: ***localhost:5432/ci
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1943278Z   WORKER_DATABASE_URL: ***localhost:5432/ci
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1943734Z   TEST_ADMIN_DATABASE_URL: ***localhost:5432/ci
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1944029Z   DATABASE_POOL_MAX: 3
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1944307Z   AUTH_PEPPER: f6-test-pepper-0123456789abcdef-32bytes
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.1944625Z ##[endgroup]
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.3062320Z 
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.3062946Z > api@0.0.1 test:e2e
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.3063643Z > jest --config ./test/jest-e2e.json --runInBand
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:01.3064102Z 
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1131738Z [01:17:03.105] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/health","statusCode":200,"elapsed_ms":1,"correlation_id":"73e2a8c3-ba1c-4691-af31-62790d37f59f"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1352200Z [01:17:03.133] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/ready","statusCode":200,"elapsed_ms":19,"correlation_id":"8130576f-1237-4b2f-b206-cd126a601b1f"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1613611Z [01:17:03.159] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":11,"correlation_id":"a16b1ab1-d0e8-4f10-aed0-c8292dabc2e3"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1692162Z [01:17:03.167] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":3,"correlation_id":"66e814af-8cb9-4743-913d-01bf22422002"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1871994Z [01:17:03.185] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":4,"correlation_id":"f5d64f30-4e04-47b4-843e-895ba872552a"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1933392Z [01:17:03.192] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":3,"correlation_id":"c098b96f-f327-4c8e-92b6-a65e92d36d91"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.1999500Z [01:17:03.198] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/bbbbbbbb-0000-4000-8000-000000000099","statusCode":200,"elapsed_ms":2,"correlation_id":"536ba1d3-a167-4369-9396-dffc64543fa3"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2196546Z [01:17:03.218] [32mINFO[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"9842c580-a3a3-4c2f-93e7-32ce2dc09334","operation_id":"48a65ec5-8479-4b89-9fc4-7f96b3f3076c","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"CONCLUSIVE_ACCEPTED","attempt_id":"44ada31d-8a2c-4637-a6fb-e5feed0b3784"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2232807Z [01:17:03.222] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"9842c580-a3a3-4c2f-93e7-32ce2dc09334","operation_id":"48a65ec5-8479-4b89-9fc4-7f96b3f3076c","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":12,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2293734Z [01:17:03.228] [32mINFO[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"5c55143d-964a-4df0-b1ef-5e96e8fbc64b","operation_id":"bf8f3209-9cd0-432c-b9ba-0db723881cef","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"CONCLUSIVE_ACCEPTED","attempt_id":"1d79ea96-1251-4c4a-b020-942366f779e0"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2325694Z [01:17:03.231] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"5c55143d-964a-4df0-b1ef-5e96e8fbc64b","operation_id":"bf8f3209-9cd0-432c-b9ba-0db723881cef","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":8,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2413675Z [01:17:03.240] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":5,"correlation_id":"f6545e1a-47e5-4f14-82a8-01712d695484"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2480410Z [01:17:03.246] [32mINFO[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"67f19492-cba0-40eb-8a87-8894f8378b19","operation_id":"7230dd93-1248-42fb-adc0-a9555c92b6bd","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"CONCLUSIVE_ACCEPTED","attempt_id":"b2c7d4f3-3698-432d-923a-f8843b4287f2"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2523741Z [01:17:03.250] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"67f19492-cba0-40eb-8a87-8894f8378b19","operation_id":"7230dd93-1248-42fb-adc0-a9555c92b6bd","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":8,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2565081Z [01:17:03.255] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/7230dd93-1248-42fb-adc0-a9555c92b6bd","statusCode":200,"elapsed_ms":2,"correlation_id":"63f9ebe2-7f70-4fa1-87ca-386931535b10"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2724973Z [01:17:03.271] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":5,"correlation_id":"1dfaa8d7-f84e-4d4d-9cb7-77d14bc485f4"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2788641Z [01:17:03.277] [33mWARN[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"7fff16e6-9eab-416b-be78-9323df8518fc","operation_id":"bd111f5c-6948-49cf-a44b-c66e8a7f25f2","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"TRANSPORT_AMBIGUOUS","attempt_id":"c62cfa7f-1b16-4078-955d-617fd4fd37b8","normalized_code":"FAKE_AMBIGUOUS_TIMEOUT"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2833448Z [01:17:03.281] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"7fff16e6-9eab-416b-be78-9323df8518fc","operation_id":"bd111f5c-6948-49cf-a44b-c66e8a7f25f2","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":8,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2866998Z [01:17:03.285] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/bd111f5c-6948-49cf-a44b-c66e8a7f25f2","statusCode":200,"elapsed_ms":1,"correlation_id":"df2d6201-667b-4b47-bc9c-c6721b981234"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2932645Z [01:17:03.292] [32mINFO[39m (3080): [36mprovider_reconcile_result[39m [90m{"event":"provider_reconcile_result","worker_id":"e2e-worker","work_id":"95309e43-41cb-4c08-b3f4-3947ae2e4b70","operation_id":"bd111f5c-6948-49cf-a44b-c66e8a7f25f2","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":0,"outcome":"FOUND_ACCEPTED","attempt_id":"c62cfa7f-1b16-4078-955d-617fd4fd37b8"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.2977402Z [01:17:03.296] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"95309e43-41cb-4c08-b3f4-3947ae2e4b70","operation_id":"bd111f5c-6948-49cf-a44b-c66e8a7f25f2","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":8,"outcome":"RECONCILED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3007717Z [01:17:03.299] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/bd111f5c-6948-49cf-a44b-c66e8a7f25f2","statusCode":200,"elapsed_ms":1,"correlation_id":"8b492a34-61cd-41f6-a23c-6ab7dd58aa7e"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3094618Z [01:17:03.308] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":4,"correlation_id":"a121e690-83b4-4271-9a86-9f982015fcf1"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3150681Z [01:17:03.314] [33mWARN[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"b3f30b85-419a-4ecf-be95-60d22eee8be6","operation_id":"ad813b1f-5434-4481-867a-d1376181ef3c","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"TRANSPORT_AMBIGUOUS","attempt_id":"a14679d0-2dbd-4655-9188-69a617b4441a","normalized_code":"FAKE_AMBIGUOUS_TIMEOUT"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3192698Z [01:17:03.317] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"b3f30b85-419a-4ecf-be95-60d22eee8be6","operation_id":"ad813b1f-5434-4481-867a-d1376181ef3c","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":7,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3222963Z [01:17:03.321] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/ad813b1f-5434-4481-867a-d1376181ef3c","statusCode":200,"elapsed_ms":2,"correlation_id":"9ef76b83-659f-413f-93b8-45b8ed6ace04"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3314372Z [01:17:03.330] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/ad813b1f-5434-4481-867a-d1376181ef3c","statusCode":200,"elapsed_ms":2,"correlation_id":"b19636e0-8c86-49a7-b540-956166d3e996"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3440511Z [01:17:03.343] [32mINFO[39m (3080): [36mprovider_reconcile_result[39m [90m{"event":"provider_reconcile_result","worker_id":"e2e-worker","work_id":"eef7e1c7-fdc8-46ce-9bc4-34a547e6d662","operation_id":"ad813b1f-5434-4481-867a-d1376181ef3c","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":0,"outcome":"FOUND_ACCEPTED","attempt_id":"a14679d0-2dbd-4655-9188-69a617b4441a"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3476099Z [01:17:03.345] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"eef7e1c7-fdc8-46ce-9bc4-34a547e6d662","operation_id":"ad813b1f-5434-4481-867a-d1376181ef3c","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":6,"outcome":"RECONCILED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3506554Z [01:17:03.349] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/ad813b1f-5434-4481-867a-d1376181ef3c","statusCode":200,"elapsed_ms":1,"correlation_id":"115705a8-5029-494f-a2c7-404a8d5ee5da"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3596925Z [01:17:03.358] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":4,"correlation_id":"7565f6fb-4009-44f0-afdc-f66492e8d5e0"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3658763Z [01:17:03.364] [33mWARN[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"f0e11163-1804-4312-be6f-256240d543a7","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"TRANSPORT_AMBIGUOUS","attempt_id":"d91c413c-1d54-434c-bb2d-876d955e2b84","normalized_code":"FAKE_DELAYED_VISIBILITY"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3704154Z [01:17:03.368] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"f0e11163-1804-4312-be6f-256240d543a7","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":8,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3734415Z [01:17:03.372] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/4e41a48f-e582-49f8-a25c-e6f412cc6005","statusCode":200,"elapsed_ms":2,"correlation_id":"1366e32c-aecf-49fd-a93a-9aaf0b406574"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3784651Z [01:17:03.377] [33mWARN[39m (3080): [36mprovider_reconcile_result[39m [90m{"event":"provider_reconcile_result","worker_id":"e2e-worker","work_id":"945100dd-2396-4518-9ca3-719d9468e9f9","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":0,"outcome":"INDETERMINATE","attempt_id":"d91c413c-1d54-434c-bb2d-876d955e2b84"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3811266Z [01:17:03.379] [33mWARN[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"945100dd-2396-4518-9ca3-719d9468e9f9","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":5,"outcome":"RETRY_SCHEDULED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3843284Z [01:17:03.383] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/4e41a48f-e582-49f8-a25c-e6f412cc6005","statusCode":200,"elapsed_ms":2,"correlation_id":"73a1e3eb-4864-49cc-8af8-15e0de34e3da"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3882440Z [01:17:03.387] [33mWARN[39m (3080): [36mprovider_reconcile_result[39m [90m{"event":"provider_reconcile_result","worker_id":"e2e-worker","work_id":"945100dd-2396-4518-9ca3-719d9468e9f9","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":2,"elapsed_ms":0,"outcome":"INDETERMINATE","attempt_id":"d91c413c-1d54-434c-bb2d-876d955e2b84"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3909146Z [01:17:03.389] [33mWARN[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"945100dd-2396-4518-9ca3-719d9468e9f9","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":2,"elapsed_ms":4,"outcome":"RETRY_SCHEDULED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3941365Z [01:17:03.392] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/4e41a48f-e582-49f8-a25c-e6f412cc6005","statusCode":200,"elapsed_ms":1,"correlation_id":"b25a9b3e-36fa-41ca-aba5-07f6d1604d1c"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.3989165Z [01:17:03.397] [32mINFO[39m (3080): [36mprovider_reconcile_result[39m [90m{"event":"provider_reconcile_result","worker_id":"e2e-worker","work_id":"945100dd-2396-4518-9ca3-719d9468e9f9","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":3,"elapsed_ms":0,"outcome":"FOUND_ACCEPTED","attempt_id":"d91c413c-1d54-434c-bb2d-876d955e2b84"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4022976Z [01:17:03.400] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"945100dd-2396-4518-9ca3-719d9468e9f9","operation_id":"4e41a48f-e582-49f8-a25c-e6f412cc6005","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":3,"elapsed_ms":5,"outcome":"RECONCILED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4051502Z [01:17:03.404] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/4e41a48f-e582-49f8-a25c-e6f412cc6005","statusCode":200,"elapsed_ms":2,"correlation_id":"ede668d7-91c4-4c7a-b364-6e61553592a5"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4138388Z [01:17:03.412] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":4,"correlation_id":"9209467c-7fe3-436f-a29c-f82996db089a"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4198972Z [01:17:03.418] [32mINFO[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"73e431cd-426b-4f56-8663-7ccae392b910","operation_id":"c9e5d2ff-fe10-4868-b2c3-0ec466f2f29b","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"TRANSPORT_PROVEN_NOT_SENT","attempt_id":"9d968d65-621c-41d9-8465-fa3c7a342b19","normalized_code":"FAKE_PROVEN_NOT_SENT"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4244077Z [01:17:03.422] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"73e431cd-426b-4f56-8663-7ccae392b910","operation_id":"c9e5d2ff-fe10-4868-b2c3-0ec466f2f29b","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":8,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4268064Z [01:17:03.425] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/c9e5d2ff-fe10-4868-b2c3-0ec466f2f29b","statusCode":200,"elapsed_ms":1,"correlation_id":"0de5ae5a-0eb6-408d-a1d7-ee8b05b3a48e"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4343833Z [01:17:03.433] [32mINFO[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"71b78700-933f-4ca5-abbc-c167ecf9ac79","operation_id":"c9e5d2ff-fe10-4868-b2c3-0ec466f2f29b","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":0,"outcome":"CONCLUSIVE_ACCEPTED","attempt_id":"cbfa6edf-cb6f-463f-bc32-d5ee87539ca4"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4380207Z [01:17:03.436] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"71b78700-933f-4ca5-abbc-c167ecf9ac79","operation_id":"c9e5d2ff-fe10-4868-b2c3-0ec466f2f29b","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":7,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4408483Z [01:17:03.439] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/c9e5d2ff-fe10-4868-b2c3-0ec466f2f29b","statusCode":200,"elapsed_ms":1,"correlation_id":"89213c71-f8f3-4918-85c3-e5b27c6ca327"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4497255Z [01:17:03.448] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":5,"correlation_id":"30abd0dd-bb7a-4631-b8e0-f835a2483e13"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4572852Z [01:17:03.455] [33mWARN[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"03818384-e6a1-41d4-9be0-ce6e80549980","operation_id":"ad219ab8-52a2-4daa-ba67-991326a2eab7","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":1,"elapsed_ms":3,"outcome":"MUTATIONS_PAUSED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4600585Z [01:17:03.459] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/ad219ab8-52a2-4daa-ba67-991326a2eab7","statusCode":200,"elapsed_ms":2,"correlation_id":"84e1b3f1-3872-4365-83e0-c881220c2dc6"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4670775Z [01:17:03.466] [32mINFO[39m (3080): [36mprovider_submit_result[39m [90m{"event":"provider_submit_result","worker_id":"e2e-worker","work_id":"03818384-e6a1-41d4-9be0-ce6e80549980","operation_id":"ad219ab8-52a2-4daa-ba67-991326a2eab7","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":2,"elapsed_ms":0,"outcome":"CONCLUSIVE_ACCEPTED","attempt_id":"b1e9c5af-6f56-4c9d-b444-d034cafc3dee"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4705712Z [01:17:03.469] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"03818384-e6a1-41d4-9be0-ce6e80549980","operation_id":"ad219ab8-52a2-4daa-ba67-991326a2eab7","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":2,"elapsed_ms":7,"outcome":"SUBMITTED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4735275Z [01:17:03.472] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/ad219ab8-52a2-4daa-ba67-991326a2eab7","statusCode":200,"elapsed_ms":1,"correlation_id":"8f75e750-8dd0-43ce-a9e8-0d838577a5d3"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4811064Z [01:17:03.480] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":4,"correlation_id":"e5beda96-1ea3-4395-904d-35c6fb9ba65e"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4943572Z [01:17:03.492] [33mWARN[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"e02b47c4-6b7c-4ad9-b94a-8ef168b323d9","operation_id":"3d214139-0775-4114-8241-17d17e872bbd","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"SUBMIT","attempt_count":2,"elapsed_ms":4,"outcome":"RECOVERED_UNKNOWN"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.4969116Z [01:17:03.496] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/3d214139-0775-4114-8241-17d17e872bbd","statusCode":200,"elapsed_ms":2,"correlation_id":"7efe5003-8bec-4ce3-9d03-7259c038f62a"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5026039Z [01:17:03.501] [32mINFO[39m (3080): [36mprovider_reconcile_result[39m [90m{"event":"provider_reconcile_result","worker_id":"e2e-worker","work_id":"da5e1cc5-0411-4396-925b-a279848102cd","operation_id":"3d214139-0775-4114-8241-17d17e872bbd","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":0,"outcome":"FOUND_ACCEPTED","attempt_id":"056d83b0-824b-407e-b721-9f9067177b1e"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5064581Z [01:17:03.504] [32mINFO[39m (3080): [36mworker_job_completed[39m [90m{"event":"worker_job_completed","worker_id":"e2e-worker","work_id":"da5e1cc5-0411-4396-925b-a279848102cd","operation_id":"3d214139-0775-4114-8241-17d17e872bbd","tenant_id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1","work_kind":"RECONCILE","attempt_count":1,"elapsed_ms":6,"outcome":"RECONCILED"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5091724Z [01:17:03.508] [32mINFO[39m (3080): [36mhttp_request[39m [90m{"method":"GET","url":"/v1/fiscal-operations/3d214139-0775-4114-8241-17d17e872bbd","statusCode":200,"elapsed_ms":2,"correlation_id":"630a778e-4da4-45b2-9d72-ac664120a02e"}[39m
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5204169Z PASS test/app.e2e-spec.ts
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5206916Z   API-DIAN F6B (e2e)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5209603Z     ✓ /health and /ready expose real DB readiness (60 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5210834Z     ✓ rejects missing credential (5 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5211745Z     ✓ persists one logical operation and one work item, then replays it (34 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5212848Z     ✓ rejects reuse of idempotency key with changed fiscal semantics (15 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5214047Z     ✓ does not reveal an operation from another tenant (6 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5214694Z     ✓ worker accepts a READY operation with one persisted provider attempt (63 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5215393Z     ✓ ambiguous submit becomes UNKNOWN and reconciles without a second submit (38 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5216063Z     ✓ invariant: UNKNOWN never resubmits (UNKNOWN != REEMITIR) (50 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5216708Z     ✓ retries read-only reconciliation during delayed provider visibility (54 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5217345Z     ✓ retries a mutation only after PROVEN_NOT_SENT is persisted (35 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5217981Z     ✓ kill switch pauses new submits without creating provider attempts (32 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5218703Z     ✓ crash after remote acceptance recovers through UNKNOWN and reconciliation (36 ms)
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5219485Z 
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5235411Z Test Suites: 1 passed, 1 total
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5235999Z Tests:       12 passed, 12 total
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5236477Z Snapshots:   0 total
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5236862Z Time:        1.908 s
+ci	E2E tests as separated API and worker DB logins	2026-09-08T01:17:03.5237247Z Ran all test suites.
+ci	Concurrency correctness gate	﻿2026-09-08T01:17:03.6600923Z ##[group]Run timeout 120s npm run test:concurrency -- --verbose
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6601455Z [36;1mtimeout 120s npm run test:concurrency -- --verbose[0m
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6638932Z shell: /usr/bin/bash -e {0}
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6639219Z env:
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6639449Z   NODE_ENV: test
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6640239Z   DATABASE_URL: ***localhost:5432/ci
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6640776Z   WORKER_DATABASE_URL: ***localhost:5432/ci
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6641554Z   TEST_ADMIN_DATABASE_URL: ***localhost:5432/ci
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6641992Z   DATABASE_POOL_MAX: 3
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6642420Z   AUTH_PEPPER: f6-test-pepper-0123456789abcdef-32bytes
+ci	Concurrency correctness gate	2026-09-08T01:17:03.6659058Z ##[endgroup]
+ci	Concurrency correctness gate	2026-09-08T01:17:03.7783778Z 
+ci	Concurrency correctness gate	2026-09-08T01:17:03.7784453Z > api@0.0.1 test:concurrency
+ci	Concurrency correctness gate	2026-09-08T01:17:03.7785317Z > jest --config ./test/jest-concurrency.json --runInBand --verbose
+ci	Concurrency correctness gate	2026-09-08T01:17:03.7785743Z 
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5373382Z [01:17:05.530] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":32,"correlation_id":"2563a44f-adfb-4728-842c-9336b4617b8d"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5411285Z [01:17:05.538] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":33,"correlation_id":"d8a12ed0-d322-42b9-8457-6c19b2e943b6"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5427262Z [01:17:05.539] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":33,"correlation_id":"04962d04-92b5-4709-8948-030a5ac4ba64"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5448325Z [01:17:05.543] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":40,"correlation_id":"49dbf159-a70a-47f0-9f18-6a5b1809077e"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5486954Z [01:17:05.546] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":38,"correlation_id":"6ab910b7-aa12-4b3e-bd7f-feb97375aae1"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5489061Z [01:17:05.547] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":38,"correlation_id":"a47be953-737a-4ec0-a57f-2529687e8391"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5522020Z [01:17:05.551] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":41,"correlation_id":"6c49ce1f-3455-49f0-a52e-bdbae7deff3c"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5543170Z [01:17:05.552] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":41,"correlation_id":"7fa984a0-c59c-4c54-a6d3-a1a6f7b36dbb"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5565820Z [01:17:05.553] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":41,"correlation_id":"a434f7da-0b7a-4757-a463-bbfd25c1c668"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5591618Z [01:17:05.557] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":44,"correlation_id":"a9f0fbd8-83a7-4f53-b750-ecc84d7429eb"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5613851Z [01:17:05.559] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":44,"correlation_id":"140e46bd-7d1a-42ea-b5cf-306be70ec700"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5618043Z [01:17:05.560] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":45,"correlation_id":"922995f2-2258-4a0c-b82b-b1914a5d9e8a"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5646010Z [01:17:05.563] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":47,"correlation_id":"04c672b9-47b5-4aa9-8079-cff78487d040"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5660592Z [01:17:05.564] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":47,"correlation_id":"9e2edab1-8ead-4c75-83a9-ce6b52837e70"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5677670Z [01:17:05.566] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":48,"correlation_id":"f56a5f9a-0313-4e20-abd5-e286cc90a851"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5692619Z [01:17:05.568] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":49,"correlation_id":"93a826f3-d3f4-4276-bace-ea9bfa7f7e10"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5751866Z [01:17:05.573] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":53,"correlation_id":"e265fef3-5e42-42e6-b7ef-3fc5e84d1dd8"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5754401Z [01:17:05.573] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":52,"correlation_id":"022fe517-b297-444f-89ba-a41e00cc82c1"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5815128Z [01:17:05.579] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":39,"correlation_id":"06219b59-6166-4193-b6e7-f94d4e093f9b"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5827561Z [01:17:05.581] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":33,"correlation_id":"63654eff-7978-48c4-8fc1-d33f7db3bdf1"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5832036Z [01:17:05.581] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":27,"correlation_id":"c7f95680-070d-4239-a770-ed569a7a4782"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5847640Z [01:17:05.583] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":22,"correlation_id":"f35d3960-1cf0-41b7-8cee-290ab00a4db8"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5865908Z [01:17:05.585] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":20,"correlation_id":"0c137eaf-aa52-42b3-a77b-29fa044cdec3"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5887019Z [01:17:05.586] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":16,"correlation_id":"93f1e7cb-35c8-4cef-b02a-e8561ef50f86"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5890961Z [01:17:05.587] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":18,"correlation_id":"0d5fbdf3-2bab-4fce-93e9-01346483c675"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5905329Z [01:17:05.589] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":18,"correlation_id":"398f41ff-f842-4223-be95-bb7569b9bb72"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5923632Z [01:17:05.591] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":19,"correlation_id":"5a3e1a78-06f8-4667-8993-9bf4bc5e6d02"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5930802Z [01:17:05.592] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":18,"correlation_id":"feabf4ff-0f58-4ff8-a6f1-246fd1ec8264"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5942383Z [01:17:05.593] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":18,"correlation_id":"1a5ba63b-bc14-49c2-8335-037a34fa9b0f"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5953172Z [01:17:05.594] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":18,"correlation_id":"abfe61bf-cf60-4661-b811-318721e6c552"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5962171Z [01:17:05.595] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":18,"correlation_id":"70599403-7fab-4fe9-9984-78ed03b9fda4"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.5967198Z [01:17:05.596] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":19,"correlation_id":"95a0944c-a998-4f33-886b-4cf8cf1a8dc8"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6174428Z [01:17:05.616] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":6,"correlation_id":"6e1f878b-a63d-495d-b6ce-dabee851550c"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6189993Z [01:17:05.618] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":7,"correlation_id":"b32e4735-bdd0-4847-9c29-2b929624add0"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6443475Z [01:17:05.642] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":9,"correlation_id":"2df6f644-916e-446a-9ff1-70aff433616a"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6470650Z [01:17:05.646] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":13,"correlation_id":"5adb3212-dda1-417b-8c02-fc8872c9b555"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6488779Z [01:17:05.646] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":11,"correlation_id":"c854ac1d-731a-48f7-b1a7-293dab10373a"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6615458Z [01:17:05.659] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":23,"correlation_id":"f0ee3434-9706-4f65-8ce8-84c929ea71b0"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6699521Z [01:17:05.668] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":24,"correlation_id":"f9ea6a2c-2aaa-4b1c-be30-e874b4fb8190"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6711000Z [01:17:05.669] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":22,"correlation_id":"f871c51e-e16f-49da-bfab-847f21ff1034"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6737878Z [01:17:05.672] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":24,"correlation_id":"5dba3fc6-5914-47ca-b2aa-6ac6aab20765"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6782695Z [01:17:05.675] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":26,"correlation_id":"e29b9b3c-91fe-457d-8e3e-990ea104addd"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6795474Z [01:17:05.678] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":27,"correlation_id":"0034ca61-dc52-4143-ae27-b78aaafc9a0d"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6823308Z [01:17:05.680] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":29,"correlation_id":"a98a15ad-b5ab-40ff-b895-2d8aa2e0e177"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6873137Z [01:17:05.685] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":31,"correlation_id":"8c7e1f8b-ec41-486e-9842-7f65e34b2e5d"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6876413Z [01:17:05.685] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":32,"correlation_id":"c1754daf-ed5c-4c13-a542-81151bd6968c"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6892654Z [01:17:05.688] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":33,"correlation_id":"fe587472-18ce-4655-a88a-29a5d3c94283"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6931166Z [01:17:05.692] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":36,"correlation_id":"61bf29d0-252b-4993-b1e0-0a339a040b89"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6948458Z [01:17:05.694] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":37,"correlation_id":"140da2a1-faf6-4542-8a0d-b05b41f7e3cc"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.6961927Z [01:17:05.695] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":38,"correlation_id":"5384975c-426a-4639-8090-fcb0ba517d21"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7013379Z [01:17:05.700] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":40,"correlation_id":"9f96441d-af69-4052-87ed-d939f1b77b4f"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7025447Z [01:17:05.701] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":40,"correlation_id":"44e3945d-dd9f-45c8-bb17-3ac8cc1d56d6"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7032544Z [01:17:05.701] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":43,"correlation_id":"c48dcb09-24be-490f-b240-40bf31e83869"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7101052Z [01:17:05.707] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":46,"correlation_id":"8bfbcbbc-a03d-48da-b469-78a782d44a6a"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7169301Z [01:17:05.715] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":52,"correlation_id":"6cf4116c-7d10-4183-8282-f89b9e4948c0"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7198524Z [01:17:05.718] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":47,"correlation_id":"d880edcd-bd5a-4f49-a007-434e9fb1ffef"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7210614Z [01:17:05.720] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":44,"correlation_id":"045c83b9-42e7-4270-b7a4-298ef48d4669"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7227600Z [01:17:05.721] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":40,"correlation_id":"761330b9-2100-4d36-9435-4ce938a35476"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7255998Z [01:17:05.724] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":37,"correlation_id":"bb87c66d-e928-48a1-b385-41a8b3495f09"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7273813Z [01:17:05.726] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":33,"correlation_id":"b8ec66c2-b6af-4305-8790-ad1830ba93f9"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7287997Z [01:17:05.728] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":32,"correlation_id":"a14f4a85-6e2f-47f1-bc69-dff60568ad9d"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7311952Z [01:17:05.730] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":28,"correlation_id":"aa3e38bf-3eb1-45c9-85cc-e99fba0462f0"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7347730Z [01:17:05.732] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":28,"correlation_id":"ad2727c2-05f0-443b-8fc5-5c2467fc1504"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7350164Z [01:17:05.733] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":28,"correlation_id":"bafdab26-03a1-4d5d-9235-f4f5e1c058df"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7395414Z [01:17:05.737] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":31,"correlation_id":"1243d253-4668-410b-a4db-c71c216cf056"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7397949Z [01:17:05.738] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":31,"correlation_id":"25c99e46-1053-4ce7-b6b1-43107b565da4"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7414610Z [01:17:05.740] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":32,"correlation_id":"e3cf1de9-6bd2-45c3-a2fb-2735029c5429"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7446185Z [01:17:05.743] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":34,"correlation_id":"39de4a7a-4d6d-4303-9376-704d48e30610"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7462655Z [01:17:05.745] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":35,"correlation_id":"112c30c3-f325-4364-9ad5-9312f27a433e"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7484608Z [01:17:05.747] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":36,"correlation_id":"82d0e651-a472-4cf2-9084-3ebb66796039"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7507489Z [01:17:05.749] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":38,"correlation_id":"4ae5bde8-88bd-4277-94fb-5aa59415b45a"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7531742Z [01:17:05.752] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":40,"correlation_id":"01c62e8c-bd78-4dbe-98b4-ff1203904423"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7536796Z [01:17:05.752] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":39,"correlation_id":"4d7350f9-3f2f-4934-b3b0-3c213e39f970"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.7556058Z [01:17:05.754] [32mINFO[39m (3135): [36mhttp_request[39m [90m{"method":"POST","url":"/v1/fiscal-operations","statusCode":202,"elapsed_ms":41,"correlation_id":"ad153cfe-d6d7-4e67-8388-74da45dec583"}[39m
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8352154Z PASS test/fiscal-concurrency.concurrency-spec.ts
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8353595Z   API-DIAN F6 concurrency gates
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8358756Z     ✓ collapses 32 simultaneous identical commands into one logical operation (187 ms)
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8361399Z     ✓ allows exactly one semantic winner when different payloads race on one key (14 ms)
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8364767Z     ✓ persists 40 distinct simultaneous commands without loss or duplication (137 ms)
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8371747Z     ✓ claims every newly queued work item exactly once under parallel workers (59 ms)
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8372780Z 
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8399960Z Test Suites: 1 passed, 1 total
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8400631Z Tests:       4 passed, 4 total
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8401120Z Snapshots:   0 total
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8401560Z Time:        1.759 s
+ci	Concurrency correctness gate	2026-09-08T01:17:05.8401966Z Ran all test suites.
+ci	Post Run actions/setup-node@v4	﻿2026-09-08T01:17:05.9801645Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:05.9802931Z Post job cleanup.
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:06.1111428Z (node:3169) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:06.1113039Z (Use `node --trace-deprecation ...` to show where the warning was created)
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:06.1398113Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/API-Dian/API-Dian --files-from manifest.txt --use-compress-program zstdmt
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:06.5842021Z (node:3169) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:07.5754487Z Sent 23855104 of 32688450 (73.0%), 22.7 MBs/sec
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:08.0031211Z Sent 32688450 of 32688450 (100.0%), 21.8 MBs/sec
+ci	Post Run actions/setup-node@v4	2026-09-08T01:17:08.2738513Z Cache saved with the key: node-cache-Linux-x64-npm-0bf1052aa5a480812542930f81012a5a8172984c759af0ae2b03b52f918c2064
+ci	Post Run actions/checkout@v4	﻿2026-09-08T01:17:08.2904915Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.2906221Z Post job cleanup.
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3802633Z [command]/usr/bin/git version
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3853302Z git version 2.55.0
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3901312Z Temporarily overriding HOME='/home/runner/work/_temp/26f63084-d642-4257-994f-60fb88e172a9' before making global git config changes
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3903320Z Adding repository directory to the temporary git global config as a safe directory
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3907782Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/API-Dian/API-Dian
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3957155Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.3998672Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.4280071Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.4314972Z http.https://github.com/.extraheader
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.4328035Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.4385440Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.4665770Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+ci	Post Run actions/checkout@v4	2026-09-08T01:17:08.4710666Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+ci	Stop containers	﻿2026-09-08T01:17:08.5147459Z Print service container logs: 7f29c0d38f6241b894be86ae3e979aaf_postgres15_515711
+ci	Stop containers	2026-09-08T01:17:08.5155242Z ##[command]/usr/bin/docker logs --details 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Stop containers	2026-09-08T01:17:08.5303978Z  initdb: warning: enabling "trust" authentication for local connections
+ci	Stop containers	2026-09-08T01:17:08.5304851Z  The files belonging to this database system will be owned by user "postgres".
+ci	Stop containers	2026-09-08T01:17:08.5305847Z  initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+ci	Stop containers	2026-09-08T01:17:08.5307071Z  2026-09-08 01:16:22.184 UTC [1] LOG:  starting PostgreSQL 15.19 (Debian 15.19-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+ci	Stop containers	2026-09-08T01:17:08.5307987Z  2026-09-08 01:16:22.185 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+ci	Stop containers	2026-09-08T01:17:08.5308584Z  2026-09-08 01:16:22.185 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+ci	Stop containers	2026-09-08T01:17:08.5309272Z  2026-09-08 01:16:22.186 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+ci	Stop containers	2026-09-08T01:17:08.5311900Z  2026-09-08 01:16:22.188 UTC [65] LOG:  database system was shut down at 2026-09-08 01:16:22 UTC
+ci	Stop containers	2026-09-08T01:17:08.5313035Z  2026-09-08 01:16:22.193 UTC [1] LOG:  database system is ready to accept connections
+ci	Stop containers	2026-09-08T01:17:08.5314558Z  2026-09-08 01:17:00.957 UTC [131] WARNING:  role "api_dian_dev" is not a member of role "app_worker"
+ci	Stop containers	2026-09-08T01:17:08.5315573Z  2026-09-08 01:17:00.957 UTC [131] WARNING:  role "api_dian_dev" is not a member of role "app_ops"
+ci	Stop containers	2026-09-08T01:17:08.5316550Z  2026-09-08 01:17:00.957 UTC [131] WARNING:  role "api_dian_dev" is not a member of role "app_ops_control"
+ci	Stop containers	2026-09-08T01:17:08.5317532Z  2026-09-08 01:17:00.957 UTC [131] WARNING:  role "api_dian_dev" is not a member of role "app_migrator"
+ci	Stop containers	2026-09-08T01:17:08.5318565Z  2026-09-08 01:17:00.966 UTC [131] WARNING:  role "api_dian_worker_dev" is not a member of role "app_api"
+ci	Stop containers	2026-09-08T01:17:08.5319596Z  2026-09-08 01:17:00.966 UTC [131] WARNING:  role "api_dian_worker_dev" is not a member of role "app_ops"
+ci	Stop containers	2026-09-08T01:17:08.5320997Z  2026-09-08 01:17:00.966 UTC [131] WARNING:  role "api_dian_worker_dev" is not a member of role "app_ops_control"
+ci	Stop containers	2026-09-08T01:17:08.5322161Z  2026-09-08 01:17:00.966 UTC [131] WARNING:  role "api_dian_worker_dev" is not a member of role "app_migrator"
+ci	Stop containers	2026-09-08T01:17:08.5323279Z  2026-09-08 01:17:00.975 UTC [131] WARNING:  role "api_dian_ops_dev" is not a member of role "app_api"
+ci	Stop containers	2026-09-08T01:17:08.5324320Z  2026-09-08 01:17:00.975 UTC [131] WARNING:  role "api_dian_ops_dev" is not a member of role "app_worker"
+ci	Stop containers	2026-09-08T01:17:08.5327172Z  2026-09-08 01:17:00.975 UTC [131] WARNING:  role "api_dian_ops_dev" is not a member of role "app_migrator"
+ci	Stop containers	2026-09-08T01:17:08.5328259Z  2026-09-08 01:17:03.325 UTC [147] ERROR:  invalid fiscal state transition: UNKNOWN -> READY
+ci	Stop containers	2026-09-08T01:17:08.5329358Z  2026-09-08 01:17:03.325 UTC [147] CONTEXT:  PL/pgSQL function app.guard_fiscal_operation_update() line 40 at RAISE
+ci	Stop containers	2026-09-08T01:17:08.5330612Z  2026-09-08 01:17:03.325 UTC [147] STATEMENT:  UPDATE app.fiscal_operations
+ci	Stop containers	2026-09-08T01:17:08.5331201Z  	         SET status = 'READY', state_version = state_version + 1
+ci	Stop containers	2026-09-08T01:17:08.5331545Z  	         WHERE id = $1::uuid
+ci	Stop containers	2026-09-08T01:17:08.5331868Z  This user must also own the server process.
+ci	Stop containers	2026-09-08T01:17:08.5332160Z  
+ci	Stop containers	2026-09-08T01:17:08.5332442Z  The database cluster will be initialized with locale "en_US.utf8".
+ci	Stop containers	2026-09-08T01:17:08.5332886Z  The default database encoding has accordingly been set to "UTF8".
+ci	Stop containers	2026-09-08T01:17:08.5333316Z  The default text search configuration will be set to "english".
+ci	Stop containers	2026-09-08T01:17:08.5333643Z  
+ci	Stop containers	2026-09-08T01:17:08.5333835Z  Data page checksums are disabled.
+ci	Stop containers	2026-09-08T01:17:08.5334085Z  
+ci	Stop containers	2026-09-08T01:17:08.5334390Z  fixing permissions on existing directory /var/lib/postgresql/data ... ok
+ci	Stop containers	2026-09-08T01:17:08.5334788Z  creating subdirectories ... ok
+ci	Stop containers	2026-09-08T01:17:08.5335380Z  selecting dynamic shared memory implementation ... posix
+ci	Stop containers	2026-09-08T01:17:08.5335738Z  selecting default max_connections ... 100
+ci	Stop containers	2026-09-08T01:17:08.5336040Z  selecting default shared_buffers ... 128MB
+ci	Stop containers	2026-09-08T01:17:08.5336333Z  selecting default time zone ... Etc/UTC
+ci	Stop containers	2026-09-08T01:17:08.5336623Z  creating configuration files ... ok
+ci	Stop containers	2026-09-08T01:17:08.5336895Z  running bootstrap script ... ok
+ci	Stop containers	2026-09-08T01:17:08.5337193Z  performing post-bootstrap initialization ... ok
+ci	Stop containers	2026-09-08T01:17:08.5337504Z  syncing data to disk ... ok
+ci	Stop containers	2026-09-08T01:17:08.5337731Z  
+ci	Stop containers	2026-09-08T01:17:08.5337900Z  
+ci	Stop containers	2026-09-08T01:17:08.5338127Z  Success. You can now start the database server using:
+ci	Stop containers	2026-09-08T01:17:08.5338436Z  
+ci	Stop containers	2026-09-08T01:17:08.5338670Z      pg_ctl -D /var/lib/postgresql/data -l logfile start
+ci	Stop containers	2026-09-08T01:17:08.5338970Z  
+ci	Stop containers	2026-09-08T01:17:08.5339621Z  waiting for server to start....2026-09-08 01:16:21.875 UTC [49] LOG:  starting PostgreSQL 15.19 (Debian 15.19-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+ci	Stop containers	2026-09-08T01:17:08.5340878Z  2026-09-08 01:16:21.876 UTC [49] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+ci	Stop containers	2026-09-08T01:17:08.5341477Z  2026-09-08 01:16:21.878 UTC [52] LOG:  database system was shut down at 2026-09-08 01:16:21 UTC
+ci	Stop containers	2026-09-08T01:17:08.5342003Z  2026-09-08 01:16:21.882 UTC [49] LOG:  database system is ready to accept connections
+ci	Stop containers	2026-09-08T01:17:08.5342545Z   done
+ci	Stop containers	2026-09-08T01:17:08.5342732Z  server started
+ci	Stop containers	2026-09-08T01:17:08.5342938Z  CREATE DATABASE
+ci	Stop containers	2026-09-08T01:17:08.5343131Z  
+ci	Stop containers	2026-09-08T01:17:08.5343301Z  
+ci	Stop containers	2026-09-08T01:17:08.5343620Z  /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+ci	Stop containers	2026-09-08T01:17:08.5344024Z  
+ci	Stop containers	2026-09-08T01:17:08.5344278Z  2026-09-08 01:16:22.063 UTC [49] LOG:  received fast shutdown request
+ci	Stop containers	2026-09-08T01:17:08.5344816Z  waiting for server to shut down....2026-09-08 01:16:22.064 UTC [49] LOG:  aborting any active transactions
+ci	Stop containers	2026-09-08T01:17:08.5345517Z  2026-09-08 01:16:22.066 UTC [49] LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
+ci	Stop containers	2026-09-08T01:17:08.5346063Z  2026-09-08 01:16:22.066 UTC [50] LOG:  shutting down
+ci	Stop containers	2026-09-08T01:17:08.5346456Z  2026-09-08 01:16:22.067 UTC [50] LOG:  checkpoint starting: shutdown immediate
+ci	Stop containers	2026-09-08T01:17:08.5347473Z  2026-09-08 01:16:22.082 UTC [50] LOG:  checkpoint complete: wrote 922 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.012 s, sync=0.002 s, total=0.017 s; sync files=301, longest=0.001 s, average=0.001 s; distance=4239 kB, estimate=4239 kB
+ci	Stop containers	2026-09-08T01:17:08.5348469Z  2026-09-08 01:16:22.089 UTC [49] LOG:  database system is shut down
+ci	Stop containers	2026-09-08T01:17:08.5348798Z   done
+ci	Stop containers	2026-09-08T01:17:08.5348983Z  server stopped
+ci	Stop containers	2026-09-08T01:17:08.5349177Z  
+ci	Stop containers	2026-09-08T01:17:08.5349413Z  PostgreSQL init process complete; ready for start up.
+ci	Stop containers	2026-09-08T01:17:08.5349956Z  
+ci	Stop containers	2026-09-08T01:17:08.5356202Z Stop and remove container: 7f29c0d38f6241b894be86ae3e979aaf_postgres15_515711
+ci	Stop containers	2026-09-08T01:17:08.5361883Z ##[command]/usr/bin/docker rm --force 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Stop containers	2026-09-08T01:17:08.7731117Z 5a8df0a28e6d0fc2e166ab062085c5ce73ae39e5a72b8590ca23b8846326d935
+ci	Stop containers	2026-09-08T01:17:08.7761591Z Remove container network: github_network_023acc28863942a9b309f651d11bcbae
+ci	Stop containers	2026-09-08T01:17:08.7765968Z ##[command]/usr/bin/docker network rm github_network_023acc28863942a9b309f651d11bcbae
+ci	Stop containers	2026-09-08T01:17:08.8736349Z github_network_023acc28863942a9b309f651d11bcbae
+ci	Complete job	﻿2026-09-08T01:17:08.8814220Z Cleaning up orphan processes
+ci	Complete job	2026-09-08T01:17:08.9182831Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

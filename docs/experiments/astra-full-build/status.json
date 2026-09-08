@@ -67,15 +67,17 @@
                    {
                        "id":  5,
                        "name":  "Runner + containers + CI",
-                       "status":  "IN PROGRESS",
+                       "status":  "PASS",
                        "evidence":  [
                                         "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
                                         "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md"
+                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md",
+                                        "docs/experiments/astra-full-build/PHASE-5-CI-RUN-2026-09-07.md",
+                                        "docs/experiments/astra-full-build/evidence-run-34176075661.log",
+                                        "https://github.com/Abraha33/API-Dian/actions/runs/34176075661",
+                                        ".github/workflows/ci.yml"
                                     ],
-                       "blockers":  [
-                                        "No hay ejecución real disparada en GitHub Actions (self-hosted o hospedado); solo equivalente local reproducido dos veces."
-                                    ]
+                       "note":  "Ejecucion real disparada en el runner hospedado ubuntu-latest de GitHub Actions (no self-hosted, no disponible para este experimento): checkout limpio, npm ci, audit, build, lint, unit 10/10, provider-contract 6/6, migraciones desde cero, E2E 12/12, concurrencia 4/4. Primer intento fallo por una vulnerabilidad alta real (fast-uri) y se corrigio con npm audit fix (commit 2ec1e71); el segundo intento fue PASS completo."
                    },
                    {
                        "id":  6,
@@ -84,12 +86,17 @@
                        "evidence":  [
                                         "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
                                         "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md"
+                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md",
+                                        "apps/api/test/app.e2e-spec.ts::'invariant: UNKNOWN never resubmits (UNKNOWN != REEMITIR)' (commit be98754, 12/12 e2e PASS incl. this test, run 34176075661)",
+                                        "scripts/benchmarks/fiscal-throughput-bench.mjs (commit cb73ed7)",
+                                        "docs/experiments/astra-full-build/evidence/bench-2026-09-07-local.json"
                                     ],
+                       "note":  "Benchmark de throughput migrado al repo (scripts/benchmarks/fiscal-throughput-bench.mjs) y corrido localmente contra FakeFiscalProvider ACCEPT (commit df7acce, Windows 10, i7-7700, 8 CPU, 32GB RAM): progresion 10/25/50/75/100 de concurrencia, 150 peticiones por nivel, 0 errores en todos los niveles, throughput observado 106-147 docs/s (por encima del objetivo de 50 docs/s), p95 sube de 195ms a 939ms segun la concurrencia. Todavia no mide CPU/memoria/locks/profundidad de cola de PostgreSQL ni del proceso API/worker.",
                        "blockers":  [
                                         "Webhooks no implementados en apps/api/src (grep sin resultados); el punto B del mandato de Fase 6 no se puede probar hasta que exista el módulo.",
                                         "Faltan specs de fault-injection para lease expirado, crash de worker, backlog drain y rollback de deployment.",
-                                        "Benchmark no migrado a scripts/ del repo ni corrido en progresión 10/25/50/75/100 req/s con métricas de sistema."
+                                        "Benchmark no captura todavia CPU/memoria/locks/profundidad de cola de PostgreSQL ni del proceso API/worker (solo latencia y throughput HTTP).",
+                                        "Seguridad/invariantes (cross-tenant, RLS, secretos en logs) no revalidados con evidencia fresca en esta ronda de sesiones."
                                     ]
                    },
                    {

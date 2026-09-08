@@ -21,8 +21,8 @@ Una fase solo puede estar en `PASS` si tiene evidencia reproducible enlazada.
 | 2. Testeo/aceptación | Demostrar comportamientos e invariantes | suites unitarias, provider, E2E y concurrencia | PASS | `PHASE-2-ACCEPTANCE-PLAN.md`, `LOCAL-EVIDENCE-2026-09-07.md` |
 | 3. Construcción local | Construir la API V1 local | API, DB, worker y FakeFiscalProvider ejecutados | PASS | `LOCAL-EVIDENCE-2026-09-07.md`, `test/app.e2e-spec.ts` |
 | 4. Integración E2E local | Conectar el flujo completo sin PT real | 11 pruebas E2E PASS con FakeFiscalProvider | PASS | `LOCAL-EVIDENCE-2026-09-07.md` |
-| 5. Runner + containers + CI | Reproducir checkout, DB, migraciones y tests | Docker, migraciones, checkout limpio, build y suites locales PASS; runner/CI pendiente | IN PROGRESS | `LOCAL-EVIDENCE-2026-09-07.md`, `PHASE-5-6-FAULT-CAPACITY-2026-09-07.md`, `PHASE-5-6-SESSION-2026-09-07B.md`, `.github/workflows/ci.yml` |
-| 6. Fallos + seguridad + capacidad | Atacar, recuperar y medir el sistema | concurrencia, crash, DB outage, restore y benchmark cubiertos; webhooks NO implementados en el código (bloqueador de alcance), rollback/lease de worker y límites del PT pendientes | IN PROGRESS | `PHASE-2-ACCEPTANCE-PLAN.md`, `LOCAL-EVIDENCE-2026-09-07.md`, `PHASE-5-6-FAULT-CAPACITY-2026-09-07.md`, `PHASE-5-6-SESSION-2026-09-07B.md` |
+| 5. Runner + containers + CI | Reproducir checkout, DB, migraciones y tests | Docker, migraciones, checkout limpio, build y suites, ahora también en un runner real de GitHub Actions (hospedado `ubuntu-latest`, no self-hosted) | PASS | `PHASE-5-CI-RUN-2026-09-07.md`, `evidence-run-34176075661.log`, run https://github.com/Abraha33/API-Dian/actions/runs/34176075661, `LOCAL-EVIDENCE-2026-09-07.md`, `PHASE-5-6-FAULT-CAPACITY-2026-09-07.md`, `PHASE-5-6-SESSION-2026-09-07B.md`, `.github/workflows/ci.yml` |
+| 6. Fallos + seguridad + capacidad | Atacar, recuperar y medir el sistema | concurrencia, crash, DB outage, restore, benchmark de throughput e invariante `UNKNOWN != REEMITIR` cubiertos; webhooks NO implementados en el código (bloqueador de alcance), rollback/lease de worker, seguridad refrescada y métricas de sistema (CPU/mem/locks/cola) del benchmark pendientes | IN PROGRESS | `PHASE-2-ACCEPTANCE-PLAN.md`, `LOCAL-EVIDENCE-2026-09-07.md`, `PHASE-5-6-FAULT-CAPACITY-2026-09-07.md`, `PHASE-5-6-SESSION-2026-09-07B.md`, `apps/api/test/app.e2e-spec.ts` (commit `be98754`), `scripts/benchmarks/fiscal-throughput-bench.mjs`, `evidence/bench-2026-09-07-local.json` (commit `cb73ed7`) |
 | 7. Ready for PT Integration | Cerrar solo con Fases 0–6 PASS | bloqueada por Fases 5–6 | BLOCKED | depende de Fases 5–6 |
 | 8. Integración PT real | Reemplazar el PT falso por el proveedor real sin cambiar la API pública | adapter real, sandbox, errores reales, reconciliación y contingencias PT | BLOCKED | requiere owner/PT |
 | 9. Validación externa | Demostrar comportamiento con sistemas y condiciones reales | pruebas aplicables PT/DIAN, habilitación, piloto controlado | BLOCKED | requiere mundo externo |
@@ -105,3 +105,51 @@ Siguiente fase:
 ```
 
 Este formato es obligatorio para los cierres de fase.
+
+---
+
+## Cierre de Fase 5 (2026-09-07)
+
+```text
+FASE: 5 — Runner + containers + CI
+ESTADO: PASS
+
+¿Qué significa?
+El pipeline completo (checkout, dependencias, base de datos, migraciones,
+lint, build, pruebas unitarias, de contrato, E2E y de concurrencia) ya
+corrió de punta a punta en un runner real de GitHub Actions, no solo en
+la máquina local.
+
+¿Qué probamos?
+- Workflow disparado en un runner hospedado (ubuntu-latest; no hay
+  self-hosted runner disponible para este experimento, se documenta así)
+- Checkout limpio del branch experimental
+- PostgreSQL 15 real como contenedor de servicio del runner
+- npm ci reproducible
+- npm audit (gate de severidad alta)
+- build, lint
+- unit tests 10/10, provider-contract 6/6
+- migraciones desde cero + verificaciones SQL
+- E2E 12/12 (incluye la invariante obligatoria UNKNOWN != REEMITIR)
+- concurrencia 4/4
+
+¿Qué salió mal y se corrigió?
+- El primer run real (34175894436) falló en el audit de dependencias de
+  producción: vulnerabilidad alta real en `fast-uri` (transitiva vía
+  fastify/ajv). Se corrigió con `npm audit fix` (sin --force, sin romper
+  nada) en el commit 2ec1e71. El segundo run (34176075661) fue PASS
+  completo. Quedan 2 vulnerabilidades moderadas de fastify que requieren
+  una migración mayor (--force) y se dejan para el owner, no bloquean
+  el gate de severidad alta.
+
+Evidencia:
+- commits: be98754 (test invariante), df7acce (workflow scoping), 2ec1e71 (fix audit)
+- comando: gh workflow run "CI Pipeline" --ref experiment/astra-full-api-dian-v1
+- runs: https://github.com/Abraha33/API-Dian/actions/runs/34175894436 (failure, real)
+         https://github.com/Abraha33/API-Dian/actions/runs/34176075661 (success, real)
+- reporte: docs/experiments/astra-full-build/PHASE-5-CI-RUN-2026-09-07.md
+           docs/experiments/astra-full-build/evidence-run-34176075661.log
+
+Siguiente fase:
+6 — Fallos + seguridad + capacidad (sigue IN PROGRESS; ver bloqueadores en status.json)
+```
