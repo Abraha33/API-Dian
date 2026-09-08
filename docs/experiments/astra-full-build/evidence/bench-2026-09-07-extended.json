@@ -1,0 +1,503 @@
+{
+  "generated_at": "2026-09-08T03:57:33.988Z",
+  "commit": "0488712bd03940ca1fb73c161fc390d5cbe79b3b",
+  "branch": "experiment/astra-full-api-dian-v1",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpus": 8,
+    "cpu_model": "Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz",
+    "total_mem_gb": 31.9,
+    "node_version": "v24.18.0",
+    "loadavg_note": "os.loadavg() is always [0,0,0] on Windows; not a real measurement on this OS"
+  },
+  "provider": "FakeFiscalProvider (ACCEPT) — no real fiscal provider involved",
+  "base_url": "http://127.0.0.1:3100",
+  "requests_per_level": 300,
+  "levels_planned": [
+    10,
+    25,
+    50,
+    75,
+    100
+  ],
+  "levels_actually_run": [
+    10,
+    25,
+    50,
+    75,
+    100,
+    150,
+    225,
+    338,
+    507,
+    761
+  ],
+  "auto_extend": true,
+  "max_concurrency_cap": 1000,
+  "postgres_metrics": {
+    "available": true
+  },
+  "results": [
+    {
+      "concurrency": 10,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 30474.7,
+      "observed_docs_per_s": 9.84,
+      "p50_ms": 1004.8,
+      "p95_ms": 1132.1,
+      "p99_ms": 1224.5,
+      "max_ms": 1226.8,
+      "process_rss_mb": {
+        "min": 59,
+        "max": 79.7,
+        "avg": 73.9
+      },
+      "os_free_mem_pct": {
+        "min": 37.4,
+        "max": 38.3,
+        "avg": 37.8
+      },
+      "postgres": {
+        "connections": {
+          "min": 3,
+          "max": 13,
+          "avg": 12.8
+        },
+        "locks": {
+          "min": 2,
+          "max": 13,
+          "avg": 2.5
+        },
+        "queue_depth": {
+          "min": 0,
+          "max": 0,
+          "avg": 0
+        },
+        "oldest_pending_age_s": {
+          "min": 0,
+          "max": 0,
+          "avg": 0
+        }
+      }
+    },
+    {
+      "concurrency": 25,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 11225.4,
+      "observed_docs_per_s": 26.72,
+      "p50_ms": 975.6,
+      "p95_ms": 1068.1,
+      "p99_ms": 1091.9,
+      "max_ms": 1161.2,
+      "process_rss_mb": {
+        "min": 80.1,
+        "max": 88.9,
+        "avg": 85.8
+      },
+      "os_free_mem_pct": {
+        "min": 37.5,
+        "max": 37.7,
+        "avg": 37.6
+      },
+      "postgres": {
+        "connections": {
+          "min": 13,
+          "max": 28,
+          "avg": 27.3
+        },
+        "locks": {
+          "min": 2,
+          "max": 25,
+          "avg": 12
+        },
+        "queue_depth": {
+          "min": 0,
+          "max": 15,
+          "avg": 2.8
+        },
+        "oldest_pending_age_s": {
+          "min": 0,
+          "max": 0.6,
+          "avg": 0.2
+        }
+      }
+    },
+    {
+      "concurrency": 50,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 6216.6,
+      "observed_docs_per_s": 48.26,
+      "p50_ms": 980,
+      "p95_ms": 1171,
+      "p99_ms": 1173.6,
+      "max_ms": 1175.8,
+      "process_rss_mb": {
+        "min": 88.4,
+        "max": 104.9,
+        "avg": 97.9
+      },
+      "os_free_mem_pct": {
+        "min": 37.5,
+        "max": 37.9,
+        "avg": 37.6
+      },
+      "postgres": {
+        "connections": {
+          "min": 28,
+          "max": 34,
+          "avg": 32.7
+        },
+        "locks": {
+          "min": 2,
+          "max": 25,
+          "avg": 10.3
+        },
+        "queue_depth": {
+          "min": 0,
+          "max": 78,
+          "avg": 51
+        },
+        "oldest_pending_age_s": {
+          "min": 0,
+          "max": 1.9,
+          "avg": 1.2
+        }
+      }
+    },
+    {
+      "concurrency": 75,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 4175,
+      "observed_docs_per_s": 71.86,
+      "p50_ms": 755,
+      "p95_ms": 1439,
+      "p99_ms": 1444.7,
+      "max_ms": 1454.1,
+      "process_rss_mb": {
+        "min": 104.6,
+        "max": 110.6,
+        "avg": 108.1
+      },
+      "os_free_mem_pct": {
+        "min": 37.3,
+        "max": 38,
+        "avg": 37.7
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 2,
+          "max": 22,
+          "avg": 10.6
+        },
+        "queue_depth": {
+          "min": 0,
+          "max": 171,
+          "avg": 98.1
+        },
+        "oldest_pending_age_s": {
+          "min": 0,
+          "max": 2.5,
+          "avg": 1.5
+        }
+      }
+    },
+    {
+      "concurrency": 100,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 3473.2,
+      "observed_docs_per_s": 86.38,
+      "p50_ms": 1036.2,
+      "p95_ms": 1163.4,
+      "p99_ms": 1164.8,
+      "max_ms": 1165.1,
+      "process_rss_mb": {
+        "min": 110.4,
+        "max": 120.9,
+        "avg": 114.7
+      },
+      "os_free_mem_pct": {
+        "min": 37,
+        "max": 38.5,
+        "avg": 37.6
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 3,
+          "max": 22,
+          "avg": 16.3
+        },
+        "queue_depth": {
+          "min": 84,
+          "max": 274,
+          "avg": 177.7
+        },
+        "oldest_pending_age_s": {
+          "min": 2.3,
+          "max": 4.4,
+          "avg": 3.4
+        }
+      }
+    },
+    {
+      "concurrency": 150,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 2844.3,
+      "observed_docs_per_s": 105.47,
+      "p50_ms": 711,
+      "p95_ms": 1341.9,
+      "p99_ms": 1343.5,
+      "max_ms": 1344.2,
+      "process_rss_mb": {
+        "min": 120.9,
+        "max": 138.8,
+        "avg": 129.6
+      },
+      "os_free_mem_pct": {
+        "min": 38.5,
+        "max": 38.6,
+        "avg": 38.6
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 13,
+          "max": 25,
+          "avg": 20.6
+        },
+        "queue_depth": {
+          "min": 183,
+          "max": 395,
+          "avg": 324.2
+        },
+        "oldest_pending_age_s": {
+          "min": 3.5,
+          "max": 5.4,
+          "avg": 4.6
+        }
+      }
+    },
+    {
+      "concurrency": 225,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 2594.5,
+      "observed_docs_per_s": 115.63,
+      "p50_ms": 875.5,
+      "p95_ms": 1486.6,
+      "p99_ms": 1488.7,
+      "max_ms": 1489.4,
+      "process_rss_mb": {
+        "min": 137.6,
+        "max": 138.1,
+        "avg": 138
+      },
+      "os_free_mem_pct": {
+        "min": 38.7,
+        "max": 38.7,
+        "avg": 38.7
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 10,
+          "max": 22,
+          "avg": 17
+        },
+        "queue_depth": {
+          "min": 311,
+          "max": 553,
+          "avg": 482
+        },
+        "oldest_pending_age_s": {
+          "min": 5.2,
+          "max": 6.7,
+          "avg": 6
+        }
+      }
+    },
+    {
+      "concurrency": 338,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 2299.2,
+      "observed_docs_per_s": 130.48,
+      "p50_ms": 1333,
+      "p95_ms": 1806.2,
+      "p99_ms": 1806.8,
+      "max_ms": 1807,
+      "process_rss_mb": {
+        "min": 138.1,
+        "max": 141.6,
+        "avg": 140.5
+      },
+      "os_free_mem_pct": {
+        "min": 38.6,
+        "max": 38.6,
+        "avg": 38.6
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 2,
+          "max": 25,
+          "avg": 17.3
+        },
+        "queue_depth": {
+          "min": 465,
+          "max": 743,
+          "avg": 657.3
+        },
+        "oldest_pending_age_s": {
+          "min": 8.2,
+          "max": 9.5,
+          "avg": 8.8
+        }
+      }
+    },
+    {
+      "concurrency": 507,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 2196.6,
+      "observed_docs_per_s": 136.58,
+      "p50_ms": 1217.4,
+      "p95_ms": 1702.2,
+      "p99_ms": 1702.6,
+      "max_ms": 1702.8,
+      "process_rss_mb": {
+        "min": 141,
+        "max": 142.3,
+        "avg": 141.7
+      },
+      "os_free_mem_pct": {
+        "min": 38.5,
+        "max": 38.7,
+        "avg": 38.6
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 2,
+          "max": 22,
+          "avg": 13
+        },
+        "queue_depth": {
+          "min": 614,
+          "max": 892,
+          "avg": 806.8
+        },
+        "oldest_pending_age_s": {
+          "min": 8.6,
+          "max": 10.3,
+          "avg": 9.3
+        }
+      }
+    },
+    {
+      "concurrency": 761,
+      "total": 300,
+      "ok": 300,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 2123.1,
+      "observed_docs_per_s": 141.3,
+      "p50_ms": 1217.7,
+      "p95_ms": 1649.2,
+      "p99_ms": 1649.7,
+      "max_ms": 1650,
+      "process_rss_mb": {
+        "min": 141.9,
+        "max": 155,
+        "avg": 150.2
+      },
+      "os_free_mem_pct": {
+        "min": 38.7,
+        "max": 38.7,
+        "avg": 38.7
+      },
+      "postgres": {
+        "connections": {
+          "min": 33,
+          "max": 33,
+          "avg": 33
+        },
+        "locks": {
+          "min": 7,
+          "max": 25,
+          "avg": 17.8
+        },
+        "queue_depth": {
+          "min": 771,
+          "max": 1048,
+          "avg": 961.5
+        },
+        "oldest_pending_age_s": {
+          "min": 11.2,
+          "max": 12.8,
+          "avg": 12.1
+        }
+      }
+    }
+  ],
+  "first_observed_degradation_concurrency": null,
+  "degradation_note": "no degradation observed up to the highest level run (761); either raise --max-concurrency or this environment saturates above that point",
+  "backlog_drain": {
+    "attempted": true,
+    "start_backlog": 917,
+    "end_backlog": 0,
+    "drained": true,
+    "drain_time_s": 22.1,
+    "note": "backlog fully drained by an externally-running worker process"
+  }
+}
