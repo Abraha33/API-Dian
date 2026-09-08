@@ -15,6 +15,7 @@ import { PinoLoggerService } from './../src/common/logger/pino-logger.service';
 import { FakeFiscalProvider } from './../src/modules/provider/fake-fiscal-provider';
 import { FiscalWorkerRepository } from './../src/modules/worker/fiscal-worker.repository';
 import { FiscalWorkerService } from './../src/modules/worker/fiscal-worker.service';
+import { WebhookDeliveryRepository } from './../src/modules/webhooks/webhook-delivery.repository';
 
 const AUTH_TOKEN =
   'adn_v1.aaaaaaaa-0000-4000-8000-000000000001.BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc';
@@ -94,7 +95,10 @@ describe('API-DIAN F6B (e2e)', () => {
       WORKER_RECONCILE_MAX_ATTEMPTS: 5,
     });
     workerDb = new DatabaseService(workerConfig);
-    workerRepository = new FiscalWorkerRepository(workerDb);
+    workerRepository = new FiscalWorkerRepository(
+      workerDb,
+      new WebhookDeliveryRepository(workerDb),
+    );
     fakeProvider = new FakeFiscalProvider('ACCEPT');
     const workerLogger = moduleFixture.get(PinoLoggerService);
     worker = new FiscalWorkerService(

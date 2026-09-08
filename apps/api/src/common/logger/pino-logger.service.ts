@@ -1,4 +1,4 @@
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Injectable, LoggerService, Optional } from '@nestjs/common';
 import pino, { Logger } from 'pino';
 
 export type HttpRequestLog = {
@@ -22,7 +22,8 @@ export type WorkerEventLog = {
   event:
     | 'worker_job_completed'
     | 'provider_submit_result'
-    | 'provider_reconcile_result';
+    | 'provider_reconcile_result'
+    | 'webhook_delivery_completed';
   worker_id: string;
   work_id: string;
   operation_id: string;
@@ -43,15 +44,23 @@ const WORKER_WARN_OUTCOMES = new Set([
   'DEAD_LETTERED',
   'MUTATIONS_PAUSED',
   'UNHANDLED_ERROR',
+  'ENDPOINT_MISSING',
 ]);
 
 @Injectable()
 export class PinoLoggerService implements LoggerService {
   private readonly root: Logger;
 
-  constructor() {
+  /**
+   * `destination` is exposed only so tests can point pino at an in-memory
+   * stream and assert on real redaction output synchronously (pino's
+   * default stdout path writes through a Sonic Boom file descriptor that
+   * bypasses `process.stdout.write`, so it can't be spied on directly).
+   * Never pass this in application code — omit it to get real stdout.
+   */
+  constructor(@Optional() destination?: NodeJS.WritableStream) {
     const isProd = process.env.NODE_ENV === 'production';
-    this.root = pino({
+    const options = {
       level: isProd ? 'info' : 'debug',
       redact: {
         paths: [
@@ -66,13 +75,15 @@ export class PinoLoggerService implements LoggerService {
         ],
         censor: '[REDACTED]',
       },
-      ...(!isProd && {
-        transport: {
-          target: 'pino-pretty',
-          options: { colorize: true, singleLine: true },
-        },
-      }),
-    });
+      ...(!isProd &&
+        !destination && {
+          transport: {
+            target: 'pino-pretty',
+            options: { colorize: true, singleLine: true },
+          },
+        }),
+    };
+    this.root = destination ? pino(options, destination) : pino(options);
   }
 
   log(message: string, context?: string): void {
