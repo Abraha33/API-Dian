@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-09-08T01:16:58.380Z",
+  "commit": "df7acceffc59392d1b71d186fc8f06b58d6b0b63",
+  "branch": "HEAD",
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "cpus": 8,
+    "cpu_model": "Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz",
+    "total_mem_gb": 31.9,
+    "node_version": "v24.18.0"
+  },
+  "provider": "FakeFiscalProvider (ACCEPT) — no real fiscal provider involved",
+  "base_url": "http://127.0.0.1:3100",
+  "requests_per_level": 150,
+  "levels": [
+    10,
+    25,
+    50,
+    75,
+    100
+  ],
+  "results": [
+    {
+      "concurrency": 10,
+      "total": 150,
+      "ok": 150,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 1255.6,
+      "observed_docs_per_s": 119.46,
+      "p50_ms": 69.4,
+      "p95_ms": 194.9,
+      "p99_ms": 214.6,
+      "max_ms": 263.5
+    },
+    {
+      "concurrency": 25,
+      "total": 150,
+      "ok": 150,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 1189.9,
+      "observed_docs_per_s": 126.06,
+      "p50_ms": 185.7,
+      "p95_ms": 260,
+      "p99_ms": 290.9,
+      "max_ms": 308.5
+    },
+    {
+      "concurrency": 50,
+      "total": 150,
+      "ok": 150,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 1220.3,
+      "observed_docs_per_s": 122.92,
+      "p50_ms": 370.7,
+      "p95_ms": 451.6,
+      "p99_ms": 540.2,
+      "max_ms": 542.6
+    },
+    {
+      "concurrency": 75,
+      "total": 150,
+      "ok": 150,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 1018.1,
+      "observed_docs_per_s": 147.34,
+      "p50_ms": 444.5,
+      "p95_ms": 615.3,
+      "p99_ms": 675.7,
+      "max_ms": 676.6
+    },
+    {
+      "concurrency": 100,
+      "total": 150,
+      "ok": 150,
+      "errors": 0,
+      "error_rate": 0,
+      "elapsed_ms": 1408.7,
+      "observed_docs_per_s": 106.48,
+      "p50_ms": 715.5,
+      "p95_ms": 939.4,
+      "p99_ms": 1011,
+      "max_ms": 1016.9
+    }
+  ],
+  "first_observed_degradation_concurrency": 50
+}
