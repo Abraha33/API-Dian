@@ -23,8 +23,8 @@ Una fase solo puede estar en `PASS` si tiene evidencia reproducible enlazada.
 | 4. Integración E2E local | Conectar el flujo completo sin PT real | 11 pruebas E2E PASS con FakeFiscalProvider | PASS | `LOCAL-EVIDENCE-2026-09-07.md` |
 | 5. Runner + containers + CI | Reproducir checkout, DB, migraciones y tests | Docker, migraciones, checkout limpio, build y suites, ahora también en un runner real de GitHub Actions (hospedado `ubuntu-latest`, no self-hosted) | PASS | `PHASE-5-CI-RUN-2026-09-07.md`, `evidence-run-34176075661.log`, run https://github.com/Abraha33/API-Dian/actions/runs/34176075661, `LOCAL-EVIDENCE-2026-09-07.md`, `PHASE-5-6-FAULT-CAPACITY-2026-09-07.md`, `PHASE-5-6-SESSION-2026-09-07B.md`, `.github/workflows/ci.yml` |
 | 6. Fallos + seguridad + capacidad | Atacar, recuperar y medir el sistema | webhooks implementados con invariante duro y 11/11 fault injection, lease expiry por worker distinto, backlog drain sin pérdida/duplicación, Idempotency-Key concurrente, UUID ajeno, secretos en logs, benchmark con métricas reales de sistema y punto de saturación real encontrado — todo con corrida completa PASS en runner hospedado de GitHub Actions | PASS | `PHASE-6-WEBHOOKS.md`, `evidence-run-34186377539.log`, run https://github.com/Abraha33/API-Dian/actions/runs/34186377539, `apps/api/test/webhooks.e2e-spec.ts`, `apps/api/test/fault-injection.e2e-spec.ts`, `apps/api/src/common/logger/secrets-redaction.spec.ts`, `supabase/migrations/20260907010000_create_webhooks_schema.sql`, `evidence/bench-2026-09-07-extended.json` |
-| 7. Ready for PT Integration | Cerrar solo con Fases 0–6 PASS | Fases 0–6 en PASS con evidencia reproducible | PASS | `PHASE-6-WEBHOOKS.md`, `HKA-INTEGRATION-REQUEST.md` |
-| 8. Integración PT real | Reemplazar el PT falso por el proveedor real sin cambiar la API pública | adapter real, sandbox, errores reales, reconciliación y contingencias PT | BLOCKED | requiere owner/PT — ver `HKA-INTEGRATION-REQUEST.md` |
+| 7. Ready for PT Integration | Cerrar solo con Fases 0–6 PASS | Fases 0–6 en PASS con evidencia reproducible | PASS | `PHASE-6-WEBHOOKS.md`, `DATAICO-INTEGRATION-REQUEST.md` |
+| 8. Integración PT real | Reemplazar el PT falso por DATAICO sin cambiar la API pública | adapter real, ambiente de prueba, errores reales, reconciliación y contingencias PT | BLOCKED | owner seleccionó DATAICO; faltan credenciales/API de prueba, ambiente/sandbox y semántica remota confirmada — ver `DATAICO-INTEGRATION-REQUEST.md` |
 | 9. Validación externa | Demostrar comportamiento con sistemas y condiciones reales | pruebas aplicables PT/DIAN, habilitación, piloto controlado | BLOCKED | requiere mundo externo |
 | 10. Production readiness | Decidir responsablemente si se puede usar con documentos reales de clientes | todos los gates finales PASS + autorización del owner | BLOCKED | requiere fases previas |
 
@@ -151,7 +151,7 @@ Evidencia:
            docs/experiments/astra-full-build/evidence-run-34176075661.log
 
 Siguiente fase:
-6 — Fallos + seguridad + capacidad (sigue IN PROGRESS; ver bloqueadores en status.json)
+6 — Fallos + seguridad + capacidad
 ```
 
 ---
@@ -163,62 +163,31 @@ FASE: 6 — Fallos + seguridad + capacidad
 ESTADO: PASS
 
 ¿Qué significa?
-El sistema ahora tiene webhooks reales (no solo fiscal), con entrega
-durable, firma, reintentos con backoff acotado y dead-letter, worker
-separado que garantiza que un webhook caído nunca toca el resultado
-fiscal — y esto está probado con fault injection real, no solo descrito.
-Además se revalidaron con evidencia fresca los invariantes de seguridad
-y se extendió el benchmark hasta encontrar el punto real de saturación.
+El sistema tiene webhooks reales, entrega durable, firma, reintentos con
+backoff acotado y dead-letter, y un worker separado que garantiza que un
+webhook caído nunca toca el resultado fiscal. También se revalidaron los
+invariantes de seguridad y se extendió el benchmark hasta encontrar el
+punto real de saturación.
 
 ¿Qué probamos?
-- Invariante duro: endpoint de webhook permanentemente caído no afecta
-  el resultado fiscal (antes y después de un intento real fallido)
-- 11/11 escenarios de fault injection de webhooks (200/400/500/timeout/
-  connection-refused/retries/backoff/dead-letter/dos-endpoints/
-  recuperación/aislamiento-multitenant)
-- Lease expiry recuperado por un worker distinto (no el mismo)
-- Backlog drain sin pérdida ni duplicación (40 en test, 917 en benchmark)
-- Idempotency-Key concurrente (15-way) sin doble procesamiento
-- UUID ajeno rechazado sin fuga de información de otro tenant
-- Secretos no expuestos en logs (prueba real contra pino, no mock)
-- Benchmark extendido con métricas reales de sistema (RSS, conexiones
-  PostgreSQL, locks, profundidad de cola) y punto de saturación real
-  encontrado (concurrencia ≈75, agotamiento del pool de conexiones,
-  cola creciendo sin límite de 78 a 1048 según sube la concurrencia)
-- Corrida completa PASS en runner hospedado real de GitHub Actions:
-  48/48 tests (11 unit + 6 provider-contract + 27 e2e + 4 concurrencia)
+- 11/11 escenarios de fault injection de webhooks
+- Lease expiry recuperado por un worker distinto
+- Backlog drain sin pérdida ni duplicación
+- Idempotency-Key concurrente
+- UUID ajeno rechazado sin fuga
+- Secretos no expuestos en logs
+- Benchmark extendido con métricas reales de sistema
+- Corrida completa PASS en runner hospedado de GitHub Actions: 48/48
 
-¿Qué salió mal y se corrigió?
-- NestFactory silenciaba errores fatales de arranque sin
-  `abortOnError: false` (encontrado depurando el worker de benchmark)
-- `fiscal-throughput-bench.mjs` no podía leer métricas de Postgres en
-  Windows (comando `docker exec` roto por diferencias de escapado de
-  shell) — corregido usando `execFileSync` con argv
-- `verify-f6-behavior.sql` dejaba 2 work items `CLAIMED` con lease de
-  solo 30s, que expiraba antes de terminar el pipeline extendido y
-  contaminaba el gate de concurrencia — lease subido a 3600s
-- Un test nuevo (Idempotency-Key concurrente) no drenaba su propio work
-  item, contaminando el gate de concurrencia en el mismo job de CI —
-  corregido drenándolo explícitamente
-- Ambos últimos bugs se manifestaron SOLO en el runner hospedado real de
-  GitHub Actions, no en corridas locales — exactamente la clase de
-  evidencia que este proyecto exige antes de declarar PASS
-
-Excepciones honestas (no ocultas):
-- No se ejecutó un kill -9 literal de los procesos API/worker; se probó
-  el mecanismo de recuperación (lease expiry por otro worker) que un
-  reinicio real dispararía, y los 3 procesos reales corrieron sin
-  caerse durante varios minutos de benchmark
-- Rollback de deployment: no hay infraestructura de despliegue real que
-  revertir; se documenta `git revert` + redeploy como mecanismo interino
+Excepciones honestas:
+- No se ejecutó kill -9 literal; se probó directamente el mecanismo de recuperación por lease.
+- No existe infraestructura real de deployment/rollback; `git revert` + redeploy es el mecanismo interino documentado.
 
 Evidencia:
 - commits: 5db23e1, d224fe9, 8cd6120, f26bf0a, 6afe011, 3332882
-- comando: gh workflow run "CI Pipeline" --ref experiment/astra-full-api-dian-v1
-- run: https://github.com/Abraha33/API-Dian/actions/runs/34186377539 (PASS)
-- reporte: docs/experiments/astra-full-build/PHASE-6-WEBHOOKS.md
-           docs/experiments/astra-full-build/evidence-run-34186377539.log
-           docs/experiments/astra-full-build/evidence/bench-2026-09-07-extended.json
+- run: https://github.com/Abraha33/API-Dian/actions/runs/34186377539
+- reporte: `PHASE-6-WEBHOOKS.md`
+- benchmark: `evidence/bench-2026-09-07-extended.json`
 
 Siguiente fase:
 7 — Ready for PT Integration
@@ -234,27 +203,21 @@ ESTADO: PASS
 
 ¿Qué significa?
 Todas las fases 0–6 tienen evidencia reproducible en PASS. El sistema
-está listo, en su alcance local/experimental, para que el owner decida
-conectar un PT real — eso requiere su autorización explícita y no ocurre
-en este experimento (regla no negociable del proyecto).
+está listo, en su alcance local/experimental, para conectar un PT real.
 
-¿Qué probamos?
-Fases 0 a 6 en PASS con evidencia citada arriba en este mismo tablero.
-
-¿Qué salió mal y se corrigió?
-Ver cierres de fase individuales arriba.
+Decisión del owner:
+- PT objetivo para Fase 8: DATAICO S.A.S.
+- HKA deja de ser el proveedor objetivo y su documento queda histórico.
 
 Evidencia:
-- Este tablero (`STUDENT-CONTROL-BOARD.md`) y `status.json`
-- `docs/experiments/astra-full-build/HKA-INTEGRATION-REQUEST.md` —
-  lista concreta de lo que se necesita del owner/HKA antes de tocar
-  código de integración PT real
+- Este tablero y `status.json`
+- `docs/experiments/astra-full-build/DATAICO-INTEGRATION-REQUEST.md`
 
 Siguiente fase:
-8 — Integración PT real (BLOCKED — requiere autorización explícita del
-owner y credenciales/sandbox real de HKA; no se avanza sin eso)
+8 — Integración PT real con DATAICO
+BLOCKED hasta disponer localmente de credenciales/API de prueba,
+ambiente de prueba/sandbox y semántica remota verificada.
 ```
 
-**LISTO PARA INTEGRAR PT** (Fase 7: PASS). Ver
-`docs/experiments/astra-full-build/HKA-INTEGRATION-REQUEST.md` para la
-lista exacta de lo que se necesita antes de iniciar Fase 8.
+**LISTO PARA INTEGRAR PT — DATAICO** (Fase 7: PASS).
+Ver `docs/experiments/astra-full-build/DATAICO-INTEGRATION-REQUEST.md`.
