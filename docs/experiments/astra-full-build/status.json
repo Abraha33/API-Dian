@@ -1,141 +1,145 @@
 {
-    "experiment":  "astra-full-api-dian-v1",
-    "branch":  "experiment/astra-full-api-dian-v1",
-    "base":  "draft/official-construction-plan-v1",
-    "updated":  "2026-09-08",
-    "rules":  {
-                  "pass_requires_evidence":  true,
-                  "protect_dev":  true,
-                  "protect_architecture_branch":  true,
-                  "protect_official_plan_branch":  true,
-                  "real_pt_requires_owner":  true,
-                  "production_requires_owner":  true
-              },
-    "phases":  [
-                   {
-                       "id":  0,
-                       "name":  "Aislamiento + harness",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/README.md",
-                                        "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md",
-                                        "docs/experiments/astra-full-build/EVIDENCE-RULES.md",
-                                        "docs/experiments/astra-full-build/EXPERIMENT-GOAL.md",
-                                        "experiment/astra-full-api-dian-v1"
-                                    ]
-                   },
-                   {
-                       "id":  1,
-                       "name":  "Conceptualización ejecutable",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/PHASE-1-TRACEABILITY.md",
-                                        "apps/api/src/modules/fiscal-operations",
-                                        "apps/api/test/app.e2e-spec.ts"
-                                    ]
-                   },
-                   {
-                       "id":  2,
-                       "name":  "Testeo y aceptación",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/PHASE-2-ACCEPTANCE-PLAN.md",
-                                        "apps/api/test/app.e2e-spec.ts",
-                                        "apps/api/test/fiscal-concurrency.concurrency-spec.ts",
-                                        "apps/api/test/provider-contract/provider-contract-harness.spec.ts"
-                                    ]
-                   },
-                   {
-                       "id":  3,
-                       "name":  "Construcción local V1",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
-                                        "apps/api/src",
-                                        "supabase/migrations"
-                                    ]
-                   },
-                   {
-                       "id":  4,
-                       "name":  "Integración E2E local",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
-                                        "apps/api/test/app.e2e-spec.ts"
-                                    ]
-                   },
-                   {
-                       "id":  5,
-                       "name":  "Runner + containers + CI",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md",
-                                        "docs/experiments/astra-full-build/PHASE-5-CI-RUN-2026-09-07.md",
-                                        "docs/experiments/astra-full-build/evidence-run-34176075661.log",
-                                        "https://github.com/Abraha33/API-Dian/actions/runs/34176075661",
-                                        ".github/workflows/ci.yml"
-                                    ],
-                       "note":  "Ejecucion real disparada en el runner hospedado ubuntu-latest de GitHub Actions (no self-hosted, no disponible para este experimento): checkout limpio, npm ci, audit, build, lint, unit 10/10, provider-contract 6/6, migraciones desde cero, E2E 12/12, concurrencia 4/4. Primer intento fallo por una vulnerabilidad alta real (fast-uri) y se corrigio con npm audit fix (commit 2ec1e71); el segundo intento fue PASS completo."
-                   },
-                   {
-                       "id":  6,
-                       "name":  "Fallos + seguridad + capacidad",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/PHASE-6-WEBHOOKS.md",
-                                        "docs/experiments/astra-full-build/evidence-run-34186377539.log",
-                                        "https://github.com/Abraha33/API-Dian/actions/runs/34186377539",
-                                        "supabase/migrations/20260907010000_create_webhooks_schema.sql",
-                                        "apps/api/src/modules/webhooks/",
-                                        "apps/api/test/webhooks.e2e-spec.ts (11/11 PASS)",
-                                        "apps/api/test/fault-injection.e2e-spec.ts (4/4 PASS)",
-                                        "apps/api/src/common/logger/secrets-redaction.spec.ts (1/1 PASS)",
-                                        "scripts/benchmarks/fiscal-throughput-bench.mjs (extended)",
-                                        "docs/experiments/astra-full-build/evidence/bench-2026-09-07-extended.json",
-                                        "commits: 5db23e1, d224fe9, 8cd6120, f26bf0a, 6afe011, 3332882"
-                                    ],
-                       "note":  "Webhook module implemented per docs/architecture/final/PROCESSING-QUEUES-WEBHOOKS.md: durable delivery, HMAC signing, canonical retry ladder (1m/5m/30m/2h/8h/24h then dead-letter), separate worker process (webhook-worker.ts), tenant RLS. Hard invariant (down endpoint never affects fiscal outcome) proven before and after a real failed attempt. 11/11 webhook fault-injection scenarios PASS (200/400/500/timeout/connection-refused/retries/backoff/dead-letter/two-endpoints/recovery/tenant-isolation). 4/4 additional fault-injection tests PASS (lease expiry recovered by a different worker instance, 40-op backlog drain with no loss/duplication, 15-way concurrent Idempotency-Key race, foreign UUID rejected without leakage). Secrets-in-logs verified against a real pino instance. Benchmark extended with real process/OS/PostgreSQL system metrics (fixed a Windows shell-escaping bug that made postgres metrics always null) and pushed to find real saturation: connection pool exhaustion at concurrency~=75 (DATABASE_POOL_MAX=30 ceiling), work_items queue depth growing unbounded (78->1048) as concurrency rises 75->761 with 0 HTTP errors throughout -- documented manually since the automated error-rate heuristic did not trip. 917-operation backlog drained fully in 22.1s by a real external worker process. Full pipeline (unit+provider-contract+e2e+concurrency, 48/48) PASS on a real hosted GitHub Actions run after fixing two CI-only flakes found along the way (verify-f6-behavior.sql lease too short for the extended pipeline; a new test not draining its own work item, contaminating the concurrency gate).",
-                       "known_gaps":  [
-                                        "No literal OS-level process kill (kill -9) of API/worker to test restart -- the underlying recovery mechanism (lease expiry claimed by a different worker) is tested directly and deterministically instead; all 3 processes (API, fiscal worker, webhook worker) ran as real, independent OS processes for several minutes during the benchmark without crashing.",
-                                        "No real deployment/rollback infrastructure exists in this experiment; git revert + redeploy is documented as the honest interim mechanism, not fabricated against nonexistent infra."
-                                    ]
-                   },
-                   {
-                       "id":  7,
-                       "name":  "Ready for PT Integration",
-                       "status":  "PASS",
-                       "evidence":  [
-                                        "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md",
-                                        "docs/experiments/astra-full-build/PHASE-6-WEBHOOKS.md",
-                                        "docs/experiments/astra-full-build/HKA-INTEGRATION-REQUEST.md"
-                                    ],
-                       "note":  "Phases 0-6 all PASS with reproducible evidence. LISTO PARA INTEGRAR PT, pending explicit owner authorization and real HKA sandbox access/credentials per HKA-INTEGRATION-REQUEST.md -- Phase 8 (real PT integration) is not started, per the non-negotiable rule that real PT connection requires explicit owner sign-off."
-                   },
-                   {
-                       "id":  8,
-                       "name":  "Integración PT real",
-                       "status":  "BLOCKED",
-                       "evidence":  [
-
-                                    ]
-                   },
-                   {
-                       "id":  9,
-                       "name":  "Validación externa DIAN/PT + piloto",
-                       "status":  "BLOCKED",
-                       "evidence":  [
-
-                                    ]
-                   },
-                   {
-                       "id":  10,
-                       "name":  "Production readiness",
-                       "status":  "BLOCKED",
-                       "evidence":  [
-
-                                    ]
-                   }
-               ]
+  "experiment": "astra-full-api-dian-v1",
+  "branch": "experiment/astra-full-api-dian-v1",
+  "base": "draft/official-construction-plan-v1",
+  "updated": "2026-09-08",
+  "rules": {
+    "pass_requires_evidence": true,
+    "protect_dev": true,
+    "protect_architecture_branch": true,
+    "protect_official_plan_branch": true,
+    "real_pt_requires_owner": true,
+    "production_requires_owner": true
+  },
+  "pt_target": {
+    "provider": "DATAICO S.A.S.",
+    "selected_by_owner": true,
+    "selected_on": "2026-09-08",
+    "integration_handoff": "docs/experiments/astra-full-build/DATAICO-INTEGRATION-REQUEST.md",
+    "previous_target": "The Factory HKA Colombia S.A.S. (historical only)"
+  },
+  "phases": [
+    {
+      "id": 0,
+      "name": "Aislamiento + harness",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/README.md",
+        "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md",
+        "docs/experiments/astra-full-build/EVIDENCE-RULES.md",
+        "docs/experiments/astra-full-build/EXPERIMENT-GOAL.md",
+        "experiment/astra-full-api-dian-v1"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Conceptualización ejecutable",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/PHASE-1-TRACEABILITY.md",
+        "apps/api/src/modules/fiscal-operations",
+        "apps/api/test/app.e2e-spec.ts"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Testeo y aceptación",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/PHASE-2-ACCEPTANCE-PLAN.md",
+        "apps/api/test/app.e2e-spec.ts",
+        "apps/api/test/fiscal-concurrency.concurrency-spec.ts",
+        "apps/api/test/provider-contract/provider-contract-harness.spec.ts"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Construcción local V1",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
+        "apps/api/src",
+        "supabase/migrations"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Integración E2E local",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
+        "apps/api/test/app.e2e-spec.ts"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Runner + containers + CI",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/LOCAL-EVIDENCE-2026-09-07.md",
+        "docs/experiments/astra-full-build/PHASE-5-6-FAULT-CAPACITY-2026-09-07.md",
+        "docs/experiments/astra-full-build/PHASE-5-6-SESSION-2026-09-07B.md",
+        "docs/experiments/astra-full-build/PHASE-5-CI-RUN-2026-09-07.md",
+        "docs/experiments/astra-full-build/evidence-run-34176075661.log",
+        "https://github.com/Abraha33/API-Dian/actions/runs/34176075661",
+        ".github/workflows/ci.yml"
+      ],
+      "note": "PASS con checkout limpio, npm ci, audit, build, lint, unit, provider-contract, migraciones, E2E y concurrencia en GitHub Actions."
+    },
+    {
+      "id": 6,
+      "name": "Fallos + seguridad + capacidad",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/PHASE-6-WEBHOOKS.md",
+        "docs/experiments/astra-full-build/evidence-run-34186377539.log",
+        "https://github.com/Abraha33/API-Dian/actions/runs/34186377539",
+        "supabase/migrations/20260907010000_create_webhooks_schema.sql",
+        "apps/api/src/modules/webhooks/",
+        "apps/api/test/webhooks.e2e-spec.ts (11/11 PASS)",
+        "apps/api/test/fault-injection.e2e-spec.ts (4/4 PASS)",
+        "apps/api/src/common/logger/secrets-redaction.spec.ts (1/1 PASS)",
+        "scripts/benchmarks/fiscal-throughput-bench.mjs (extended)",
+        "docs/experiments/astra-full-build/evidence/bench-2026-09-07-extended.json",
+        "commits: 5db23e1, d224fe9, 8cd6120, f26bf0a, 6afe011, 3332882"
+      ],
+      "note": "PASS con webhooks durables, fault injection, seguridad y benchmark extendido. Saturación local observada alrededor de concurrencia 75 por pool PostgreSQL; backlog drenado sin pérdida/duplicación.",
+      "known_gaps": [
+        "No literal OS-level kill -9; el mecanismo de recuperación por lease expiry fue probado directamente.",
+        "No existe deployment/rollback real en este experimento; git revert + redeploy queda como mecanismo interino documentado."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Ready for PT Integration",
+      "status": "PASS",
+      "evidence": [
+        "docs/experiments/astra-full-build/STUDENT-CONTROL-BOARD.md",
+        "docs/experiments/astra-full-build/PHASE-6-WEBHOOKS.md",
+        "docs/experiments/astra-full-build/DATAICO-INTEGRATION-REQUEST.md"
+      ],
+      "note": "Fases 0-6 PASS con evidencia reproducible. Owner seleccionó DATAICO S.A.S. como PT objetivo el 2026-09-08. LISTO PARA INTEGRAR PT — DATAICO."
+    },
+    {
+      "id": 8,
+      "name": "Integración PT real — DATAICO",
+      "status": "BLOCKED",
+      "evidence": [
+        "docs/experiments/astra-full-build/DATAICO-INTEGRATION-REQUEST.md"
+      ],
+      "note": "Falta disponer localmente de credenciales/API de prueba, confirmar ambiente sandbox/habilitación y verificar semántica remota de ambigüedad/reconciliación antes de mutaciones reales."
+    },
+    {
+      "id": 9,
+      "name": "Validación externa DIAN/PT + piloto",
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    {
+      "id": 10,
+      "name": "Production readiness",
+      "status": "BLOCKED",
+      "evidence": []
+    }
+  ]
 }
