@@ -1,5 +1,8 @@
 # API-DIAN — Handoff canónico de construcción V1
 
+> **ADDENDUM 2026-09-20 — auditoría HKA:** antes de trabajar Fase 8 leer `docs/experiments/astra-full-build/HKA-INTEGRATION-AUDIT-2026-09-20.md`. La auditoría directa de esta branch confirma que existe el puerto `FiscalProvider` y `FakeFiscalProvider`, pero **no existe todavía un `HkaFiscalProvider` real** ni configuración HKA en `.env.example`. `canonicalization.ts` genera un hash SHA-256 semántico de JSON interno; **no es canonicalización XML/XAdES ni firma DIAN**. La documentación oficial HKA distingue REST (`demoemision21-api...`) de SOAP V4 (`demoemision21v4...Service.svc?wsdl`); pedir WSDL al host REST y recibir 404 no debe tratarse como discrepancia del proveedor. Estado canónico hasta localizar evidencia contraria en otra branch/commit: **HKA REAL = NO IMPLEMENTADO / FASE 8 PENDIENTE**.
+
+
 ## Estado canónico
 
 - Repositorio: `Abraha33/API-Dian`.
