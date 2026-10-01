@@ -11,7 +11,7 @@ Leyenda: C confirmado con fuente oficial; P parcial/secundaria; ? no claro. Prec
 | Dataico | PT/API | C | C | C | C | C | P | P | C | NO PUBLICADO | Hibrido |
 | Facture/ESTELA | PT enterprise | C | ? | ? | C | ? | ? | P | ? | NO PUBLICADO | Enterprise |
 | Factus | API/aliado | C | C | C | Contradictorio | C | C | C | C | P | Hibrido |
-| Matias API | Software/API | P | P | P | P | P | P | P | P | P | Partner |
+| Matias API | Software/API | C | C | C | C | C | C | C | C | P | Partner |
 | FacturaLatam | API white-label | P | P | P | P | P | ? | ? | P | P | Partner |
 | Plemsi/ECA | API | P | P | ? | P | P | P | ? | P | P | Hibrido |
 | Saphety | PT/operador virtual | P | P | P | P | P | ? | P | P | NO PUBLICADO partner | Enterprise |
@@ -39,7 +39,7 @@ API v2 con facturas, NC, ND, consulta y XML/PDF; sandbox observado. Programa de 
 
 ### Matias API / Lopezsoft
 
-Fuente secundaria reporta REST, sandbox, FEV, DEE POS, casa de software y bolsa compartida. Precios competitivos. Requisito minimo de clientes es contradictorio (3/6 meses o 5/3 meses): **NO VERIFICADO**. Algunas fuentes lo clasifican como software propio y no PT.
+**CONFIRMADO:** documentacion oficial publica con REST, sandbox, FEV/NC/ND, DEE POS y ajuste, documento soporte y ajuste, nomina, eventos RADIAN 030-034, salud, consulta, XML/PDF, resoluciones y webhooks. Los valores magicos permiten probar errores por familia. Precio, SLA, produccion y condicion de casa de software siguen **PARCIALMENTE CONFIRMADOS**; no se afirma que sea PT directo.
 
 ### FacturaLatam
 
@@ -72,3 +72,18 @@ API/OAuth, xPOS y presencia regional reportadas; orientacion SAP/Oracle/enterpri
 - **Siigo/Alegra/LOGGRO:** referencias de precio/UX final; sus APIs contables no prueban programa fiscal neutral para casas de software.
 
 La ausencia de evidencia se conserva como ?, no como “No”.
+
+## Cobertura ampliada
+
+| Competidor | FEV/notas | DEE POS | Soporte | Nomina | RADIAN | Salud | Evidencia |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Matias API | C | C | C | C | C | C | Docs oficiales y sandbox |
+| Factus | C | Contradictorio | C | C | C, separado | ? | Material comercial/endpoints |
+| HKA | C | C | P | P | P | ? | Wiki; ampliar sandbox |
+| Dataico | C | C | P | P | P | ? | Portal; confirmar modulos |
+| Saphety | P | P | P | P | P | P | Oferta reportada |
+| Aliaddo | P | P | P | P | P | ? | Cotizacion pendiente |
+| Plemsi | P | P | ? | ? | ? | ? | Endpoints parciales |
+| ESTELA | C | C | ? | ? | P | P | Oferta enterprise |
+
+Matias es la referencia publica mas completa de amplitud. HKA sigue siendo la referencia publica mas fuerte para reconciliacion.

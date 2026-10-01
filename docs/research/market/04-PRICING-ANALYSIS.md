@@ -50,3 +50,12 @@ Se anualiza Q*12 y se toma el menor paquete conocido. No incluye IVA, soporte ni
 | Partner | $199.000 + $25.000/NIT | 500 compartidos | $75-$120/doc | Casa de software |
 
 No publicar antes de dos cotizaciones y simulacion con consumo real.
+
+## Modulos adicionales
+
+| Modulo Factus | Tramos anuales observados | Nota |
+|---|---|---|
+| Nomina | 24/$60k; 60/$75k; 120/$90k; 300/$180k; 480/$250k; 780/$350k; 1.200/$480k | Interfaz aliados; P |
+| RADIAN | 24/$60k; 60/$75k; 120/$90k; 300/$150k; 500/$195k; 800/$240k; 1.600/$320k; 2.500/$475k; 5.000/$900k | Plan separado; P |
+
+La bolsa multifacturador Factus reporta nomina incluida, no RADIAN. Matias confirma los modulos, pero no se verifico si todos consumen la misma bolsa/unidad. Salud/RIPS y RNDC deben cotizarse como add-ons sectoriales.

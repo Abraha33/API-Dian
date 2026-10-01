@@ -1,7 +1,7 @@
 # Definicion del MVP competitivo
 
 **Fecha de corte:** 2026-10-01  
-**Producto:** API fiscal comercial B2B2B para software colombiano.
+**Producto:** plataforma fiscal comercial B2B2B modular para software colombiano.
 
 Esta mision reemplaza para efectos comerciales el baseline de agosto que reservaba la API publica para despues. No cambia la recomendacion de un solo PT.
 
@@ -38,7 +38,24 @@ Esta mision reemplaza para efectos comerciales el baseline de agosto que reserva
 - White-label avanzado.
 - Personalizacion extensa de PDF.
 - BI, aplicacion POS propia o portal contable.
-- Cualquier documento fuera de FEV/NC/ND/DEE POS.
+- Modulos de soporte, nomina, RADIAN, restantes DEE y verticales, segun roadmap.
+
+## Producto objetivo completo
+
+| Capa | Productos |
+|---|---|
+| Core ventas | FEV, NC, ND, contingencia |
+| Comercio | DEE POS y ajustes |
+| Compras | Documento soporte y ajuste |
+| Laboral fiscal | Nomina y ajustes |
+| Recepcion | Bandeja y eventos 030-034 |
+| RADIAN | Titulo valor |
+| DEE extendido | Tipos restantes vigentes |
+| Salud | FEV/NC salud + RIPS/MUV |
+| Transporte | FEV + RNDC |
+| Plataforma | Empresas, sandbox, webhooks, archivos, consumo |
+
+El producto completo no equivale a un unico MVP. Cada capa tiene gate normativo, proveedor, pruebas y economia propios.
 
 ## Criterio de salida
 
@@ -54,4 +71,4 @@ Demostrar aceptado, rechazado, timeout antes/despues de recepcion, duplicado, we
 
 ## Decision
 
-Construir primero un prototipo comercial de FEV + estado/reconciliacion contra fake provider; no ampliar a implementacion PT de los cuatro hasta cerrar los gates contractuales. El alcance fiscal final sigue siendo los cuatro productos.
+Construir primero un prototipo comercial de FEV + estado/reconciliacion contra fake provider; no ampliar a implementacion PT de los cuatro iniciales hasta cerrar los gates contractuales. El alcance objetivo es la suite modular descrita en `11-FULL-PRODUCT-PORTFOLIO.md`; el primer release permanece deliberadamente limitado.

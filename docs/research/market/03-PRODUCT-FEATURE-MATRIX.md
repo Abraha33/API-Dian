@@ -36,3 +36,19 @@ Frecuencia no equivale a necesidad. Idempotencia y reconciliacion son obligatori
 8. Reconciliar UNKNOWN; nunca reemitir por timeout sin evidencia.
 
 Estados internos: received, validated, queued, sending, reconciling, completed, failed_internal. Fiscales: pending, accepted, rejected, unknown, requires_attention.
+
+## Familias del producto completo
+
+La muestra no permite calcular porcentajes comparables para todos los modulos: varios proveedores agrupan funcionalidades, no publican API o exigen cotizacion. En esos casos se evita convertir ausencia publica en un “No”.
+
+| Familia | Evidencia competitiva util | Clasificacion | Release recomendado |
+|---|---|---|---|
+| Documento soporte + ajuste | Matias y Factus confirmados; cobertura de otros, parcial | ESTANDAR en suites amplias | Fase 3 |
+| Nomina electronica | Matias y Factus confirmados; HKA/Dataico/Saphety requieren verificacion contractual | ESTANDAR como modulo separado | Fase 4 |
+| Recepcion + eventos 030-034 | Matias confirmado; otros ofrecen capacidades parciales o no publicadas | ESTANDAR para cuentas por pagar | Fase 5 |
+| RADIAN avanzado | Oferta comercial Factus y eventos Matias; amplitud productiva no verificada | DIFERENCIADOR especializado | Fase 6 |
+| Catalogo DEE distinto de POS | Cobertura publica insuficiente por tipo | VERTICAL | Solo con cliente ancla |
+| Salud/RIPS/MUV | Matias confirma endpoints; cobertura comparable no calculable | VERTICAL especializado | Fase 8 |
+| Transporte/RNDC | No se confirmo una muestra competitiva suficiente | VERTICAL especializado | Fase 9 |
+
+**Resultado:** la frecuencia es **NO CALCULABLE** fuera del nucleo con la evidencia disponible. El producto debe habilitar modulos independientes sobre capacidades transversales, no una API unica con un payload generico para todas las familias.

@@ -1,14 +1,27 @@
 # Resumen ejecutivo - mercado de API fiscal DIAN
 
 **Fecha de corte:** 2026-10-01  
-**Alcance:** FEV, nota credito (NC), nota debito (ND) y documento equivalente electronico POS (DEE POS).  
+**Alcance:** portafolio completo: ventas, familia DEE, documento soporte, nomina, recepcion/RADIAN y verticales salud/RIPS y transporte/RNDC.  
 **Evidencia:** fuentes oficiales verificadas entre 2026-08-19 y 2026-09-26, mas evidencia tecnica publica consultada en GitHub el 2026-10-01. La reconsulta directa de sitios el dia de corte fallo por indisponibilidad del proxy; se indica donde afecta la frescura.
 
 ## Veredicto
 
-**Hay evidencia suficiente para continuar, pero no para construir los cuatro documentos sin cerrar primero el contrato con un proveedor tecnologico (PT).** Existe oferta para casas de software, APIs REST, sandbox y bolsas multiempresa. El vacio no es tecnico: faltan cotizaciones contractuales comparables y una prueba de reconciliacion ante timeout.
+**Hay evidencia suficiente para definir el producto completo, pero no para lanzarlo como una sola V1.** Existe oferta para casas de software, APIs REST, sandbox y bolsas multiempresa. Faltan cotizaciones contractuales y pruebas productivas por familia.
 
-La mejor hipotesis es una API multiempresa, con un PT, que cubra FEV/NC/ND/DEE POS, estados y artefactos. No conviene competir como facturador final ni por “tener mas documentos”. El valor defendible es reducir trabajo de integracion y operacion para POS/ERP/SaaS.
+La mejor hipotesis es una plataforma modular multiempresa. El primer release cubre FEV/NC/ND/DEE POS; el producto objetivo agrega compras, nomina, RADIAN, los restantes DEE y verticales sin mezclar sus modelos.
+
+## Portafolio completo
+
+1. Ventas: FEV, NC, ND y contingencias.
+2. DEE: POS, ajustes y catalogo completo vigente.
+3. Compras: documento soporte y ajuste.
+4. Nomina: individual, reemplazo y eliminacion/ajuste.
+5. Recepcion/RADIAN: importacion, eventos 030-034 y titulo valor.
+6. Salud: FEV/NC salud, RIPS, MUV/CUV/CUCON.
+7. Transporte: FEV y RNDC cuando aplique.
+8. Plataforma: empresas, sandbox, webhooks, artefactos, consumo y auditoria.
+
+Detalle: `11-FULL-PRODUCT-PORTFOLIO.md`; secuencia: `12-FULL-SUITE-ROADMAP.md`.
 
 ## Hallazgos
 
@@ -75,6 +88,6 @@ Con 100 clientes, costos fijos de COP 2,5 millones, 500 documentos/cliente, cost
 
 ## Decision
 
-**GO condicionado para discovery y prototipo; NO-GO aun para lanzamiento.** Gates: dos cotizaciones API/partner, confirmacion escrita de los cuatro documentos, contrato multiempresa/reventa, sandbox con timeout/reconciliacion y cinco entrevistas B2B con volumen y disposicion de pago.
+**GO para construir el nucleo modular; NO-GO para lanzar toda la suite simultaneamente.** Gates iniciales: dos cotizaciones, cuatro documentos core confirmados, contrato multiempresa, sandbox con reconciliacion y cinco entrevistas B2B.
 
 Pendiente: precio contractual de HKA/Dataico/Aliaddo; DEE POS de Factus; costo real de soporte/alta; y evidencia de demanda pagada de una API neutral.

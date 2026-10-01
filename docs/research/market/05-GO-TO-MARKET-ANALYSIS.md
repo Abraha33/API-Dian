@@ -65,3 +65,18 @@ El sandbox debe ser autoservicio; produccion, asistida. Ocultar toda la document
 ## Lo que no debe prometerse
 
 “API oficial DIAN”, cero errores, disponibilidad no contratada, integracion en minutos, documentos ilimitados o soporte 24/7. La promesa defendible es contrato estable, trazabilidad, sandbox y menor carga de integracion.
+
+## Go-to-market por modulo
+
+La suite completa no tiene un solo comprador ni debe venderse con una landing generica.
+
+| Modulo | Comprador inicial | Problema que compra | Movimiento comercial |
+|---|---|---|---|
+| Ventas + DEE POS | POS, ERP, SaaS comercio | Emitir y operar alto volumen | Sandbox autoservicio + alta asistida |
+| Documento soporte | ERP y cuentas por pagar | Compras a no obligados | Venta cruzada al cliente core |
+| Nomina fiscal | Software de nomina/HR y ERP | Transmitir liquidaciones ya calculadas | Piloto por ciclos de nomina |
+| Recepcion/RADIAN | ERP contable, AP, factoring | Evidencia, eventos y titulo valor | Venta consultiva con casos de uso |
+| Salud/RIPS | IPS y software salud | Coordinar DIAN y MUV | Vertical con especialista y cliente ancla |
+| Transporte/RNDC | TMS y transportadores | Coordinar factura y RNDC | Alianza con TMS; no vender como API fiscal generica |
+
+La expansion eficiente es `land and expand`: entrar por una familia con volumen probado y agregar modulos al mismo NIT o integrador. Marketing, documentacion, precio y onboarding deben existir por modulo, aunque compartan marca y plataforma.

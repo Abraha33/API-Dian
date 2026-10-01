@@ -9,7 +9,7 @@
 | HKA | Wiki extensa, DEMO, API ConsultarDocumento, XML/PDF, guia de timeout | Fuerte para referencia y operacion; alta asistida |
 | Dataico | REST, POST FEV/NC/ND, GET por consecutivo, POS, Postman | Fuerte para inicio; ambiguedad de consulta POS pendiente |
 | Factus | v2 bills/credit-notes/debit-notes, sandbox, XML/PDF, ejemplos comunitarios | Accesible; endpoint ND y DEE POS presentan contradicciones |
-| Matias | REST/sandbox reportados y repositorio Lopezsoft de docs | Parcial; validar version y soporte contractual |
+| Matias | Quickstart oficial enumera FEV/salud, NC/ND, POS, soporte, nomina, RADIAN, estados, archivos, resoluciones y webhooks; valores magicos fuerzan errores | Referencia fuerte de amplitud en sandbox; produccion, SLA y precio no quedan probados |
 | Plemsi | URLs sandbox/produccion y endpoints observados en integraciones | Parcial; falta referencia oficial consolidada |
 | Alanube | Webhooks/docs reportados | Parcial; precio y prueba no verificados |
 | ESTELA | No se encontro referencia publica equivalente | No evaluable |
@@ -44,3 +44,14 @@ Firma HMAC, timestamp, ID unico, numero de intento, tolerancia a duplicados, bac
 ### Tiempo de integracion
 
 No afirmar “horas” o “dias” por apariencia. Medir con tres integradores: tiempo desde cuenta hasta primer FEV aceptado, luego hasta los cuatro documentos y manejo de un timeout.
+
+## DX de la suite completa
+
+- Un quickstart por familia y un inicio comun de autenticacion/empresa; no una guia enorme para todo el portafolio.
+- Esquemas y versiones separados para ventas, DEE, soporte, nomina, eventos, salud y transporte.
+- Escenarios deterministas por modulo: aceptado, rechazado, duplicado, timeout, correccion y consulta.
+- Estados externos separados: DIAN, PT, MUV y RNDC nunca deben colapsarse en un unico `status`.
+- Credenciales y permisos por entorno, empresa y modulo.
+- Colecciones OpenAPI/Postman parciales para que un integrador descargue solo lo contratado.
+
+El repositorio oficial de Matias es un benchmark util de cobertura. No basta para declarar una experiencia productiva superior: faltan mediciones de onboarding, soporte, disponibilidad y reconciliacion real.

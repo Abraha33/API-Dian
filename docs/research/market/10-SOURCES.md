@@ -30,6 +30,14 @@
 | Saphety planes | Saphety | Oficial candidato | https://saphety.co/planes-y-precios/ | No publicada | 2026-06, via comparativa | Precio directo |
 | Alanube Colombia | Alanube | Oficial candidato | https://www.alanube.co/colombia/ | No publicada | 2026-06, via comparativa | API regional |
 | Plemsi precios | Plemsi | Oficial candidato | https://plemsi.com/precios-facturacion-electronica/ | No publicada | 2026-09, via investigacion | Referencia precio |
+| Micrositio nomina | DIAN | Oficial | https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/soporte-de-pago-de-nomina-electronica/ | No publicada | 2026-10-01 | Alcance nomina electronica |
+| Micrositio documento soporte | DIAN | Oficial | https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/soporte-adquisiciones-no-obligados/ | No publicada | 2026-10-01 | Alcance documento soporte |
+| Res. 167/2021 | DIAN | Norma | https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0167_2021.htm | 2021-12-30 | 2026-10-01 | Documento soporte y ajustes |
+| Res. 85/2022 RADIAN | DIAN | Norma PDF | https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000085%20de%2008-04-2022.pdf | 2022-04-08 | 2026-10-01 | Registro de factura como titulo valor |
+| Micrositio RADIAN | DIAN | Oficial | https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/que-es-radian-2/ | No publicada | 2026-10-01 | Alcance RADIAN |
+| Matias quickstart sandbox | Lopezsoft/Matias | Documentacion oficial | https://github.com/lopezsoft/APIUBL2.1-DOCS/blob/main/docs/sandbox/quickstart.md | Repositorio actualizado 2026-08-22 | 2026-10-01 | Endpoints de suite completa y sandbox |
+| Matias valores magicos | Lopezsoft/Matias | Documentacion oficial | https://github.com/lopezsoft/APIUBL2.1-DOCS/blob/main/sandbox/sandbox/MAGIC-VALUES.md | Repositorio actualizado 2026-08-22 | 2026-10-01 | Simulacion de errores por familia |
+| Res. 948/2026 salud | MinSalud, copia PwC | Copia de norma | https://legalytributarioenlinea.co.pwc.com/Repositorio%20PwC/PDF/Normas%20Nacionales/Resoluciones/Ministerio%20de%20Salud%20y%20Protecci%C3%B3n%20Social/2026/RES-000948-26.pdf | 2026-05-14 | 2026-10-01 | RIPS y soporte de FEV salud |
 
 ## Secundarias y evidencia privada transcrita
 
@@ -41,6 +49,7 @@
 | Comparativa ksmart360 | keilor9703/ksmart | Secundaria | https://github.com/keilor9703/ksmart/blob/main/docs/comparativa-proveedores-fe-colombia-2026.md | 2026-06 | 2026-10-01 | 8 competidores/precios |
 | Factus docs comunitarias | sbetav/factus-js | Repositorio | https://github.com/sbetav/factus-js/tree/master/factus-docs/v2 | No publicada | 2026-10-01 | Endpoints |
 | Plemsi implementaciones | GitHub code search | Evidencia tecnica secundaria | https://github.com/search?q=%22api.plemsi.com%22&type=code | Variable | 2026-10-01 | Sandbox/endpoints |
+| Guia RNDC V5 | MinTransporte, copia comunitaria | Copia tecnica secundaria | https://github.com/grachos/TMS-Junior/blob/main/docs/GUIA_Web_Service_RNDC_V5.md | No publicada | 2026-10-01 | Frontera e integracion RNDC |
 
 ## Incertidumbre y contradicciones
 
@@ -49,7 +58,9 @@
 - Matias, FacturaLatam, Plemsi y Saphety: precios deben reconfirmarse por cotizacion.
 - HKA/Dataico/ESTELA: evidencia oficial de agosto; vigencia al 1 de octubre no pudo reconsultarse.
 - Ausencia publica se marca NO PUBLICADO solo cuando la investigacion reviso la oferta; en otros casos, NO VERIFICADO.
+- La Resolucion 948/2026 se obtuvo desde una copia de PwC; debe sustituirse por URL oficial MinSalud antes de implementar salud.
+- La guia RNDC consultada es una copia comunitaria atribuida a MinTransporte; version y endpoint productivo requieren confirmacion oficial.
 
 ## Auditoria
 
-Cada precio del informe apunta a una fila anterior; ningun precio no calculable fue inventado. No se confundio PT con software propio; se marco expresamente. FEV/NC/ND/DEE POS permanecen como centro. Los calculos usan formulas explicitas y las limitaciones del proxy quedan registradas.
+Cada precio del informe apunta a una fila anterior; ningun precio no calculable fue inventado. No se confundio PT con software propio; se marco expresamente. La primera version conserva FEV/NC/ND/DEE POS como centro y el producto objetivo se separa por familias. Los calculos usan formulas explicitas y las limitaciones del proxy quedan registradas.

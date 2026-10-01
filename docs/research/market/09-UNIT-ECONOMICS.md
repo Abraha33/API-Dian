@@ -60,3 +60,9 @@ Con esta mezcla solo se llega a la meta si costo variable medio y soporte se man
 6. Reserva para incidentes y cambios normativos.
 
 No hay evidencia para asumir 100 clientes. La meta requiere canal de partners y retencion; con venta uno a uno la carga comercial/soporte contradice la operacion unipersonal.
+
+## Economia de suite completa
+
+No mezclar unidades: ventas/DEE/soporte se cobran por documento; nomina por empleado-periodo/ajuste; recepcion/RADIAN por documento o evento; salud por factura mas validacion RIPS; transporte por factura/integracion RNDC.
+
+Modelo recomendado: suscripcion de plataforma + modulos activados + consumo por modulo. Un “todo incluido” unico trasladaria consumos impredecibles al operador. La meta de 100 clientes debe recalcularse segun cuantos usan core, nomina, RADIAN y verticales.
