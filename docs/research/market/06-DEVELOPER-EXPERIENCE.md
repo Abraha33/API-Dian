@@ -4,54 +4,72 @@
 
 ## Evidencia concreta
 
-| Competidor | Evidencia | Evaluacion limitada |
+| Competidor | Evidencia pública | Evaluación basada en hechos |
 |---|---|---|
-| HKA | Wiki extensa, DEMO, API ConsultarDocumento, XML/PDF, guia de timeout | Fuerte para referencia y operacion; alta asistida |
-| Dataico | REST, POST FEV/NC/ND, GET por consecutivo, POS, Postman | Fuerte para inicio; ambiguedad de consulta POS pendiente |
-| Factus | v2 bills/credit-notes/debit-notes, sandbox, XML/PDF, ejemplos comunitarios | Accesible; endpoint ND y DEE POS presentan contradicciones |
-| Matias | Quickstart oficial enumera FEV/salud, NC/ND, POS, soporte, nomina, RADIAN, estados, archivos, resoluciones y webhooks; valores magicos fuerzan errores | Referencia fuerte de amplitud en sandbox; produccion, SLA y precio no quedan probados |
-| Plemsi | URLs sandbox/produccion y endpoints observados en integraciones | Parcial; falta referencia oficial consolidada |
-| Alanube | Webhooks/docs reportados | Parcial; precio y prueba no verificados |
-| ESTELA | No se encontro referencia publica equivalente | No evaluable |
+| Factus | docs v2; OAuth; sandbox/producción; FEV/NC/ND, soporte, nómina y RADIAN; listar/ver/PDF/XML | referencia más completa por endpoint y ciclo CRUD |
+| Matias | quickstart; sandbox; errores forzables; múltiples familias; webhooks y dashboard | referencia de amplitud y pruebas deterministas |
+| HKA | wiki, demo, guías de timeout, DEE, soporte, nómina y API RIPS | fuerte en operación y módulos; onboarding asistido |
+| Aliaddo | API key, sandbox/onboarding publicado, webhooks por plan, rate limits | oferta clara; docs detalladas requieren navegación/cuenta |
+| Bilidox | REST, JSON, JWT y ambiente gratuito publicados | contrato técnico se entrega por solicitud |
+| Alanube | sandbox solicitado, documentación por comprobante y webhooks | developer-oriented, pero no autoservicio completo confirmado |
+| Dataico | REST JSON, Postman y páginas de soporte | API requiere conversación comercial |
+| Saphety | integración con expertos, operador virtual; objetivo publicado <40 días | experiencia asistida, no quickstart público comparable |
+| ESTELA/EDICOM | integración ERP y mecanismos tecnológicos | no evaluable como self-service público |
 
-No se asigna una nota estetica. Cada valoracion se apoya en recursos o endpoints observados.
+## Patrones técnicos confirmados
 
-## Rubrica para shortlist (0-2)
+- JSON/REST domina en ofertas developer-first.
+- Bearer/OAuth, API key o JWT son comunes.
+- Sandbox separado de producción es estándar.
+- `reference_code` de Factus y referencias propias observadas respaldan deduplicación, pero no todos publican semántica de idempotencia.
+- PDF, XML y AttachedDocument aparecen repetidamente.
+- Dashboard acompaña incluso APIs puras porque resuelve soporte y auditoría.
+- Webhooks todavía se reservan a planes superiores o no se documentan públicamente.
+
+## DX mínima propia
+
+Un desarrollador debe poder:
+
+1. crear cuenta y obtener credenciales de prueba;
+2. usar una empresa ficticia preconfigurada;
+3. emitir y consultar cada documento del módulo contratado;
+4. forzar aceptado, rechazo, timeout antes/después de recepción y duplicado;
+5. descargar XML, PDF y respuesta original;
+6. recibir, validar y reintentar webhook;
+7. entender un error sin leer el anexo DIAN completo;
+8. completar checklist de producción y alta de NIT.
+
+## Diseño por módulos
+
+- Inicio común para autenticación, empresas, rangos, archivos y webhooks.
+- Quickstart independiente para ventas, DEE, soporte, nómina, recepción, RADIAN, salud y transporte.
+- OpenAPI y colección Postman recortables por módulo.
+- Estados externos separados: PT, DIAN, MUV y RNDC.
+- Permisos por organización, NIT, entorno y servicio.
+- Changelog normativo y fecha de vigencia por esquema.
+
+## Errores y conciliación
+
+Respuesta mínima: código propio estable, categoría, HTTP, mensaje accionable, campos, `retryable`, ID de correlación y mensaje PT/DIAN sin sobrescribir. Un timeout deja estado `UNKNOWN/RECONCILING`; un worker consulta antes de decidir cualquier reenvío.
+
+## Webhooks
+
+HMAC, timestamp, ID de evento, versión de esquema, número de intento, backoff, tolerancia a duplicados, historial, replay manual, rotación de secreto y endpoint de prueba.
+
+## Rúbrica de selección PT (0–2)
 
 | Criterio | 0 | 1 | 2 |
 |---|---|---|---|
-| Acceso | Sin docs | Docs publicas | Cuenta sandbox autoservicio |
-| Quickstart | Ausente | Parcial | Solicitud completa reproducible |
-| Referencia | Campos incompletos | Endpoints | OpenAPI actualizado |
-| Ejemplos | Ninguno | Happy path | Cuatro documentos + errores |
-| Estado/error | Opaco | Lista | Maquina y remediacion |
-| Webhook | Ausente | Payload | Firma, retry y prueba |
-| Artefactos | No claro | PDF/XML | Respuesta DIAN y retencion |
-| Produccion | No explicado | Contacto | Checklist y SLA |
+| Acceso | sin docs | docs públicas | sandbox autoservicio |
+| Cobertura | claim comercial | endpoints | casos completos por módulo |
+| Errores | mensaje opaco | códigos | remediación + simulación |
+| Reconciliación | ausente | consulta | guía de timeout concluyente |
+| Multiempresa | no claro | comercial | aislamiento/API probado |
+| Webhook | ausente | payload | firma/retry/replay |
+| Producción | contacto | checklist | SLA/runbook/escalamiento |
+| Precio | oculto | paquete | contrato con todos los costos |
 
-## DX minima de nuestro MVP
+## Prueba de integración
 
-Un desarrollador debe poder obtener credencial de prueba, crear emisor ficticio, emitir los cuatro tipos, forzar aceptado/rechazado/timeout, consultar, descargar artefactos y verificar webhook sin hablar con ventas. Produccion si requiere validacion.
+No afirmar “integra en minutos”. Medir con tres integradores: tiempo a credencial, primer FEV, cuatro documentos core, alta de segundo NIT, manejo de rechazo y recuperación de timeout. Repetir por cada módulo nuevo.
 
-### Errores
-
-Cada error: codigo estable propio, categoria, mensaje accionable, campos, `retryable`, correlacion y codigo/mensaje original PT/DIAN separado.
-
-### Webhooks
-
-Firma HMAC, timestamp, ID unico, numero de intento, tolerancia a duplicados, backoff, historial, reenvio y rotacion de secreto.
-
-### Tiempo de integracion
-
-No afirmar “horas” o “dias” por apariencia. Medir con tres integradores: tiempo desde cuenta hasta primer FEV aceptado, luego hasta los cuatro documentos y manejo de un timeout.
-
-## DX de la suite completa
-
-- Un quickstart por familia y un inicio comun de autenticacion/empresa; no una guia enorme para todo el portafolio.
-- Esquemas y versiones separados para ventas, DEE, soporte, nomina, eventos, salud y transporte.
-- Escenarios deterministas por modulo: aceptado, rechazado, duplicado, timeout, correccion y consulta.
-- Estados externos separados: DIAN, PT, MUV y RNDC nunca deben colapsarse en un unico `status`.
-- Credenciales y permisos por entorno, empresa y modulo.
-- Colecciones OpenAPI/Postman parciales para que un integrador descargue solo lo contratado.
-
-El repositorio oficial de Matias es un benchmark util de cobertura. No basta para declarar una experiencia productiva superior: faltan mediciones de onboarding, soporte, disponibilidad y reconciliacion real.

@@ -1,89 +1,113 @@
-# Panorama competitivo
+# Panorama competitivo ampliado
 
 **Fecha de corte:** 2026-10-01  
-**Muestra:** 11 ofertas. Carvajal, Bilidox, Siigo y LOGGRO quedan en watchlist por evidencia API insuficiente o por ser software final no comparable.
+**Muestra principal:** 12 ofertas; 10 con evidencia oficial directa y 2 parciales.  
+**Leyenda:** C = confirmado oficialmente; P = parcial/secundario; ? = no publicado o no verificado. La ausencia pública nunca se convierte en “No”.
 
-Leyenda: C confirmado con fuente oficial; P parcial/secundaria; ? no claro. Precio significa API/casa de software comparable.
+## Matriz por servicio
 
-| Competidor | Rol | FEV | NC | ND | POS | API | Sandbox | XML/PDF | Multiempresa | Precio API | Venta |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
-| The Factory HKA | PT | C | C | C | C | C | C | C | P | NO PUBLICADO | Sales-assisted |
-| Dataico | PT/API | C | C | C | C | C | P | P | C | NO PUBLICADO | Hibrido |
-| Facture/ESTELA | PT enterprise | C | ? | ? | C | ? | ? | P | ? | NO PUBLICADO | Enterprise |
-| Factus | API/aliado | C | C | C | Contradictorio | C | C | C | C | P | Hibrido |
-| Matias API | Software/API | C | C | C | C | C | C | C | C | P | Partner |
-| FacturaLatam | API white-label | P | P | P | P | P | ? | ? | P | P | Partner |
-| Plemsi/ECA | API | P | P | ? | P | P | P | ? | P | P | Hibrido |
-| Saphety | PT/operador virtual | P | P | P | P | P | ? | P | P | NO PUBLICADO partner | Enterprise |
-| Aliaddo | PT/API | P | P | P | P | P | ? | P | P | NO PUBLICADO | Sales-assisted |
-| Alanube | API regional | P | P | P | P | P | P | ? | P | NO PUBLICADO | Sales-assisted |
-| Gosocket | Red/API enterprise | P | P | P | P | P | ? | P | P | NO PUBLICADO | Enterprise |
+| Competidor | Rol | FEV/notas | DEE POS | Otros DEE | Soporte | Nómina | Recepción | RADIAN avanzado | Salud/RIPS | Transporte | API/sandbox |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Matias API | software propio/API | C | C | ? | C | C | C | P | C/FEV salud | ? | C/C |
+| Factus | API/aliados | C | ? | ? | C | C | C | P | C/P | C FEV | C/C |
+| The Factory HKA | PT | C | C | C | C | C | C | P | C/C | ? | C/C |
+| Bilidox/Grafosoft | PT/API | C | C | C parcial | C | C | C | C publicado | ? | DEE transporte | C/C |
+| Aliaddo | PT/API/software | C | C | C parcial | C | P separado | ? | ? | ? | DEE transporte | C/? |
+| Dataico | PT/API/software | C | C | ? | C | C | C | ? | ? | ? | C/P |
+| Saphety | PT/operador virtual | C | C | C genérico | C | C | C | P/factoring | ? | ? | P/? |
+| ESTELA/Facture | PT enterprise | C | C | C | C | C | C | C | ? | ? | P/? |
+| Alanube/Alegra | API regional | C | ? | ? | ? | ? | C | P eventos | ? | ? | C/C solicitado |
+| EDICOM | PT enterprise/global | C | C | ? | ? | C | P | C | ? | ? | integración/? |
+| Plemsi/ECA | API/PT | P | P | ? | ? | ? | ? | ? | ? | ? | P/P |
+| FacturaLatam | código fuente | P | P | ? | ? | ? | ? | ? | ? | ? | API autohospedada |
 
-## Fichas
-
-### The Factory HKA Colombia
-
-**CONFIRMADO:** PT listado por DIAN el 2026-08-19; manual de integracion, DEMO, consulta separada, XML/PDF, FEV y documentos equivalentes. Publica un proceso con acuerdo, credenciales, folios, especialista y produccion. Es la evidencia mas fuerte sobre intermitencia y reconsulta. Faltan precio, SLA, multi-NIT contractual, identificador previo al submit y significado concluyente de inexistencia.
-
-### Dataico
-
-**CONFIRMADO:** PT listado por DIAN; API REST para ERP/POS; FEV, NC, ND y DEE POS; GET por consecutivo; Postman. Documenta desfase entre DIAN y estado local, resincronizacion y reenvio de factura existente. Certificado incluido y sandbox ilimitado son claims **PARCIALMENTE CONFIRMADOS**. Precio integrador: **NO PUBLICADO**.
-
-### Facture / ESTELA
-
-**CONFIRMADO:** FACTURE S.A.S figuraba como PT; ESTELA comunica integracion de la marca y oferta FEV/documento equivalente. No se encontro documentacion publica suficiente de auth, sandbox, consulta o NC/ND. Reserva hasta recibir paquete privado.
-
-### Factus
-
-API v2 con facturas, NC, ND, consulta y XML/PDF; sandbox observado. Programa de aliados y bolsas multi-NIT confirmados en material de septiembre. **Contradiccion:** una comparativa atribuye DEE POS; la lista/API reciente no lo muestra y Factus respondio que ofrece FEV valida para POS. Para este MVP, POS queda NO CONFIRMADO/PROBABLE NO. Rate limit reportado: 80 solicitudes/minuto por usuario.
+## Fichas competitivas
 
 ### Matias API / Lopezsoft
 
-**CONFIRMADO:** documentacion oficial publica con REST, sandbox, FEV/NC/ND, DEE POS y ajuste, documento soporte y ajuste, nomina, eventos RADIAN 030-034, salud, consulta, XML/PDF, resoluciones y webhooks. Los valores magicos permiten probar errores por familia. Precio, SLA, produccion y condicion de casa de software siguen **PARCIALMENTE CONFIRMADOS**; no se afirma que sea PT directo.
+**Oferta:** API bajo modalidad software propio, casas de software y paquetes por NIT. Publica FEV/notas, POS, soporte, nómina, eventos RADIAN, salud, contingencia, exportación, ApplicationResponse y AttachedDocument.  
+**DX:** documentación pública, endpoints, sandbox inmediato, valores mágicos para errores, dashboard multiempresa y webhooks.  
+**Precio:** bolsa anual pública; 5.000–500.000 documentos. Firma separada para casas de software.  
+**Venta:** self-service/híbrida, precios visibles, WhatsApp y soporte dev-to-dev.  
+**Crítica:** es la referencia más fuerte para API amplia y barata. Los claims de uptime, tiempos y volumen son del proveedor y no fueron auditados. “Eventos RADIAN” no prueba todo el ciclo avanzado de título valor.
 
-### FacturaLatam
+### Factus
 
-**PARCIALMENTE CONFIRMADO:** marca blanca, multiempresa, FEV/DEE POS y planes mensuales. Buena forma economica para integradores, pero empresa joven y evidencia primaria no revalidada.
+**Oferta:** API v2 para FEV/notas, documento soporte/ajuste, nómina/ajuste, recepción/RADIAN y variantes FEV de salud y transporte.  
+**DX:** documentación pública muy detallada, sandbox/producción, OAuth bearer, consulta/listado, PDF/XML y `reference_code` para evitar duplicados.  
+**Precio:** planes comunicados por asesores/material comercial; tarifa pública API comparable no aparece en la landing actual.  
+**Venta:** documentación y sandbox compartido para iniciar; sandbox privado/producción tras comprar; contacto por WhatsApp.  
+**Crítica:** la documentación actual no muestra DEE POS, por lo que queda `?`; no debe atribuirse por analogía con “software POS”.
 
-### Plemsi / ECA
+### The Factory HKA
 
-Evidencia tecnica de endpoints productivos/sandbox para factura, NC y DEE POS. Fuentes difieren sobre casa de software; investigacion reciente reporta bolsa multiempresa sin precio publico. **PARCIALMENTE CONFIRMADO**.
+**Oferta:** PT autorizado con manuales para facturación, DEE, documento soporte, nómina, eventos y HKA Fácil RIPS.  
+**DX:** wiki pública, ambientes demo/productivo, guías de intermitencia y API REST específica para RIPS.  
+**Precio:** **NO PUBLICADO**.  
+**Venta:** alta e integración asistida con acuerdo, credenciales y especialista.  
+**Crítica:** mejor referencia pública de operación/reconciliación y salud. Multiempresa, SLA y RADIAN avanzado requieren cotización.
 
-### Saphety
+### Bilidox / Grafosoft
 
-Oferta reportada de FEV, DEE POS, API y Operador Virtual/Distribuidor. Plan directo reportado: COP 150.000/100; 720.000/1.000; 1.200.000/2.000 al ano. No usar como precio partner.
+**Oferta:** API REST/JWT, sandbox, FEV/notas, soporte, nómina, recepción, varios DEE y eventos RADIAN avanzados publicados.  
+**Precio:** bolsa anual desde 15 documentos/COP 24.000 hasta 50.000/COP 6.250.000; todos los tipos listados comparten plan.  
+**Venta:** precios y compra directa; documentación API se solicita.  
+**Crítica:** es el comparable público más claro de suite completa, pero no publica NIT incluidos, excedentes, rate limits, SLA ni detalle técnico abierto.
 
 ### Aliaddo
 
-API para integradores, FEV/DEE POS y firma/certificado incluidos son **PARCIALMENTE CONFIRMADOS**. Debe cotizarse porque el certificado puede cambiar la economia por NIT.
+**Oferta API:** FEV, NC/ND, documento soporte/ajuste y DEE/ajuste; enumera POS, cine, transporte terrestre/aéreo, peajes, juegos y espectáculos. Firma y retención por cinco años incluidas.  
+**Precio API:** 5.000/COP 399.900; 15.000/674.900; 40.000/1.599.900; 120.000/3.590.000 anuales. Multiempresa desde 15.000; webhooks desde 40.000; rate limits 20/60/120/300 por minuto.  
+**Nómina:** producto separado; el plan Lite publicado es transmisión DIAN para dos empleados, no evidencia de nómina incluida en la API de integradores.  
+**Venta:** self-service con checkout, onboarding escrito y soporte por tickets/correo.  
+**Crítica:** evidencia primaria muy útil de cómo las capacidades operativas cambian por plan.
+
+### Dataico
+
+**Oferta:** software final y API REST JSON para ERP de facturación, nómina o POS. Sus planes directos publican FEV, POS, nómina, soporte y eventos de recepción.  
+**Precio:** software final desde COP 0/36.000/72.000 mes; precio API **NO PUBLICADO**, requiere agenda comercial.  
+**Venta:** híbrida; autoservicio para software final, ventas para API.  
+**Crítica:** confirma la amplitud del mercado, pero los precios de pyme no sirven para calcular costo partner.
+
+### Saphety
+
+**Oferta:** emisión/recepción de FEV, POS/DEE, soporte, nómina, factoring/confirming y programas para partners.  
+**Venta:** operador virtual con marca propia o distribuidor por comisión; integración asistida que el sitio estima en menos de 40 días.  
+**Precio:** partner **NO PUBLICADO**.  
+**Crítica:** benchmark directo para canal white-label, no para autoservicio inmediato.
+
+### ESTELA / Facture
+
+**Oferta:** FEV/notas, nómina, soporte, DEE (POS, servicios públicos, peajes, extractos, boletas y otros), RADIAN, recepción e integración ERP. Publica una opción multi-PT.  
+**Venta:** enterprise, formulario y acompañamiento.  
+**Precio/API pública:** **NO PUBLICADO**.  
+**Crítica:** suite amplia para altos volúmenes; documentación de desarrollador no es públicamente comparable con Factus o Matias.
 
 ### Alanube
 
-BaaS/API regional, webhooks y cobertura Colombia reportados; vinculado a Alegra. Interesante para expansion regional, sin ventaja comprobada para el MVP Colombia.
+**Oferta:** API regional para emisión/consulta, webhooks, sandbox solicitado y eventos de recepción (acuse, recibo, aceptación expresa/tácita).  
+**Modelo:** comunica pago por emisión y alianza con Alegra como PT.  
+**Venta:** formulario de sandbox y asesoría.  
+**Crítica:** fuerte mensaje API/multip país; soporte, nómina, DEE y salud quedan **NO VERIFICADOS**.
 
-### Gosocket
+### EDICOM
 
-API/OAuth, xPOS y presencia regional reportadas; orientacion SAP/Oracle/enterprise. Benchmark de escala, no primera opcion.
+**Oferta:** cumplimiento global/enterprise; página Colombia confirma FEV, RADIAN, nómina y facturación electrónica POS, integración con sistemas y archivo.  
+**Venta:** consultiva internacional.  
+**Precio/API pública:** **NO PUBLICADO**.  
+**Crítica:** benchmark de cumplimiento regional, no alternativa inicial económica demostrada.
+
+### Plemsi / ECA
+
+Fuentes técnicas previas muestran API/sandbox, FEV, NC y POS. El sitio devolvió un desafío anti-bot durante la consulta de corte. Nómina, soporte, RADIAN y precios partner quedan **NO VERIFICADOS**.
+
+### FacturaLatam
+
+Vende código fuente/APIDIAN con conexión directa, no una bolsa administrada comparable. La web publica USD 200 para APIDIAN 2026 y afirma documentos ilimitados, pero “todos los documentos” no se desglosó. Se mantiene como sustituto de construir internamente, no como PT/API SaaS equivalente.
 
 ## Watchlist
 
-- **Carvajal T&S:** actor historico; no se obtuvo paquete API actual comparable.
-- **Bilidox:** no se obtuvo evidencia suficiente para atribuir oferta actual.
-- **Siigo/Alegra/LOGGRO:** referencias de precio/UX final; sus APIs contables no prueban programa fiscal neutral para casas de software.
+- Carvajal T&S y Cadena siguen siendo actores autorizados/históricos, pero no se obtuvo oferta API actual suficientemente detallada.
+- Siigo, Alegra y LOGGRO sirven para precio y UX de software final; no se atribuye una API fiscal neutral por pertenecer al listado DIAN.
+- La lista DIAN contiene 97 razones sociales visibles al corte. Ser autorizado no demuestra programa partner, API pública ni soporte de todos los módulos.
 
-La ausencia de evidencia se conserva como ?, no como “No”.
-
-## Cobertura ampliada
-
-| Competidor | FEV/notas | DEE POS | Soporte | Nomina | RADIAN | Salud | Evidencia |
-|---|---:|---:|---:|---:|---:|---:|---|
-| Matias API | C | C | C | C | C | C | Docs oficiales y sandbox |
-| Factus | C | Contradictorio | C | C | C, separado | ? | Material comercial/endpoints |
-| HKA | C | C | P | P | P | ? | Wiki; ampliar sandbox |
-| Dataico | C | C | P | P | P | ? | Portal; confirmar modulos |
-| Saphety | P | P | P | P | P | P | Oferta reportada |
-| Aliaddo | P | P | P | P | P | ? | Cotizacion pendiente |
-| Plemsi | P | P | ? | ? | ? | ? | Endpoints parciales |
-| ESTELA | C | C | ? | ? | P | P | Oferta enterprise |
-
-Matias es la referencia publica mas completa de amplitud. HKA sigue siendo la referencia publica mas fuerte para reconciliacion.

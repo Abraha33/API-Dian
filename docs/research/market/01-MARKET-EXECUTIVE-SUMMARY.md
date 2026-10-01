@@ -1,93 +1,113 @@
-# Resumen ejecutivo - mercado de API fiscal DIAN
+# Resumen ejecutivo — mercado colombiano de API fiscal
 
 **Fecha de corte:** 2026-10-01  
-**Alcance:** portafolio completo: ventas, familia DEE, documento soporte, nomina, recepcion/RADIAN y verticales salud/RIPS y transporte/RNDC.  
-**Evidencia:** fuentes oficiales verificadas entre 2026-08-19 y 2026-09-26, mas evidencia tecnica publica consultada en GitHub el 2026-10-01. La reconsulta directa de sitios el dia de corte fallo por indisponibilidad del proxy; se indica donde afecta la frescura.
+**Naturaleza:** investigación preliminar para decidir producto, cliente y secuencia; no reemplaza cotizaciones, pilotos ni concepto jurídico.
 
-## Veredicto
+## Respuesta corta
 
-**Hay evidencia suficiente para definir el producto completo, pero no para lanzarlo como una sola V1.** Existe oferta para casas de software, APIs REST, sandbox y bolsas multiempresa. Faltan cotizaciones contractuales y pruebas productivas por familia.
+Sí existe un mercado observable para una API fiscal multiempresa dirigida a casas de software, ERP, POS y SaaS. La evidencia pública demuestra oferta de facturación, documentos equivalentes, documento soporte, nómina y eventos de recepción/RADIAN. Salud y RADIAN avanzado también se venden, pero exigen especialización. No hay evidencia suficiente para justificar construir todos los servicios simultáneamente ni para asumir que se conseguirán 100 clientes.
 
-La mejor hipotesis es una plataforma modular multiempresa. El primer release cubre FEV/NC/ND/DEE POS; el producto objetivo agrega compras, nomina, RADIAN, los restantes DEE y verticales sin mezclar sus modelos.
+La oportunidad no es “tener todos los documentos”: competidores como Matias, Factus, HKA, Bilidox, Saphety y ESTELA ya publican suites amplias. La hipótesis defendible es ofrecer una integración más operable para software tercero: multiempresa, sandbox, idempotencia, errores claros, estados confiables, webhooks y conciliación.
 
-## Portafolio completo
+## Qué comprende el mercado investigado
 
-1. Ventas: FEV, NC, ND y contingencias.
-2. DEE: POS, ajustes y catalogo completo vigente.
-3. Compras: documento soporte y ajuste.
-4. Nomina: individual, reemplazo y eliminacion/ajuste.
-5. Recepcion/RADIAN: importacion, eventos 030-034 y titulo valor.
-6. Salud: FEV/NC salud, RIPS, MUV/CUV/CUCON.
-7. Transporte: FEV y RNDC cuando aplique.
-8. Plataforma: empresas, sandbox, webhooks, artefactos, consumo y auditoria.
+1. FEV, notas crédito/débito, contingencia, exportación, mandatos, AIU, divisas y variantes sectoriales.
+2. Los 12 tipos de documento equivalente electrónico, empezando por POS, y sus notas de ajuste.
+3. Documento soporte en adquisiciones a no obligados y nota de ajuste.
+4. Documento soporte de pago de nómina y nota de ajuste.
+5. Recepción fiscal y eventos 030–034.
+6. RADIAN avanzado: inscripción y eventos del título valor.
+7. FEV de salud y RIPS/MUV como vertical sectorial.
+8. FEV de transporte; RNDC se trata como integración adyacente, no como documento DIAN.
 
-Detalle: `11-FULL-PRODUCT-PORTFOLIO.md`; secuencia: `12-FULL-SUITE-ROADMAP.md`.
+## Qué venden los competidores
 
-## Hallazgos
+- **API autoservicio o híbrida para desarrolladores:** Matias, Factus, Aliaddo, Bilidox, Alanube y parcialmente Dataico.
+- **Proveedor/operador para integradores:** HKA, Saphety, Dataico y ESTELA.
+- **Cumplimiento enterprise y regional:** EDICOM, ESTELA y Alanube.
+- **Código fuente/conexión directa:** FacturaLatam; compite con una decisión de construir, no con el mismo servicio administrado.
 
-### Que venden
+La cobertura más amplia publicada aparece en Matias, Bilidox, ESTELA, Factus y HKA. Ninguno queda confirmado públicamente en absolutamente todos los dominios, precios y condiciones productivas.
 
-1. PT empresariales con venta asistida: HKA, Dataico, Saphety, Aliaddo y Facture/ESTELA.
-2. API para casas de software: Matias API, Factus, FacturaLatam, Plemsi y Dataico.
-3. Infraestructura regional: Alanube y Gosocket.
-4. Software final con API complementaria: Alegra, Siigo y similares; sirven como referencia, pero no son comparables uno a uno con una API fiscal neutral.
+## Cliente objetivo
 
-### Que es estandar
+**Beachhead recomendado:** casas de software, ERP, POS y SaaS colombianos con aproximadamente 5–30 NIT activos, que ya tengan usuarios y no quieran mantener normativa, firma, habilitación, XML y comunicación con DIAN.
 
-Sobre 11 competidores con evidencia util, API aparece en aproximadamente 10/11; DEE POS se atribuye a 10/11, aunque varias confirmaciones son secundarias; multiempresa/casa de software aparece en al menos 8/11. Sandbox, webhooks y reconciliacion estan peor documentados.
+No conviene comenzar vendiendo uno a uno a microcomercios: es un segmento competido por software final desde COP 0–36.000 mensuales y genera más onboarding y soporte. Los compradores cambian por módulo:
 
-El minimo vendible incluye FEV/NC/ND/DEE POS; alta y aislamiento de NIT; resoluciones; validacion e idempotencia; consulta; XML/PDF/respuesta fiscal; errores estructurados; sandbox; webhooks y reconciliacion.
+| Servicio | Comprador principal |
+|---|---|
+| FEV/DEE POS | POS, ERP, e-commerce y SaaS comercial |
+| Documento soporte | ERP, contabilidad y cuentas por pagar |
+| Nómina fiscal | software de nómina/HR y ERP; recibe liquidación ya calculada |
+| Recepción/RADIAN | ERP contable, cuentas por pagar, factoring y tesorería |
+| Salud/RIPS | IPS y software de salud |
+| Transporte | TMS y software para transportadores |
 
-### Como cobran
+## Funcionalidades realmente estándar
 
-- **Factus individual:** COP 169.000/150 documentos-año hasta COP 2.160.000/120.000; certificado incluido. Material oficial transcrito el 2026-09-11.
-- **Factus multifacturador:** COP 630.000/10.000 hasta COP 21.000.000/1.000.000; certificado COP 130.000/NIT-año. Lista recibida el 2026-09-26 sin fecha impresa: **PARCIALMENTE CONFIRMADO**.
-- **Matias API:** COP 220.000/5.000; COP 400.000/10.000; COP 630.000/30.000; COP 850.000/50.000. Otra fuente reporta COP 6.000.000/500.000. **PARCIALMENTE CONFIRMADO**.
-- **FacturaLatam:** COP 99.900/mes, 10 empresas/5.000 documentos; COP 349.900, 50/30.000; COP 999.900, 200/150.000. **PARCIALMENTE CONFIRMADO**.
-- **Plemsi:** referencias desde COP 19.000/mes por 100 y COP 1.242.000/año por 24.000; bolsa multiempresa sin precio publico. **PARCIALMENTE CONFIRMADO**.
-- HKA, Dataico, Aliaddo, Alanube, Gosocket y Facture/ESTELA: precio API comparable **NO PUBLICADO o NO VERIFICADO**.
+En el núcleo: REST/JSON, autenticación, sandbox, alta de empresa, rangos, emisión, consulta, PDF/XML, respuesta DIAN y notas. Multiempresa, dashboard, correo y soporte son recurrentes en ofertas para integradores.
 
-### Como venden
+En una API comercial propia también son obligatorios operativamente, aunque pocos los expliquen: idempotencia, estados separados, reconciliación tras timeout, auditoría y webhooks reintentables. No son extras estéticos: evitan duplicados y pérdida de trazabilidad.
 
-El patron API-first usa documentacion, sandbox, Postman e integracion rapida. El patron PT empresarial usa demo, contacto, especialista, contrato y puesta en produccion. Conviene un recorrido hibrido: documentacion y sandbox autoservicio; activacion productiva asistida.
+Nómina requiere ciclos por empleado/periodo y notas; documento soporte requiere rango y CUDS; recepción requiere cargar/consultar facturas y secuenciar eventos; RADIAN avanzado no debe confundirse con los cinco eventos básicos; RIPS requiere estados DIAN y MUV separados.
 
-### A quien venden
+## Cómo cobran y cuánto
 
-Casas de software, POS, ERP, SaaS verticales e integradores con varios NIT. No es el mismo comprador que una pyme que busca un programa de facturacion completo.
+Hay cuatro modelos comprobados:
 
-## MVP
+1. Bolsa anual compartida por documentos: Matias.
+2. Bolsa anual por empresa/plan: Bilidox.
+3. Bolsa API con funciones que aparecen por nivel: Aliaddo.
+4. Cotización enterprise o API asistida: HKA, Dataico, Saphety, ESTELA, EDICOM y Alanube.
 
-**MUST:** cuatro documentos; un PT; API JSON versionada; API keys por entorno; multiempresa; idempotencia; validacion; estados; reconciliacion; XML/PDF/respuesta; webhooks; sandbox; OpenAPI/Postman; auditoria; limites; metricas; alta productiva.
+Precios públicos actuales destacados:
 
-**SHOULD:** sucursales/multiprefijo, alertas de resolucion y consumo, reenvio de webhook, panel operativo minimo, ejemplos y exportacion.
+- **Matias casas de software:** 5.000 documentos/año por COP 220.000; 50.000 por COP 850.000; 500.000 por COP 6.000.000. Incluye facturación, nómina, POS, soporte y eventos RADIAN; firma desde COP 104.000/NIT-año.
+- **Aliaddo API:** 5.000 por COP 399.900; 15.000 por COP 674.900; 40.000 por COP 1.599.900; 120.000 por COP 3.590.000. Multiempresa desde 15.000; webhooks desde 40.000. Incluye FEV/notas, soporte y DEE, no confirma nómina API en esa bolsa.
+- **Bilidox:** 15 por COP 24.000 hasta 50.000 por COP 6.250.000 al año. Publica una bolsa común para facturación, nómina, RADIAN, soporte, equivalentes y ajustes; cantidad de NIT incluida no está publicada.
+- **Dataico API, HKA, Saphety, ESTELA, Alanube y EDICOM:** precio comparable **NO PUBLICADO**.
 
-**LATER:** segundo PT, failover, SDK multiples, white-label visual, PDF altamente personalizable, BI, portal contable y documentos fiscales excluidos.
+Los precios son muy bajos a gran volumen —Matias publica COP 12–44/documento—, por lo que revender transmisión pura tendrá poco margen. El negocio debe cobrar por plataforma, NIT, operación y soporte, no competir solo por centavos por documento.
 
-## Precio a estudiar
+## Cómo venden
 
-No vender “ilimitado”. Probar:
+- Matias, Aliaddo y Bilidox muestran precios y permiten una compra o inicio directo.
+- Factus combina documentación/sandbox con contacto por WhatsApp.
+- Dataico ofrece planes directos, pero la API requiere agenda comercial.
+- Alanube ofrece solicitud de sandbox y pago por emisión.
+- Saphety vende programas de operador virtual/distribuidor con integración asistida.
+- HKA, ESTELA y EDICOM siguen un recorrido consultivo/enterprise.
 
-1. Por NIT: COP 69.000/100, COP 119.000/500 y COP 249.000/2.500 al mes.
-2. Integrador: COP 199.000/mes + COP 25.000/NIT activo + COP 75-120/documento.
-3. Prepago anual con descuento despues de medir consumo.
+Documentación, sandbox y ejemplos funcionan como adquisición para desarrolladores. WhatsApp, formularios, onboarding, partners y contenido educativo son los canales visibles. La importancia de anuncios pagados es **NO VERIFICADA**.
 
-Son **precios de experimento**, no conclusion de mercado.
+## Producto mínimo competitivo y secuencia
 
-## Meta de 100 clientes
+**Release comercial 1:** FEV + NC + ND + DEE POS/ajuste, multiempresa, sandbox, rangos, idempotencia, estados, consulta, XML/PDF/respuesta, webhooks y reconciliación.
 
-Con 100 clientes, costos fijos de COP 2,5 millones, 500 documentos/cliente, costo efectivo de COP 44/documento, 0,3 horas de soporte y pasarela de 3%, se necesita aproximadamente **COP 120.000 de ARPA** para acercarse a COP 5 millones de beneficio. A COP 69.000 y alto consumo, la meta no cierra.
+**Expansión validada por clientes:** documento soporte; nómina fiscal; recepción 030–034; RADIAN avanzado; restantes DEE; salud/RIPS; transporte/RNDC.
 
-## Riesgos
+El producto objetivo es completo, pero cada módulo necesita evidencia de demanda, contrato/proveedor, precio, sandbox, pruebas negativas y margen antes de construirse.
 
-1. Factus tiene evidencia contradictoria sobre DEE POS; la fuente comercial reciente dice que no lo ofrece.
-2. El “not found” concluyente tras timeout no esta demostrado para ningun PT.
-3. Bolsa compartida no siempre es mas barata; en Factus puede costar mas que paquetes individuales.
-4. Certificado, alta, resolucion y soporte por NIT pueden consumir el margen.
-5. DEE POS convierte cada venta en consumo; un precio fijo ilimitado es peligroso.
-6. La API externa contradice el baseline de agosto que la reservaba para despues. Esta mision reabre deliberadamente esa decision.
+## Qué no necesita el primer release
 
-## Decision
+Liquidación laboral/PILA, ERP, contabilidad, POS propio, TMS, historia clínica, factoring financiero, segundo PT, SDK para muchos lenguajes, white-label visual completo ni los 12 DEE sin cliente ancla.
 
-**GO para construir el nucleo modular; NO-GO para lanzar toda la suite simultaneamente.** Gates iniciales: dos cotizaciones, cuatro documentos core confirmados, contrato multiempresa, sandbox con reconciliacion y cinco entrevistas B2B.
+## Economía de 100 clientes
 
-Pendiente: precio contractual de HKA/Dataico/Aliaddo; DEE POS de Factus; costo real de soporte/alta; y evidencia de demanda pagada de una API neutral.
+La meta de COP 5 millones mensuales exige aproximadamente COP 120.000–150.000 de ARPA con costos y soporte controlados. Un plan barato de transmisión no alcanza. La mezcla debe incluir cargo de plataforma/NIT y consumo; verticales y módulos deben cobrarse aparte.
+
+## Decisión preliminar
+
+**GO condicionado** para continuar discovery y construir el núcleo común. **NO-GO** para implementar toda la suite a la vez o comprometer precio antes de obtener al menos dos cotizaciones partner actuales y tres pilotos con consumo real.
+
+Próximas pruebas decisivas: 10–15 entrevistas con integradores segmentadas por POS/ERP/nómina; dos cotizaciones contractuales; prueba de timeout/reconciliación; y un piloto dispuesto a pagar. La investigación demuestra oferta y comparables, no demanda propia garantizada.
+
+## Incertidumbre pendiente
+
+- Costos partner productivos, SLA y derecho de reventa de la mayoría de PT.
+- Precio de excedentes y número de NIT de Bilidox.
+- Cobertura productiva de todos los servicios mostrados en sandbox.
+- Demanda pagada por salud, RADIAN avanzado y DEE no POS.
+- Costo real de soporte, certificados, alta y cambios normativos.
+

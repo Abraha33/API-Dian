@@ -1,82 +1,115 @@
-# Analisis go-to-market
+# Análisis go-to-market y cliente objetivo
 
 **Fecha de corte:** 2026-10-01
 
-## Segmentos y mensajes observados
+## Segmentación observada
 
-| Segmento | Ejemplos | Mensaje dominante | Venta |
+| Segmento | Competidores visibles | Promesa | Proceso de venta |
 |---|---|---|---|
-| Desarrolladores/casas de software | Dataico, Factus, Matias, Plemsi | API, sandbox, integracion, varios clientes | Hibrida |
-| ERP/POS corporativo | HKA, Saphety, Gosocket | Cumplimiento, acompanamiento, estabilidad | Sales-assisted |
-| Pyme final | Alegra, Siigo, LOGGRO | Facilidad, facturar y administrar | Self-service/hibrida |
-| Multi-pais | Alanube, Gosocket | Una integracion regional | Enterprise |
+| Desarrolladores/casas de software | Matias, Factus, Aliaddo, Bilidox, Dataico | integrar API, delegar DIAN, multiempresa | self-service/híbrido |
+| ERP/POS | HKA, Saphety, ESTELA, Dataico | cumplimiento, integración y soporte | sales-assisted |
+| Pyme final | Dataico, Aliaddo, Siigo/Alegra | facilidad y módulos administrativos | self-service |
+| Enterprise/regional | EDICOM, ESTELA, Alanube | escala, países, cumplimiento y continuidad | consultivo |
+| Vertical salud | HKA, Factus, Matias | coordinar FEV y RIPS | consultivo técnico |
 
-HKA publica etapas de implementacion con acuerdo, credenciales, especialista y produccion. Dataico usa documentacion/Postman y pagina para ERP/POS. Factus combina sandbox con programa de aliados. La evidencia respalda dos recorridos, no uno.
+## Cliente objetivo recomendado
 
-## Recorrido recomendado
+Una casa de software, ERP, POS o SaaS con:
+
+- 5–30 NIT clientes activos;
+- un equipo técnico pequeño;
+- volumen agregado de 5.000–100.000 documentos/año;
+- necesidad inmediata de FEV/DEE POS;
+- frustración demostrable con soporte, cambios normativos o múltiples integraciones;
+- disposición a pagar por operación y no solo por XML.
+
+Se excluye como primer objetivo al comerciante individual: exige adquisición y soporte masivos y compara contra planes de software final muy baratos o gratuitos.
+
+## Buyer por servicio
+
+| Servicio | Usuario técnico | Comprador económico | Señal de compra |
+|---|---|---|---|
+| Core/DEE POS | desarrollador POS/ERP | dueño de software/product manager | migración normativa o PT inestable |
+| Soporte | equipo ERP/AP | líder contable/financiero | alto trabajo manual a no obligados |
+| Nómina fiscal | software HR/payroll | product owner/operaciones | ya calcula nómina y necesita transmitir |
+| Recepción | ERP/AP | controller/CFO | volumen de proveedores y conciliación |
+| RADIAN | factoring/tesorería | financiero/legal | negociación real de FEV título valor |
+| Salud/RIPS | software IPS | dirección de tecnología/compliance | cliente IPS ancla |
+| Transporte/RNDC | TMS | product owner/logística | transportador ancla |
+
+## Mensajes observados
+
+- Matias: un POST, conexión DIAN, precio por volumen y soporte dev-to-dev.
+- Factus: rapidez, confiabilidad, soporte y compatibilidad con cualquier stack.
+- Aliaddo: API masiva, firma incluida, retención y planes visibles.
+- Dataico: ecosistema administrativo completo y API para ERP/POS/nómina.
+- Saphety: continuidad, experto local y modelo operador virtual/distribuidor.
+- ESTELA/EDICOM: alto volumen, integración ERP y cumplimiento regional.
+- Alanube: pago por emisión, sandbox, webhooks y varios países.
+
+La promesa propia no debe ser “más documentos”. Debe ser: **una integración fiscal operable para múltiples empresas, con estados, errores y conciliación que reducen soporte del integrador**. Requiere demostración, no solo copy.
+
+## Recorridos de compra
+
+### Developer-first
 
 ```text
-Busqueda/referencia
-→ landing para integradores
-→ precios orientativos
-→ documentacion y sandbox
-→ primer documento de prueba
-→ verificacion comercial/NIT
-→ contrato y alta PT
-→ checklist de produccion
-→ consumo y cobro
+Contenido/búsqueda → documentación → sandbox → primer aceptado
+→ prueba de error/timeout → precio → alta NIT → producción
 ```
 
-El sandbox debe ser autoservicio; produccion, asistida. Ocultar toda la documentacion detras de ventas aumenta friccion; permitir produccion anonima aumenta riesgo.
+Matias, Factus y parcialmente Aliaddo muestran este patrón.
 
-## Canales con evidencia o señal
+### Sales-assisted
 
-- Documentacion publica y Postman: adquisicion tecnica comprobable en Dataico/Factus/HKA.
-- SEO/contenido educativo: portales de conocimiento de Dataico/HKA.
-- Demo/contacto comercial: comun en PT enterprise.
-- Partners/casas de software: Factus, Matias, Saphety y Dataico.
-- White-label: reportado para FacturaLatam y Saphety.
-- Webinars/redes/ads: existencia posible, importancia **NO VERIFICADA**; no se infiere canal ganador por tener cuenta.
+```text
+Landing/caso → formulario o WhatsApp → discovery → cotización
+→ contrato → credenciales → integración → habilitación → producción
+```
+
+HKA, Saphety, Dataico API, ESTELA y EDICOM siguen este patrón.
+
+### Partner/white-label
+
+```text
+Programa aliado → validación comercial → contrato/reventa
+→ integración común → alta repetible de NIT → soporte de nivel 1 por partner
+```
+
+Saphety diferencia operador virtual y distribuidor; Matias asigna soporte dev-to-dev y deja usuario final al integrador.
+
+## Canales con evidencia
+
+- Documentación y sandbox: Matias, Factus, HKA, Alanube.
+- Precios/checkout: Matias, Aliaddo, Bilidox.
+- WhatsApp/formulario: Matias, Factus, Dataico, Alanube.
+- Programa de aliados: Saphety, Factus, Matias, Aliaddo.
+- Contenido educativo/blog/webinars: HKA, Dataico, ESTELA, Bilidox.
+- Venta enterprise y casos: EDICOM, ESTELA, Saphety.
+
+Ads, afiliados y referidos como fuente dominante: **NO VERIFICADO**.
 
 ## Estrategia inicial
 
-1. Vender a software con base instalada, no adquirir cien comercios uno a uno.
-2. Elegir un vertical con dolor y volumen conocidos: POS/restaurantes es atractivo, pero DEE POS eleva consumo.
-3. Ofrecer sandbox y documentacion antes de la llamada.
-4. Ejecutar dos pilotos pagos o con compromiso contractual.
-5. Medir dias hasta primer aceptado, horas de alta, tickets/NIT, documentos y margen.
-6. Publicar caso solo despues de resultados.
+1. Elegir un beachhead entre POS y ERP con clientes existentes.
+2. Entrevistar 10–15 integradores; no mezclar respuestas de contadores finales.
+3. Publicar documentación y sandbox del núcleo antes de la llamada.
+4. Hacer producción asistida y cobrar el piloto.
+5. Medir días a primer aceptado, tickets/NIT, horas de alta, errores y margen.
+6. Agregar documento soporte al mismo canal; nómina solo si el cliente ya calcula.
+7. Abrir RADIAN/salud/transporte únicamente con design partner.
 
-## Hipotesis que deben probarse
+## Métricas de validación
 
-- El integrador paga por simplificacion aunque pueda contratar PT directo.
-- Un contrato/credencial multiempresa reduce trabajo real.
-- Errores explicados y reconciliacion importan en la compra.
-- El comprador acepta cargo por NIT y consumo.
-- Soporte mensual puede mantenerse por debajo de 0,3 h/NIT.
+- ≥3 de 10 entrevistados aceptan piloto concreto.
+- ≥2 pilotos completan integración sin desarrollo hecho por nosotros.
+- tiempo a primer FEV aceptado <1 día de trabajo del integrador después del alta;
+- onboarding propio <2 horas/NIT tras estabilización;
+- soporte <0,3 h/NIT-mes;
+- margen de contribución >60%;
+- conversión sandbox→piloto y piloto→pago registrada.
 
-## Clasificacion de ventas
+## Promesas que no deben usarse
 
-- **Self-service:** FacturaLatam/planes pequenos reportados.
-- **Hibrido:** Factus, Dataico, Plemsi.
-- **Sales-assisted:** HKA, Aliaddo, Saphety, Alanube.
-- **Enterprise:** Gosocket, ESTELA.
+“API oficial DIAN”, cero errores, disponibilidad no contratada, integración en cinco minutos, documentos ilimitados, todos los sectores desde el día uno o soporte 24/7 sin capacidad. Los claims de competidores no son métricas nuestras.
 
-## Lo que no debe prometerse
-
-“API oficial DIAN”, cero errores, disponibilidad no contratada, integracion en minutos, documentos ilimitados o soporte 24/7. La promesa defendible es contrato estable, trazabilidad, sandbox y menor carga de integracion.
-
-## Go-to-market por modulo
-
-La suite completa no tiene un solo comprador ni debe venderse con una landing generica.
-
-| Modulo | Comprador inicial | Problema que compra | Movimiento comercial |
-|---|---|---|---|
-| Ventas + DEE POS | POS, ERP, SaaS comercio | Emitir y operar alto volumen | Sandbox autoservicio + alta asistida |
-| Documento soporte | ERP y cuentas por pagar | Compras a no obligados | Venta cruzada al cliente core |
-| Nomina fiscal | Software de nomina/HR y ERP | Transmitir liquidaciones ya calculadas | Piloto por ciclos de nomina |
-| Recepcion/RADIAN | ERP contable, AP, factoring | Evidencia, eventos y titulo valor | Venta consultiva con casos de uso |
-| Salud/RIPS | IPS y software salud | Coordinar DIAN y MUV | Vertical con especialista y cliente ancla |
-| Transporte/RNDC | TMS y transportadores | Coordinar factura y RNDC | Alianza con TMS; no vender como API fiscal generica |
-
-La expansion eficiente es `land and expand`: entrar por una familia con volumen probado y agregar modulos al mismo NIT o integrador. Marketing, documentacion, precio y onboarding deben existir por modulo, aunque compartan marca y plataforma.
