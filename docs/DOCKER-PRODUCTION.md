@@ -25,7 +25,10 @@ para evitar despliegues accidentales con referencias ambiguas.
 limpio para cada pull request hacia `dev` o `main` y también puede ejecutarse
 manualmente. Las imágenes no se publican desde ese workflow: sólo se cargan en
 el runner y se escanean con Docker Scout. El gate falla si encuentra
-vulnerabilidades **críticas o altas con corrección disponible**.
+vulnerabilidades **críticas o altas con corrección disponible**. El job de PR
+desactiva attestations porque el exporter local de Docker no puede cargar una
+manifest list; el workflow de publicación debe activar SBOM y provenance al
+subir una imagen inmutable al registry.
 
 El pipeline de release que publique imágenes debe ejecutar los comandos
 equivalentes en un runner limpio y conservar sus logs:
