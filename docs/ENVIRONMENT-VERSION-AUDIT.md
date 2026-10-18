@@ -1,8 +1,8 @@
 # Auditoría y versión del entorno
 
 **Fecha de corte:** 2026-10-18
-**Rama auditada:** `dev`
-**Commit auditado:** `11a95b5`
+**Rama auditada:** `fix/security-dependencies`
+**Base:** `chore/environment-versioning`
 
 ## Objetivo
 
@@ -29,15 +29,19 @@ E2E                                [██████████████�
 Concurrencia                       [██████████████████████████████] 100%
 Contrato provider fake             [██████████████████████████████] 100%
 Versionado reproducible            [██████████████████████████████] 100%
-Vulnerabilidades npm               [████████░░░░░░░░░░░░░░░░░░░░]  0% resueltas
+Vulnerabilidades npm               [████████████████████████░░░░░░] 80% resueltas
 ```
 
 ## Seguridad de dependencias
 
-`npm audit --omit=dev --audit-level=high` reportó 10 vulnerabilidades (8 altas y
-2 moderadas), varias transitivas en Fastify/`fast-uri`, sin corrección automática
-disponible en el momento de la auditoría. Esto queda visible como bloqueo; no se
-usa `npm audit fix` ciegamente y no se rebaja el umbral de CI.
+La revisión actualizó `@nestjs/platform-fastify` a `11.2.7`, `pino-pretty` a
+`13.2.0` y aplicó las correcciones transitivas de `fast-uri` mediante el lockfile.
+El resultado actual de `npm audit --omit=dev --audit-level=high` es **2 avisos de
+producción: 1 alto y 1 moderado**. La auditoría también incluye dependencias
+transitivas, que npm agrupa bajo sus paquetes padres.
+El alto restante proviene del `fastify@5.11.3` fijado internamente por NestJS 11;
+la corrección automática propone NestJS 12, que es un cambio mayor. No se fuerza
+esa actualización: queda como riesgo documentado para una tarea separada.
 
 ## Verificación reproducible
 
@@ -67,5 +71,5 @@ npm run test:concurrency -- --runInBand
 
 La rama se considera saludable para desarrollo cuando estos comandos pasan y el
 working tree no tiene cambios no intencionados. La aprobación para producción
-continúa bloqueada hasta resolver o aceptar formalmente el riesgo de dependencias,
-integrar el proveedor real y cerrar el despliegue productivo.
+continúa bloqueada hasta resolver o aceptar formalmente el riesgo restante de
+dependencias, integrar el proveedor real y cerrar el despliegue productivo.
