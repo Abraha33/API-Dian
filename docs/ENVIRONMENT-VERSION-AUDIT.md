@@ -29,11 +29,12 @@ Lint                                [██████████████�
 Unitarias Jest                      [██████████████████████████████] 100% VERIFIED (3/3, 9/9)
 Auditoría npm producción            [██████████████████████████████] 100% VERIFIED (0)
 Compose sintaxis                    [██████████████████████████████] 100% VERIFIED
-Build                               [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] UNVERIFIED (no ejecutado por política)
-E2E/concurrencia/provider           [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] UNVERIFIED
+Build                               [██████████████████████████████] 100% VERIFIED (CI #39118975602)
+E2E/concurrencia/provider           [██████████████████████████████] 100% VERIFIED (CI #39118975602)
 Auditoría npm desarrollo            [██████████████████████░░░░░░░░] 0% VERIFIED (20 moderadas)
 Gobernanza GitHub                   [██████████████████████████████] 100% VERIFIED (ruleset + controles)
 CVEs imagen PostgreSQL fijada       [██████████████░░░░░░░░░░░░░░░░] BLOCKED (4 críticas, 33 altas)
+CI + CodeQL remoto                  [██████████████████████████████] 100% VERIFIED (CI + 3 análisis)
 ```
 
 ## Seguridad de dependencias
@@ -70,12 +71,15 @@ resolvería el gate por sí solo. El contenedor histórico `api-dian-postgres`
 continúa detenido y no se eliminó su volumen: arrancarlo o migrar sus datos
 requiere una validación operacional separada.
 
-En GitHub, la rama de mantenimiento está publicada y `dev`/`main` tienen el
+En GitHub, la rama de mantenimiento está publicada y el PR #75 tiene CI y
+CodeQL en verde: build, lint, unitarias, provider-contract, migraciones, E2E y
+concurrencia pasan en `39118975602`; los tres análisis CodeQL también pasan.
+`dev`/`main` tienen el
 ruleset activo `protect-dev-main`: PR obligatorio, una aprobación, check `ci`,
 sin borrado ni force-push. Dependabot alerts/security updates, secret scanning,
 push protection y CodeQL default setup también están habilitados. Aún no hay
-una ejecución CI remota asociada a esta rama porque no se abrió un PR; por eso
-el resultado remoto de build/E2E sigue marcado como `UNVERIFIED`.
+La integración en `dev` sigue pendiente de aprobación humana; el PR no se
+auto-mergeó.
 
 ## Verificación reproducible
 
@@ -105,9 +109,9 @@ npm run test:concurrency -- --runInBand
 
 La rama es una base saludable para desarrollo cuando estos comandos pasan y el
 working tree no tiene cambios no intencionados. En este corte, typecheck, lint,
-Jest unitario, auditoría de producción y configuración de Compose pasan. E2E,
-concurrencia, contrato provider, build, ejecución real de PostgreSQL y CI remoto
-siguen sin estar verificados. La gobernanza GitHub sí está verificada. El gate
+Jest unitario, auditoría de producción, configuración de Compose, E2E,
+concurrencia, contrato provider, build y CI remoto pasan. La gobernanza GitHub
+también está verificada. El gate
 de CVEs de Docker está verificado como fallido, no como ausente. La aprobación para
 producción continúa bloqueada hasta cerrar esos gates y resolver o aceptar
 formalmente las vulnerabilidades de desarrollo.
