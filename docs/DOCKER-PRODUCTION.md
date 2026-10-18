@@ -21,8 +21,14 @@ para evitar despliegues accidentales con referencias ambiguas.
 
 ## Build y escaneo en CI
 
-No se ejecutó ningún build durante esta auditoría. El pipeline de release debe
-ejecutar los comandos equivalentes en un runner limpio y conservar sus logs:
+`.github/workflows/docker-security.yml` construye ambas imágenes en un runner
+limpio para cada pull request hacia `dev` o `main` y también puede ejecutarse
+manualmente. Las imágenes no se publican desde ese workflow: sólo se cargan en
+el runner y se escanean con Docker Scout. El gate falla si encuentra
+vulnerabilidades **críticas o altas con corrección disponible**.
+
+El pipeline de release que publique imágenes debe ejecutar los comandos
+equivalentes en un runner limpio y conservar sus logs:
 
 ```sh
 docker build --pull --file Dockerfile.production \
