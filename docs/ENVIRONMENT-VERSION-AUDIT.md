@@ -23,7 +23,7 @@ ocultar problemas de seguridad.
 ## Estado de salud
 
 ```text
-Cambios locales intencionados      [██████████████████████████████] 100%
+Working tree local                [██████████████████████████████] 100% VERIFIED (limpio)
 Typecheck TypeScript               [██████████████████████████████] 100% VERIFIED
 Lint                                [██████████████████████████████] 100% VERIFIED
 Unitarias Jest                      [██████████████████████████████] 100% VERIFIED (3/3, 9/9)
@@ -32,7 +32,7 @@ Compose sintaxis                    [██████████████�
 Build                               [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] UNVERIFIED (no ejecutado por política)
 E2E/concurrencia/provider           [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] UNVERIFIED
 Auditoría npm desarrollo            [██████████████████████░░░░░░░░] 0% VERIFIED (20 moderadas)
-Gobernanza GitHub                   [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] BLOCKED (credencial admin)
+Gobernanza GitHub                   [██████████████████████████████] 100% VERIFIED (ruleset + controles)
 CVEs imagen PostgreSQL fijada       [██████████████░░░░░░░░░░░░░░░░] BLOCKED (4 críticas, 33 altas)
 ```
 
@@ -70,6 +70,13 @@ resolvería el gate por sí solo. El contenedor histórico `api-dian-postgres`
 continúa detenido y no se eliminó su volumen: arrancarlo o migrar sus datos
 requiere una validación operacional separada.
 
+En GitHub, la rama de mantenimiento está publicada y `dev`/`main` tienen el
+ruleset activo `protect-dev-main`: PR obligatorio, una aprobación, check `ci`,
+sin borrado ni force-push. Dependabot alerts/security updates, secret scanning,
+push protection y CodeQL default setup también están habilitados. Aún no hay
+una ejecución CI remota asociada a esta rama porque no se abrió un PR; por eso
+el resultado remoto de build/E2E sigue marcado como `UNVERIFIED`.
+
 ## Verificación reproducible
 
 Desde la raíz (no inicia servicios):
@@ -99,8 +106,8 @@ npm run test:concurrency -- --runInBand
 La rama es una base saludable para desarrollo cuando estos comandos pasan y el
 working tree no tiene cambios no intencionados. En este corte, typecheck, lint,
 Jest unitario, auditoría de producción y configuración de Compose pasan. E2E,
-concurrencia, contrato provider, build, ejecución real de PostgreSQL y GitHub
-remoto siguen sin estar verificados. El gate de CVEs de Docker está verificado
-como fallido, no como ausente. La aprobación para
+concurrencia, contrato provider, build, ejecución real de PostgreSQL y CI remoto
+siguen sin estar verificados. La gobernanza GitHub sí está verificada. El gate
+de CVEs de Docker está verificado como fallido, no como ausente. La aprobación para
 producción continúa bloqueada hasta cerrar esos gates y resolver o aceptar
 formalmente las vulnerabilidades de desarrollo.
