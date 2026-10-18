@@ -6,8 +6,8 @@ credenciales ni reemplaza la aprobación del despliegue real.
 ## Artefactos
 
 - `Dockerfile.production`: imagen multi-stage de API-DIAN. Compila en la etapa
-  de build, elimina dependencias de desarrollo, ejecuta como `node` y expone
-  `/health` mediante un healthcheck.
+  de build, elimina dependencias de desarrollo y los gestores npm/Corepack del
+  runtime, ejecuta como `node` y expone `/health` mediante un healthcheck.
 - `docker-compose.production.yml`: topología sin puertos públicos para
   PostgreSQL. La API sólo se expone a un reverse proxy conectado a la red
   `edge`; PostgreSQL queda únicamente en la red privada.
