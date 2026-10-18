@@ -23,18 +23,18 @@ ocultar problemas de seguridad.
 ## Estado de salud
 
 ```text
-Working tree local                [██████████████████████████████] 100% VERIFIED (limpio)
+Working tree local                [████████████████████░░░░░░░░░░] PARTIAL (cambios de esta entrega sin commit)
 Typecheck TypeScript               [██████████████████████████████] 100% VERIFIED
 Lint                                [██████████████████████████████] 100% VERIFIED
-Unitarias Jest                      [██████████████████████████████] 100% VERIFIED (3/3, 9/9)
+Unitarias Vitest                    [██████████████████████████████] 100% VERIFIED (3/3, 9/9)
 Auditoría npm producción            [██████████████████████████████] 100% VERIFIED (0)
 Compose sintaxis                    [██████████████████████████████] 100% VERIFIED
-Build                               [██████████████████████████████] 100% VERIFIED (CI #39118975602)
-E2E/concurrencia/provider           [██████████████████████████████] 100% VERIFIED (CI #39118975602)
-Auditoría npm desarrollo            [██████████████████████░░░░░░░░] 0% VERIFIED (20 moderadas)
+Build                               [████████████████████░░░░░░░░░░] PENDING (debe correr en CI para este commit)
+E2E/concurrencia/provider           [██████████████████░░░░░░░░░░░] PARTIAL (provider 6/6; DB local no disponible)
+Auditoría npm desarrollo            [██████████████████████████████] 100% VERIFIED (0)
 Gobernanza GitHub                   [██████████████████████████████] 100% VERIFIED (ruleset + controles)
 CVEs imagen PostgreSQL fijada       [██████████████░░░░░░░░░░░░░░░░] BLOCKED (4 críticas, 33 altas)
-CI + CodeQL remoto                  [██████████████████████████████] 100% VERIFIED (CI + 3 análisis)
+CI + CodeQL remoto                  [██████████████████░░░░░░░░░░░░] PENDING (debe repetir para esta migración)
 ```
 
 ## Seguridad de dependencias
@@ -51,12 +51,10 @@ NestJS 12 ya no queda la copia anidada de Fastify 5.11.3 que disparaba el aviso
 de producción anterior.
 
 El resultado actual de `npm audit --omit=dev --audit-level=high` es **0 avisos de
-producción**. La auditoría completa aún reporta **20 avisos moderados de
-desarrollo**, concentrados en la cadena de Jest/ts-jest (`sprintf-js` y
-dependencias de cobertura). `npm audit fix --force` propone un downgrade
-incompatible de `ts-jest`; por eso no se aplicó. Producción está limpia, pero la
-salud total de la cadena de desarrollo queda pendiente de una migración de
-runner o de una corrección upstream compatible.
+producción** y la auditoría completa `npm audit --audit-level=moderate` también
+es **0 avisos** después de migrar de Jest/ts-jest a Vitest 5.0.5. La salida de
+`npm ls jest ts-jest vitest @vitest/coverage-v8 --depth=0` confirma que Jest y
+ts-jest ya no son dependencias directas y que Vitest quedó fijado en el lockfile.
 
 ## Docker y PostgreSQL local
 
@@ -71,15 +69,14 @@ resolvería el gate por sí solo. El contenedor histórico `api-dian-postgres`
 continúa detenido y no se eliminó su volumen: arrancarlo o migrar sus datos
 requiere una validación operacional separada.
 
-En GitHub, la rama de mantenimiento está publicada y el PR #75 tiene CI y
-CodeQL en verde: build, lint, unitarias, provider-contract, migraciones, E2E y
-concurrencia pasan en `39118975602`; los tres análisis CodeQL también pasan.
-`dev`/`main` tienen el
-ruleset activo `protect-dev-main`: PR obligatorio, una aprobación, check `ci`,
-sin borrado ni force-push. Dependabot alerts/security updates, secret scanning,
-push protection y CodeQL default setup también están habilitados. Aún no hay
-La integración en `dev` sigue pendiente de aprobación humana; el PR no se
-auto-mergeó.
+La rama de mantenimiento está publicada y el PR #75 sigue abierto. La corrida
+anterior de CI/CodeQL pasó sobre el commit previo, pero la migración Vitest y el
+paquete Docker requieren una nueva ejecución remota antes de afirmar que el
+estado verde se conserva. `dev`/`main` tienen el ruleset activo
+`protect-dev-main`: PR obligatorio, una aprobación, checks `ci` y `CodeQL`, sin
+borrado ni force-push. Dependabot alerts/security updates, secret scanning,
+push protection y CodeQL default setup también están habilitados. La integración
+en `dev` sigue pendiente de aprobación humana; el PR no se auto-mergeó.
 
 ## Verificación reproducible
 
@@ -97,21 +94,22 @@ Desde `apps/api` (no ejecutar `npm run build` en esta auditoría):
 npm ci
 npx tsc --noEmit --pretty false
 npx eslint "{src,apps,libs,test}/**/*.ts"
-npm test -- --runInBand
+npm test
 ```
 
 Con PostgreSQL inicializado y las identidades de prueba:
 
 ```bash
-npm run test:e2e -- --runInBand
-npm run test:concurrency -- --runInBand
+npm run test:e2e
+npm run test:concurrency
 ```
 
-La rama es una base saludable para desarrollo cuando estos comandos pasan y el
-working tree no tiene cambios no intencionados. En este corte, typecheck, lint,
-Jest unitario, auditoría de producción, configuración de Compose, E2E,
-concurrencia, contrato provider, build y CI remoto pasan. La gobernanza GitHub
-también está verificada. El gate
-de CVEs de Docker está verificado como fallido, no como ausente. La aprobación para
-producción continúa bloqueada hasta cerrar esos gates y resolver o aceptar
-formalmente las vulnerabilidades de desarrollo.
+La rama será una base saludable para desarrollo cuando estos comandos pasen y el
+working tree no tenga cambios no intencionados. En este corte, typecheck, lint,
+unitarias Vitest, contrato provider, auditorías npm y configuración de Compose
+están verificados. E2E y concurrencia sólo llegaron al arranque de la aplicación
+en local; fallan porque no hay PostgreSQL escuchando en `127.0.0.1:5432`. Deben
+repetirse en CI para este commit. El gate de CVEs de Docker está verificado como
+fallido, no como ausente. La aprobación para producción continúa bloqueada hasta
+cerrar esos gates y verificar build, escaneo de imágenes, VPS, backup/restore y
+proveedor fiscal real.

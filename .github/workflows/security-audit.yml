@@ -1,0 +1,33 @@
+name: Security Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-audit
+  cancel-in-progress: true
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # tag: v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # tag: v4
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Complete dependency audit
+        run: npm audit --audit-level=moderate
