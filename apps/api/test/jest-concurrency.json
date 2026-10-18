@@ -3,7 +3,8 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".concurrency-spec.ts$",
+  "extensionsToTreatAsEsm": [".ts"],
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": ["ts-jest", {"useESM": true, "tsconfig": "./tsconfig.test-esm.json"}]
   }
 }

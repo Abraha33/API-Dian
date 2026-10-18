@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { jest } from '@jest/globals';
 import type {
   FiscalProvider,
   ProviderArtifact,

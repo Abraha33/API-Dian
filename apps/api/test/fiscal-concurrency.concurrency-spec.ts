@@ -2,6 +2,7 @@ import './env-setup-e2e';
 
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { jest } from '@jest/globals';
 import {
   FastifyAdapter,
   NestFastifyApplication,
