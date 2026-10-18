@@ -1,6 +1,6 @@
 # Requisitos V1 — API-DIAN
 
-**Fecha de corte:** 2026-08-18  
+**Fecha de corte:** 2026-08-18
 **Estado:** Cerrado para arquitectura  
 **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
@@ -8,7 +8,7 @@
 
 ## 1. Propósito y frontera
 
-V1 es una API fiscal interna para comercio colombiano cuyo primer consumidor es el POS propio.
+V1 es una API fiscal comercial multitenant para comercio colombiano cuyo primer consumidor es el POS propio.
 
 ```text
 POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN

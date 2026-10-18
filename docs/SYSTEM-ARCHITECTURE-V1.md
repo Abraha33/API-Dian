@@ -1,5 +1,7 @@
 # API-DIAN — Arquitectura definitiva del sistema V1
 
+API fiscal comercial multitenant para comercio colombiano.
+
 **Estado:** FROZEN / baseline de arquitectura  
 **Fecha:** 2026-08-19  
 **Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`  

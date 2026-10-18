@@ -1,10 +1,12 @@
 # API-DIAN
 
-API fiscal interna para comercio colombiano.
+API fiscal comercial multitenant para comercio colombiano.
+
+**Estado:** ACTIVE
 
 ## Estado
 
-**Corte:** 2026-08-19  
+**Corte:** 2026-08-19
 **Rama consolidada:** `dev`
 
 ```text
@@ -33,7 +35,7 @@ Fuentes principales:
 POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
-No es API pública comercial V1.
+V1 inicia como una API comercial multitenant de acceso controlado para el POS propio; no se expone como API pública general.
 
 Regla crítica:
 

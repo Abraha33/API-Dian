@@ -1,6 +1,9 @@
 # Contexto de sesión — API-DIAN
 
-**Corte:** 2026-08-19  
+**Estado:** ACTIVE
+**Producto:** API fiscal comercial multitenant para comercio colombiano.
+
+**Corte:** 2026-08-19
 **Rama consolidada:** `dev`
 
 ## 1. Autoridades vigentes

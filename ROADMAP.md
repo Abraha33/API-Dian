@@ -1,10 +1,11 @@
 # Roadmap API-DIAN
 
-**Corte:** 2026-08-19  
+**Estado:** ACTIVE
+**Corte:** 2026-08-19
 **Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 ```text
-POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
+API fiscal comercial multitenant: POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
 Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin API pública; sin multi-PT; sin custodia propia de certificados si puede delegarse; integridad fiscal por encima de velocidad.

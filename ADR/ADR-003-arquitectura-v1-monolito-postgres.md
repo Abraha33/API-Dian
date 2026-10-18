@@ -7,7 +7,7 @@
 
 ## Contexto
 
-V1 es infraestructura fiscal interna del POS propio:
+API fiscal comercial multitenant para comercio colombiano. V1 comienza con infraestructura fiscal de acceso controlado para el POS propio:
 
 ```text
 POS propio → API fiscal propia → 1 PT habilitado → DIAN

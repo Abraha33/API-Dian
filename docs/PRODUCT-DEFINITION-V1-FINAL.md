@@ -1,7 +1,9 @@
 # API-DIAN — Definición definitiva de producto V1
 
-**Estado:** FROZEN / baseline de producto  
-**Fecha:** 2026-08-19  
+API fiscal comercial multitenant para comercio colombiano.
+
+**Estado:** FROZEN / baseline de producto
+**Fecha:** 2026-08-19
 **Autoridad:** este documento define qué producto se construye en V1.  
 
 > Si una decisión técnica, implementación existente o documento anterior contradice este baseline de producto, primero se debe revisar la contradicción contra este documento antes de continuar construyendo.

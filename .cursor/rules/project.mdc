@@ -10,4 +10,5 @@ alwaysApply: true
 - **Git:** Ramas largas solo `main` y `dev`. Trabajo en `feature/...` desde `dev` → PR a `dev`. Detalle: `docs/git-branches.md`.
 - **Base de datos:** Cuando exista Supabase, el esquema versionado vive en `supabase/migrations/` (canónico). No duplicar esquema “a mano” fuera de migraciones sin acuerdo explícito.
 - **Alcance:** Cambios acotados al ticket o tarea; no refactors colaterales ni archivos no pedidos.
+- **Gobernanza:** `AGENTS.md` es obligatorio y prevalece sobre estas reglas cuando exista conflicto; respetar sus permisos, límites y requisitos de evidencia.
 - **Idioma:** Documentación nueva en `docs/` en español claro; código y nombres técnicos según convención del repo.
