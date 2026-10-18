@@ -33,14 +33,14 @@ jobs:
           sbom: false
 
       - name: Scan API image for fixable high and critical CVEs
-        uses: docker/scout-action@bacf462e8d090c09660de30a6ccc718035f961e3 # v1
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          command: cves
-          image: local://local/api-dian:${{ github.sha }}
-          only-severities: critical,high
-          only-fixed: true
-          exit-code: true
-          write-comment: false
+          image-ref: local/api-dian:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          vuln-type: os,library
 
       - name: Build PostgreSQL image
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
@@ -53,11 +53,11 @@ jobs:
           sbom: false
 
       - name: Scan PostgreSQL image for fixable high and critical CVEs
-        uses: docker/scout-action@bacf462e8d090c09660de30a6ccc718035f961e3 # v1
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          command: cves
-          image: local://local/api-dian-postgres:${{ github.sha }}
-          only-severities: critical,high
-          only-fixed: true
-          exit-code: true
-          write-comment: false
+          image-ref: local/api-dian-postgres:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+          vuln-type: os,library
