@@ -33,6 +33,7 @@ Build                               [░░░░░░░░░░░░░░�
 E2E/concurrencia/provider           [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] UNVERIFIED
 Auditoría npm desarrollo            [██████████████████████░░░░░░░░] 0% VERIFIED (20 moderadas)
 Gobernanza GitHub                   [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] BLOCKED (credencial admin)
+CVEs imagen PostgreSQL fijada       [██████████████░░░░░░░░░░░░░░░░] BLOCKED (4 críticas, 33 altas)
 ```
 
 ## Seguridad de dependencias
@@ -55,6 +56,19 @@ dependencias de cobertura). `npm audit fix --force` propone un downgrade
 incompatible de `ts-jest`; por eso no se aplicó. Producción está limpia, pero la
 salud total de la cadena de desarrollo queda pendiente de una migración de
 runner o de una corrección upstream compatible.
+
+## Docker y PostgreSQL local
+
+El digest fijado por Compose es el oficial vigente de PostgreSQL 15.19 y fue
+descargado localmente sin iniciar servicios. Docker Scout reporta para esa
+imagen **4 críticas, 33 altas, 30 moderadas y 55 bajas**; la política queda en
+salud `D` porque la imagen oficial ejecuta su entrypoint como root, contiene
+paquetes con copyleft y todavía no tiene attestations de supply chain
+requeridas. La variante oficial Alpine reduce el inventario de paquetes, pero
+mantiene 4 críticas y 32 altas en este corte, por lo que cambiar de variante no
+resolvería el gate por sí solo. El contenedor histórico `api-dian-postgres`
+continúa detenido y no se eliminó su volumen: arrancarlo o migrar sus datos
+requiere una validación operacional separada.
 
 ## Verificación reproducible
 
@@ -85,7 +99,8 @@ npm run test:concurrency -- --runInBand
 La rama es una base saludable para desarrollo cuando estos comandos pasan y el
 working tree no tiene cambios no intencionados. En este corte, typecheck, lint,
 Jest unitario, auditoría de producción y configuración de Compose pasan. E2E,
-concurrencia, contrato provider, build, ejecución real de PostgreSQL, CVEs de
-la imagen y GitHub remoto siguen sin estar verificados. La aprobación para
+concurrencia, contrato provider, build, ejecución real de PostgreSQL y GitHub
+remoto siguen sin estar verificados. El gate de CVEs de Docker está verificado
+como fallido, no como ausente. La aprobación para
 producción continúa bloqueada hasta cerrar esos gates y resolver o aceptar
 formalmente las vulnerabilidades de desarrollo.
