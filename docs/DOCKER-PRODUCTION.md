@@ -12,7 +12,8 @@ credenciales ni reemplaza la aprobación del despliegue real.
   PostgreSQL. La API sólo se expone a un reverse proxy conectado a la red
   `edge`; PostgreSQL queda únicamente en la red privada.
 - `infra/postgres/Dockerfile`: variante opcional de PostgreSQL que actualiza
-  paquetes Debian durante el build. No está aprobada para producción hasta
+  paquetes Debian y elimina `gosu`, que no se necesita cuando el contenedor
+  arranca directamente como `postgres`. No está aprobada para producción hasta
   publicar una imagen inmutable y completar el escaneo indicado abajo.
 
 Las imágenes de producción deben referenciar un digest (`@sha256:...`), nunca

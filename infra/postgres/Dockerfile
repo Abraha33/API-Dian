@@ -11,6 +11,7 @@ USER root
 # recorded by the release process.
 RUN apt-get update \
   && apt-get upgrade -y \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && rm -f /usr/local/bin/gosu
 
 USER postgres
