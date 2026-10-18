@@ -23,18 +23,18 @@ ocultar problemas de seguridad.
 ## Estado de salud
 
 ```text
-Working tree local                [██████████████████████████████] 100% VERIFIED (commits bf0f281 + 9c95a2d; limpio)
+Working tree local                [██████████████████████████████] 100% VERIFIED (commits bf0f281 + 9c95a2d + docs; limpio)
 Typecheck TypeScript               [██████████████████████████████] 100% VERIFIED
 Lint                                [██████████████████████████████] 100% VERIFIED
 Unitarias Vitest                    [██████████████████████████████] 100% VERIFIED (3/3, 9/9)
 Auditoría npm producción            [██████████████████████████████] 100% VERIFIED (0)
 Compose sintaxis                    [██████████████████████████████] 100% VERIFIED
-Build                               [████████████████████░░░░░░░░░░] PENDING (debe correr en CI para este commit)
-E2E/concurrencia/provider           [██████████████████░░░░░░░░░░░] PARTIAL (provider 6/6; DB local no disponible)
+Build                               [██████████████████████████████] 100% VERIFIED (CI #39137424156)
+E2E/concurrencia/provider           [██████████████████████████████] 100% VERIFIED (CI #39137424156)
 Auditoría npm desarrollo            [██████████████████████████████] 100% VERIFIED (0)
 Gobernanza GitHub                   [██████████████████████████████] 100% VERIFIED (ruleset + controles)
 CVEs imagen PostgreSQL fijada       [██████████████░░░░░░░░░░░░░░░░] BLOCKED (4 críticas, 33 altas)
-CI + CodeQL remoto                  [██████████████████░░░░░░░░░░░░] PENDING (debe repetir para esta migración)
+CI + CodeQL remoto                  [██████████████████████████████] 100% VERIFIED (CI #39137424156 + CodeQL #39137421279)
 ```
 
 ## Seguridad de dependencias
@@ -70,9 +70,9 @@ continúa detenido y no se eliminó su volumen: arrancarlo o migrar sus datos
 requiere una validación operacional separada.
 
 La rama de mantenimiento está publicada y el PR #75 sigue abierto. La corrida
-anterior de CI/CodeQL pasó sobre el commit previo, pero la migración Vitest y el
-paquete Docker requieren una nueva ejecución remota antes de afirmar que el
-estado verde se conserva. `dev`/`main` tienen el ruleset activo
+actual de CI pasó build, lint, unitarias, provider-contract, migraciones, E2E,
+concurrencia y la validación de ambos Compose; los tres análisis CodeQL y el
+check de configuración de Dependabot también pasaron. `dev`/`main` tienen el ruleset activo
 `protect-dev-main`: PR obligatorio, una aprobación, checks `ci` y `CodeQL`, sin
 borrado ni force-push. Dependabot alerts/security updates, secret scanning,
 push protection y CodeQL default setup también están habilitados. La integración
@@ -106,10 +106,10 @@ npm run test:concurrency
 
 La rama será una base saludable para desarrollo cuando estos comandos pasen y el
 working tree no tenga cambios no intencionados. En este corte, typecheck, lint,
-unitarias Vitest, contrato provider, auditorías npm y configuración de Compose
-están verificados. E2E y concurrencia sólo llegaron al arranque de la aplicación
-en local; fallan porque no hay PostgreSQL escuchando en `127.0.0.1:5432`. Deben
-repetirse en CI para este commit. El gate de CVEs de Docker está verificado como
+unitarias Vitest, contrato provider, auditorías npm, configuración de Compose,
+build y CI remoto están verificados. El smoke E2E/concurrencia local sólo puede
+llegar al arranque sin PostgreSQL escuchando en `127.0.0.1:5432`; el runner CI
+con PostgreSQL pasó ambos gates. El gate de CVEs de Docker está verificado como
 fallido, no como ausente. La aprobación para producción continúa bloqueada hasta
-cerrar esos gates y verificar build, escaneo de imágenes, VPS, backup/restore y
-proveedor fiscal real.
+cerrar ese gate o aceptar formalmente el riesgo y verificar escaneo de imágenes,
+VPS, backup/restore y proveedor fiscal real.
