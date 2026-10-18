@@ -4,6 +4,9 @@
 !**/.env.example
 node_modules/
 apps/api/dist/
+coverage/
+.pytest_cache/
+API-Dian.rar
 __pycache__/
 *.pyc
 .DS_Store
