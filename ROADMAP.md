@@ -1,15 +1,35 @@
 # Roadmap API-DIAN
 
-**Corte:** 2026-08-19  
-**Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
+**Estado:** `ACTIVE` — roadmap vigente de ejecución
+**Corte:** 2026-10-18
+**Rama de trabajo:** `chore/agent-governance-2026-10-18`
+**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md` (`FROZEN`)
+**Estado local:** build, TypeScript, lint sin correcciones, unit, provider-contract y governance `PASS`; E2E y concurrencia `BLOCKED` por PostgreSQL local no disponible.
+**CI remoto, auditoría de dependencias, Docker security y PT:** `UNVERIFIED`/`BLOCKED` en este corte.
 
 ```text
-POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
+ERP/POS/SaaS/integrador → API fiscal comercial multitenant
+                                  → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
-Restricciones: una sola persona opera inicialmente; un PT; sin DIAN directa; sin API pública; sin multi-PT; sin custodia propia de certificados si puede delegarse; integridad fiscal por encima de velocidad.
+El POS propio es el primer cliente y caso de validación, no una exclusión del
+producto comercial. Restricciones: una sola persona opera inicialmente; un PT;
+sin DIAN directa; sin selección automática multi-PT; sin API self-service ni
+SDK público en el MVP; los webhooks de estado/resultado son para consumidores
+autorizados; sin custodia propia de certificados si puede delegarse; integridad
+fiscal por encima de velocidad.
+
+El MVP comercial cubre FEV, Nota Crédito, Nota Débito, DEE POS y ajustes del DEE
+POS, además de estado, webhooks, contingencias, idempotencia, auditoría,
+recuperación/reconciliación, soportes y aislamiento multiempresa.
 
 ## Estado actual
+
+La definición de producto está aprobada y congelada (`FROZEN`). Los documentos
+anteriores que describían una API exclusivamente interna para el POS se
+conservan como contexto histórico (`HISTORICAL`/`SUPERSEDED`); no deben
+contradecir la definición vigente. La implementación y los resultados remotos
+no se vuelven a declarar verificados por este cambio documental.
 
 ```text
 F0   Baseline producto                         ✅
@@ -29,11 +49,16 @@ F7   Readiness + piloto                         ⏸ depende F6C
 F8   Estabilización + V1.1                      ⏸
 ```
 
+Las marcas de fase preservan el estado documentado del roadmap y no sustituyen
+una verificación fechada del HEAD actual. En este corte la implementación, CI
+remoto y PT permanecen `UNVERIFIED`.
+
 `F6H` es una etiqueta de seguimiento del hardening posterior a F6B; no cambia el alcance funcional V1.
 
 ## Fuentes de continuidad
 
-- baseline: `docs/f0-producto-v1-validado-2026-08-18.md`;
+- autoridad de producto vigente (`FROZEN`): `docs/PRODUCT-DEFINITION-V1-FINAL.md`;
+- baseline histórico (`HISTORICAL`/`SUPERSEDED` como autoridad de producto): `docs/f0-producto-v1-validado-2026-08-18.md`;
 - requisitos: `docs/v1-requisitos.md`;
 - arquitectura/side effects: ADR-003/004;
 - datos/seguridad: ADR-005/006 + docs F3;
@@ -42,6 +67,7 @@ F8   Estabilización + V1.1                      ⏸
 - core persistencia: `docs/f6-checkpoint-01-core-persistence.md`;
 - vertical slice fake: `docs/f6-checkpoint-02-fake-vertical-slice.md`;
 - operación: `docs/runbook-fiscal-worker-v1.md`;
+- packaging Docker y límites de despliegue: `docs/DOCKER-PRODUCTION.md`;
 - harness abstracto del futuro adapter: `docs/f6-provider-contract-harness.md`;
 - evidencia pública F4C actual: `docs/f4c-evidencia-publica-2026-08-19.md`;
 - cuestionario/sandbox: `docs/f4c-cuestionario-solicitud-sandbox-pt.md`.
@@ -100,13 +126,17 @@ Completado después de F6B:
 - gates de concurrencia permanentes;
 - infraestructura local reducida a PostgreSQL 15;
 - retirados Redis/MinIO y runtime local con superusuario;
+- packaging productivo Docker con API no-root, Compose con red privada para PostgreSQL,
+  referencias inmutables, secretos por archivo, healthchecks y capacidades reducidas;
+- workflow de seguridad Docker con Trivy para imágenes API y PostgreSQL; el escaneo
+  de la imagen derivada PostgreSQL y su digest de release siguen pendientes;
 - bootstrap Windows con logins separados API/worker/ops;
 - harness de contract tests del futuro adapter basado únicamente en evidencia sanitizada;
 - fixtures sin evidencia se rechazan;
 - `TRANSPORT_PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren prueba explícita referenciada;
 - el harness no contiene URLs, auth, códigos, tiempos, wire formats ni semántica específica de ningún PT.
 
-Evidencia final reciente:
+Evidencia histórica preservada (no revalidada en este corte documental):
 
 - concurrencia: CI #66;
 - limpieza local: PR #60, CI #71, consolidado como `99bd26383a299c24604c3a345ad0f7d573be682e`;
@@ -114,19 +144,23 @@ Evidencia final reciente:
 
 ## F4C — Gate externo activo
 
-La investigación oficial actualizada al 2026-08-19 mantiene los tres candidatos en el listado público vigente de PT de la DIAN y cambia el grado de evidencia disponible.
+HKA es el candidato inicial para validación. La candidatura sigue sin validar:
+no hay aquí evidencia actual suficiente para declarar selección, sandbox,
+contrato, credenciales, reconciliación, XML/PDF, SLA o precio como disponibles.
+Los resultados de proveedores y del estado remoto de CI son `UNVERIFIED` en
+este corte documental.
 
 Orden operativo provisional para probar:
 
-1. **The Factory HKA Colombia** — primero;
-2. **DATAICO** — segundo / alternativa inmediata;
-3. **Facture / ESTELA** — reserva hasta obtener paquete técnico privado suficiente.
+1. **The Factory HKA Colombia** — candidato inicial, no validado;
+2. **DATAICO** — alternativa a evaluar si HKA no supera los gates;
+3. **Facture / ESTELA** — reserva, sin selección.
 
 Razón del orden:
 
-- HKA publica documentación explícita de intermitencia/timeouts, estados intermedios, reconstrucción y reconsulta, además del proceso para obtener ambiente DEMO, credenciales y acompañamiento técnico;
-- DATAICO publica API, estados pendientes/sincronización y reenvío de documentos existentes, pero todavía falta evidencia pública suficiente para mapear con seguridad una ausencia o `DIAN_NO_ENVIADO` a nuestras clasificaciones peligrosas;
-- Facture continúa habilitado y opera dentro de ESTELA, con FEV/POS visibles comercialmente, pero la documentación técnica pública encontrada es insuficiente para validar el protocolo de ambigüedad.
+La información de candidatos que figura en documentos históricos es contexto de
+investigación, no evidencia de selección ni de integración. Para cerrar F4C se
+requiere evidencia privada y reproducible del candidato elegido.
 
 Fuentes y pendientes: `docs/f4c-evidencia-publica-2026-08-19.md`.
 
@@ -164,11 +198,18 @@ Un 404 aislado nunca equivale automáticamente a `NOT_FOUND_CONCLUSIVE`; un esta
 
 ## Siguiente trabajo
 
-El trabajo funcional interno independiente del proveedor está sustancialmente agotado. El siguiente avance significativo requiere **obtener acceso real F4C**.
+El siguiente avance significativo requiere **obtener y validar evidencia real
+F4C**, empezando por HKA como candidato, sin tratarlo como seleccionado.
 
-Packaging/deployment productivo se mantiene deliberadamente pospuesto: hoy solo existe `Dockerfile.dev`, y crear un worker “productivo” con `FakeFiscalProvider` produciría una falsa sensación de readiness antes de F6C.
+El packaging productivo Docker ya existe en `Dockerfile.production`,
+`docker-compose.production.yml` e `infra/postgres/Dockerfile`. Su diseño está
+documentado, pero build, escaneo de la imagen derivada, publicación, despliegue,
+backup/restore y operación real siguen `UNVERIFIED`; crear un worker productivo
+con `FakeFiscalProvider` produciría una falsa sensación de readiness antes de F6C.
 
-No construir respuestas, códigos, reintentos, XML/PDF ni rate limits específicos de un PT sin sandbox/contrato real.
+No construir respuestas, códigos, reintentos, XML/PDF ni rate limits específicos
+de un PT sin sandbox/contrato real. No declarar CI remoto, producción o
+readiness comercial como verificados sin evidencia del corte correspondiente.
 
 ## F5B / F6C — después de F4C
 

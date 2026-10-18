@@ -4,10 +4,15 @@
 - **Fecha:** 2026-08-18
 - **Reemplaza en arquitectura V1:** partes sustantivas de ADR-001 y ADR-002
 - **Requisitos trazados:** `docs/v1-requisitos.md`
+- **Alineación de producto:** el POS propio es el primer cliente; la misma
+  frontera API puede atender clientes comerciales controlados definidos en
+  `docs/PRODUCT-DEFINITION-V1-FINAL.md`. Esto no autoriza una API pública
+  autogestionada, un SDK público ni un segundo PT.
 
 ## Contexto
 
-V1 es infraestructura fiscal interna del POS propio:
+V1 es el núcleo de la API fiscal comercial multitenant; comienza validándose
+con nuestro POS propio y conserva una única frontera de integración:
 
 ```text
 POS propio → API fiscal propia → 1 PT habilitado → DIAN

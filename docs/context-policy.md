@@ -8,9 +8,10 @@ qué vive en `docs/` y `ADR/`, y qué va solo en comentarios de issues.
 Vive en `docs/` y `ADR/` y se actualiza cuando cambia el proyecto:
 
 - Estructura del repo y ramas: `docs/git-branches.md`, `docs/workflow.md`.
-- Módulos y responsabilidades: `docs/modules.md`.
+- Módulos y responsabilidades: `ADR/ADR-003-arquitectura-v1-monolito-postgres.md` y
+  `docs/SYSTEM-ARCHITECTURE-V1.md`.
 - Estimación y Definition of Done: `docs/estimation-and-definition-of-done.md`.
-- Forma general de trabajar con IA: este doc y `docs/agents/*`.
+- Forma general de trabajar con IA: `AGENTS.md`, este doc y `docs/agents/*`.
 - Decisiones de arquitectura: `ADR/`.
 
 En las sesiones con IA solo se hace referencia (“según docs/workflow.md…”),

@@ -1,8 +1,11 @@
 # API-DIAN — Definición definitiva de producto V1
 
-**Estado:** FROZEN / baseline de producto  
-**Fecha:** 2026-08-19  
+**Estado:** `FROZEN` / baseline de producto aprobado
+**Fecha de aprobación:** 2026-10-18
 **Autoridad:** este documento define qué producto se construye en V1.  
+**Relación histórica:** supersede como autoridad de producto a los baselines
+anteriores que describían una API exclusivamente interna para el POS; esos
+documentos se conservan como `HISTORICAL`.
 
 > Si una decisión técnica, implementación existente o documento anterior contradice este baseline de producto, primero se debe revisar la contradicción contra este documento antes de continuar construyendo.
 
@@ -10,9 +13,11 @@
 
 ## 1. Producto en una frase
 
-**API-DIAN es un servicio fiscal backend para software comercial colombiano que convierte operaciones de venta de un POS en documentos fiscales electrónicos, controla su ciclo de vida y entrega al sistema comercial un resultado simple, confiable y trazable, utilizando inicialmente un único Proveedor Tecnológico habilitado como capa regulada frente a la DIAN.**
+**API-DIAN es una API fiscal comercial multitenant para software colombiano de ERP, POS, SaaS e integradores: convierte operaciones comerciales en documentos fiscales electrónicos, controla su ciclo de vida y entrega un resultado simple, confiable y trazable, utilizando inicialmente un único Proveedor Tecnológico habilitado como capa regulada frente a la DIAN.**
 
-No es un ERP, un sistema contable ni inicialmente una API pública para terceros.
+No es un ERP, un sistema contable ni un reemplazo del software comercial. Es un
+producto API comercial con acceso controlado; que el acceso no sea
+autogestionado o público en el MVP no cambia su naturaleza comercial.
 
 ---
 
@@ -34,15 +39,23 @@ El producto no se limita a "enviar una factura". Su valor está en hacer **prede
 
 ## 3. Cliente y consumidor inicial
 
-### Cliente comercial inicial
+### Mercado y clientes objetivo
 
-Comercios colombianos que utilizan nuestro POS de venta rápida.
+Software y operadores colombianos de ERP, POS, SaaS e integradores que necesitan
+fiscalidad electrónica multiempresa.
 
-### Consumidor técnico inicial
+### Primer cliente y caso de validación
 
-Nuestro propio POS.
+Nuestro propio POS de venta rápida. El POS es el primer cliente para validar el
+core, no una exclusión de los demás clientes objetivo.
 
-### Expansión futura posible
+### Acceso comercial del MVP
+
+El MVP puede ofrecerse a clientes comerciales seleccionados mediante onboarding,
+contrato y límites operativos explícitos. No incluye todavía una plataforma
+self-service abierta.
+
+### Expansión posterior posible
 
 Solo después de probar demanda, operación y capacidad real:
 
@@ -52,13 +65,16 @@ Solo después de probar demanda, operación y capacidad real:
 - casas de software;
 - desarrolladores.
 
-V1 **no nace como API pública para desarrolladores**.
+Los webhooks de estado/resultado para consumidores autorizados forman parte del
+MVP. El SDK público y el onboarding totalmente autogestionado quedan fuera hasta
+contar con evidencia comercial y operativa suficiente.
 
 ---
 
-## 4. Qué compra realmente el comercio
+## 4. Qué compra realmente el cliente comercial
 
-El comercio compra la capacidad de completar de forma confiable este flujo:
+El cliente comercial compra la capacidad de ofrecer a sus comercios/tenants un
+flujo fiscal confiable:
 
 ```text
 vender
@@ -69,19 +85,21 @@ vender
 → continuar operando ante fallos externos
 ```
 
-Durante la primera etapa, el producto comercial se vende conceptualmente como:
+Para el POS propio, la primera integración se expresa conceptualmente como:
 
 ```text
 POS + capacidad fiscal
 ```
 
-La API podrá convertirse más adelante en producto independiente si existe demanda real.
+La API es el producto comercial desde V1. El POS propio es su primer cliente;
+no es una demostración de que la API sea solamente interna.
 
 ---
 
-## 5. Alcance funcional V1
+## 5. Alcance funcional del MVP V1
 
-V1 cubre únicamente el núcleo fiscal necesario para operar desde nuestro POS:
+V1 cubre el núcleo fiscal comercial común necesario para operar desde el POS
+propio y, bajo acceso controlado, desde ERP/POS/SaaS/integradores:
 
 1. Factura Electrónica de Venta — FEV.
 2. Nota Crédito.
@@ -92,9 +110,11 @@ V1 cubre únicamente el núcleo fiscal necesario para operar desde nuestro POS:
 7. Consulta del estado de una operación fiscal.
 8. Recuperación del XML validado cuando corresponda.
 9. Recuperación de representación gráfica/PDF disponible.
-10. Historial y trazabilidad de cada operación.
-11. Protección frente a emisiones duplicadas.
-12. Operación multiempresa.
+10. Reconciliación y recuperación operativa de operaciones ambiguas o interrumpidas.
+11. Historial, auditoría y trazabilidad de cada operación.
+12. Protección frente a emisiones duplicadas mediante idempotencia.
+13. Operación multiempresa con aislamiento por tenant.
+14. Webhooks de estado/resultado para consumidores autorizados.
 
 Este es el alcance funcional de producto V1.
 
@@ -206,6 +226,11 @@ No necesitamos convertirnos en Proveedor Tecnológico para lanzar V1.
 
 V1 utiliza **exactamente un PT**.
 
+**HKA es el candidato inicial de validación, no un proveedor seleccionado.** Su
+sandbox, contrato, credenciales, semántica de estados, reconciliación,
+soportes, SLA y precio permanecen `UNVERIFIED` hasta obtener evidencia real y
+reproducible.
+
 No se construyen inicialmente:
 
 - selección automática entre proveedores;
@@ -234,9 +259,8 @@ Queda explícitamente fuera:
 - contabilidad;
 - inventario como responsabilidad de API-DIAN;
 - CRM;
-- API pública para terceros;
-- SDK públicos;
-- webhooks públicos;
+- API pública autogestionada para terceros;
+- SDK público;
 - segundo PT;
 - failover multi-PT;
 - conexión directa DIAN;
@@ -361,14 +385,18 @@ La complejidad se incorpora cuando resuelve un problema demostrado.
 Modelo conceptual inicial:
 
 ```text
-Comercio
-   ↓ paga
-POS + servicio fiscal
+ERP/POS/SaaS/integrador
+          ↓ paga
+API fiscal comercial multitenant
+          ↑
+POS propio como primer cliente
 ```
 
 El precio exacto y estructura definitiva de planes no forman parte de este baseline y deben validarse comercialmente antes del lanzamiento.
 
-Una API externa independiente será una expansión posterior, no una obligación de V1.
+El producto es comercial desde V1; el POS propio es el primer cliente y no el
+único mercado. La apertura self-service y los canales de integración públicos
+son expansiones posteriores, no obligaciones del MVP.
 
 ---
 
@@ -406,15 +434,15 @@ La existencia de endpoints o una respuesta HTTP exitosa por sí sola **no** sign
 
 ```text
 V1
-POS propio + API fiscal + 1 PT
+POS propio como primer cliente + API fiscal comercial de acceso controlado + 1 PT
         ↓
 V1.x
 más comercios + mejor operación + automatización
         ↓
 V2 potencial
-API para terceros
+API self-service para terceros
         ↓
-SDK / webhooks / portal desarrolladores
+SDK / portal desarrolladores / canales públicos
         ↓
 otros documentos fiscales
         ↓
@@ -441,18 +469,20 @@ No se debe presentar comercialmente como "API oficial DIAN" ni insinuar que el p
 
 No reabrir durante V1 salvo evidencia nueva fuerte:
 
-1. mercado inicial: comercios colombianos;
-2. consumidor técnico inicial: nuestro POS;
-3. V1 no es API pública;
+1. producto: API fiscal comercial multitenant para ERP, POS, SaaS e integradores;
+2. primer cliente: nuestro POS, sin excluir el mercado comercial;
+3. MVP: FEV, NC, ND, DEE POS y ajustes, con estado, webhooks autorizados,
+   contingencias, idempotencia, auditoría, recuperación/reconciliación y soportes;
 4. V1 usa un Proveedor Tecnológico habilitado;
 5. exactamente un PT inicialmente;
-6. no seremos PT inicialmente;
-7. no habrá integración directa con DIAN en V1;
-8. producto multiempresa;
-9. no habrá forks por cliente;
-10. la incertidumbre es un estado real;
-11. un resultado desconocido nunca autoriza por sí mismo una reemisión;
-12. el producto debe poder ser operado inicialmente por una sola persona.
+6. HKA es candidato inicial, no selección validada;
+7. no seremos PT inicialmente;
+8. no habrá integración directa con DIAN en V1;
+9. producto multiempresa con aislamiento por tenant;
+10. no habrá forks por cliente;
+11. la incertidumbre es un estado real;
+12. un resultado desconocido nunca autoriza por sí mismo una reemisión;
+13. el producto debe poder ser operado inicialmente por una sola persona.
 
 ---
 
@@ -461,11 +491,11 @@ No reabrir durante V1 salvo evidencia nueva fuerte:
 A partir de la congelación de este documento, el proceso oficial es:
 
 ```text
-1. PRODUCT-DEFINITION-V1-FINAL.md        ← congelado
+1. PRODUCT-DEFINITION-V1-FINAL.md        ← `FROZEN` / autoridad aprobada
         ↓
-2. SYSTEM-ARCHITECTURE-V1.md             ← siguiente fase
+2. docs/SYSTEM-ARCHITECTURE-V1.md         ← siguiente fase
         ↓
-3. BUILD-PLAN-V1.md
+3. docs/BUILD-PLAN-V1.md
         ↓
 4. Backlog: fases → épicas → historias → tareas
         ↓
@@ -506,7 +536,7 @@ La decisión se tomará comparando el código con este baseline de producto y co
 El siguiente entregable formal es:
 
 ```text
-SYSTEM-ARCHITECTURE-V1.md
+docs/SYSTEM-ARCHITECTURE-V1.md
 ```
 
 Debe derivarse de este producto, no al revés.

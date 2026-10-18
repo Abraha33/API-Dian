@@ -26,6 +26,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Agent governance contract
+        run: node scripts/ci/verify-governance.mjs
+      - name: Agent governance regression probes
+        run: node scripts/ci/verify-governance.test.mjs
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
