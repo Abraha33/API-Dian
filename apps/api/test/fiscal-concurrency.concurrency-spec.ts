@@ -2,7 +2,6 @@ import './env-setup-e2e';
 
 import { ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { jest } from '@jest/globals';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -10,8 +9,6 @@ import {
 import { Pool, type QueryResultRow } from 'pg';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-
-jest.setTimeout(30_000);
 
 const AUTH_TOKEN =
   'adn_v1.aaaaaaaa-0000-4000-8000-000000000001.BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc';

@@ -16,7 +16,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "ignoreDeprecations": "6.0",
-    "types": ["node", "jest"],
+    "types": ["node", "vitest/globals"],
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,

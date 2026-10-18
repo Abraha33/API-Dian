@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { jest } from '@jest/globals';
+import { vi } from 'vitest';
 import type {
   FiscalProvider,
   ProviderArtifact,
@@ -74,8 +74,8 @@ const query = {
 };
 
 function driver(provider = new StubProvider()) {
-  const arrange = jest.fn(() => Promise.resolve());
-  const cleanup = jest.fn(() => Promise.resolve());
+  const arrange = vi.fn(() => Promise.resolve());
+  const cleanup = vi.fn(() => Promise.resolve());
   const value: ProviderContractTestDriver = { provider, arrange, cleanup };
   return { value, provider, arrange, cleanup };
 }
