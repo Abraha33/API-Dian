@@ -9,6 +9,9 @@ __pycache__/
 .DS_Store
 .snapshots/
 
+# HKA DEMO credentials are local-only and must never be versioned.
+validation/pt/hka-demo/.env
+
 # Supabase CLI (local: supabase start / branches)
 supabase/.branches
 supabase/.temp

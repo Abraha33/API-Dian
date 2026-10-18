@@ -1,15 +1,14 @@
 # Requisitos V1 — API-DIAN
 
-**Fecha de corte:** 2026-10-18
+**Fecha de corte:** 2026-08-18
 **Estado:** Cerrado para arquitectura  
-**Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`
+**Autoridad de producto:** `docs/f0-producto-v1-validado-2026-08-18.md`
 
 > “Cerrado para arquitectura” significa que el alcance funcional y los invariantes de V1 están suficientemente definidos para diseñar la arquitectura. No autoriza producción: existen gates regulatorios, contractuales, de seguridad y recuperación que deben cerrarse antes del piloto.
 
 ## 1. Propósito y frontera
 
-V1 es una API fiscal comercial multitenant para ERP, POS, SaaS e integradores
-colombianos. El primer consumidor y caso de validación es el POS propio.
+V1 es una API fiscal comercial multitenant para comercio colombiano cuyo primer consumidor es el POS propio.
 
 ```text
 POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
@@ -21,16 +20,13 @@ V1 no intenta reemplazar al PT ni convertirse en un proxy ciego.
 
 ## 2. Actores V1
 
-- **POS propio:** primer consumidor técnico y caso de validación.
-- **ERP/POS/SaaS/integrador autorizado:** consumidor comercial controlado por
-  onboarding y contrato; no implica acceso público autogestionado.
+- **POS propio:** consumidor técnico primario.
 - **Empresa/tenant:** sujeto lógico que origina y consulta operaciones fiscales.
 - **API fiscal propia:** autoridad del estado interno y evidencia de integración.
 - **Proveedor Tecnológico:** único proveedor fiscal externo de V1.
 - **Operador:** inicialmente una sola persona; por ello el sistema debe minimizar intervención manual y ambigüedad operativa.
 
-No existe un integrador público autogestionado como actor V1; los clientes
-comerciales controlados sí pertenecen al alcance del MVP.
+No existe “integrador público externo” como actor V1.
 
 ## 3. Alcance fiscal V1
 
@@ -329,9 +325,9 @@ La implementación V1 no se considera lista si no demuestra, al menos:
 
 Quedan explícitamente fuera:
 
-- API pública autogestionada para terceros;
+- API pública para terceros;
 - SDK público;
-- webhooks públicos autogestionados;
+- webhooks públicos;
 - Documento Soporte;
 - recepción/eventos;
 - nómina electrónica;

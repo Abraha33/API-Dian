@@ -1,5 +1,7 @@
 # API-DIAN — Arquitectura definitiva del sistema V1
 
+API fiscal comercial multitenant para comercio colombiano.
+
 **Estado:** FROZEN / baseline de arquitectura  
 **Fecha:** 2026-08-19  
 **Autoridad de producto:** `docs/PRODUCT-DEFINITION-V1-FINAL.md`  
@@ -12,14 +14,6 @@
 ## 1. Resultado de la revisión crítica
 
 La arquitectura adelantada en ADR-003..009 es, en lo esencial, compatible con el producto congelado y **se conserva**. No existe evidencia que justifique rehacerla con microservicios, brokers, Kubernetes, múltiples bases, múltiples PT o una plataforma IAM compleja.
-
-El POS propio es el primer cliente de esta **API fiscal comercial multitenant**
-y de esta arquitectura, no su límite de
-producto. La API puede recibir operaciones de ERP, POS, SaaS e integradores
-autorizados bajo el mismo aislamiento por tenant, autenticación y contrato
-interno. El MVP no incluye una superficie pública autogestionada ni un SDK
-público; los webhooks autorizados por contrato no cambian la autoridad del
-estado, que continúa en PostgreSQL.
 
 Se introducen dos aclaraciones arquitectónicas que deben quedar explícitas antes de continuar:
 
@@ -89,8 +83,7 @@ V1 no incorpora:
 
 ```text
                      ┌──────────────────────┐
-                     │ POS propio / clientes│
-                     │     autorizados     │
+                     │      POS propio      │
                      └──────────┬───────────┘
                                 │ TLS + credential
                                 ▼

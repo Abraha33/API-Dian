@@ -22,6 +22,16 @@ En caso de conflicto, aplicar en este orden: (1) solicitud y alcance explícitos
 - **REQUIERE AUTORIZACIÓN:** ampliar write-set; cambiar contratos, esquema, migraciones, dependencias, CI, despliegue, configuración productiva o integraciones externas; leer o usar secretos; ejecutar acciones remotas, destructivas o costosas.
 - **PROHIBIDO:** inventar comportamiento de DIAN, HKA o cualquier proveedor; borrar o reescribir historial, migraciones o trabajo ajeno; exponer secretos; afirmar que algo está listo sin evidencia; hacer commit, push, merge o deploy sin autorización explícita.
 
+## Gobernanza Git, ramas y worktrees
+
+- `dev` es la rama autoritaria de integración diaria y la base de los PR de trabajo.
+- `main` es la rama de release; no se usa para desarrollo diario.
+- No crear ramas permanentes por ambiente (`dev`, `staging`, `prod`) ni por versión. Los ambientes se configuran por despliegue y las versiones se marcan con tags `vMAJOR.MINOR.PATCH`.
+- Las ramas auxiliares deben ser de vida corta y seguir `feature/`, `fix/`, `chore/`, `docs/`, `maintenance/`, `research/` o `dependabot/`; cada una debe tener un objetivo y PR identificables.
+- No hacer push directo a `dev` o `main`; respetar el ruleset remoto, los checks obligatorios y la revisión requerida.
+- Antes de usar un worktree, ejecutar `git worktree list`; no crear worktrees duplicados para la misma rama y no eliminar worktrees con trabajo sin respaldo y autorización.
+- Al cerrar un PR, clasificar la rama como activa, respaldo o obsoleta; solo eliminar una rama obsoleta después de comprobar que su contenido está preservado.
+
 ## Evidencia y dominio fiscal
 
 - No inventar endpoints, códigos, estados, certificados, reglas de validación, respuestas ni requisitos de DIAN/HKA. Si falta una fuente oficial o contrato aprobado, marcar **NO VERIFICADO** y detener la integración.

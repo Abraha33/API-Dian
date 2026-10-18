@@ -1,22 +1,16 @@
 # Contexto de sesión — API-DIAN
 
-**Estado:** `ACTIVE` — contexto de continuidad vigente
-**Corte:** 2026-10-18
-**Rama de trabajo:** `chore/agent-governance-2026-10-18`
-**No verificado en este corte:** código, builds, CI remoto, proveedor y readiness; esta actualización es documental.
+**Estado:** ACTIVE
+**Producto:** API fiscal comercial multitenant para comercio colombiano.
+
+**Corte:** 2026-08-19
+**Rama consolidada:** `dev`
 
 ## 1. Autoridades vigentes
 
 ```text
-AGENTS.md                                           ACTIVE   cómo puede trabajar un agente
-docs/PRODUCT-DEFINITION-V1-FINAL.md              FROZEN   qué se construye
-README.md                                         ACTIVE   entrada operativa
-ROADMAP.md                                        ACTIVE   orden y gates
-docs/CONTEXT-AUDIT-2026-10-18.md                 HISTORICAL auditoría de corte
-docs/ENVIRONMENT-VERSION-AUDIT.md                 HISTORICAL auditoría de corte
-docs/DOCKER-PRODUCTION.md                         CURRENT   packaging y límites Docker
+docs/PRODUCT-DEFINITION-V1-FINAL.md              ✅ qué se construye
 docs/SYSTEM-ARCHITECTURE-V1.md                   ✅ cómo se construye
-docs/v1-requisitos.md                             FROZEN   requisitos del MVP
 docs/BUILD-PLAN-V1.md                            ✅ orden de construcción
 docs/BACKLOG-V1.md                               ✅ obligaciones/tareas
 docs/DEPENDENCY-MAP-V1.md                        ✅ dependencias/gates
@@ -27,32 +21,15 @@ docs/PROCESS-VALIDATION-EXTERNAL-2026-08-19.md    ✅ validación externa del m�
 docs/PROCESS-GATES-EXTERNAL-VALIDATION-V1.md      ✅ addendum obligatorio de ejecución
 ```
 
-`docs/f0-producto-v1-validado-2026-08-18.md` queda conservado como
-`HISTORICAL`/`SUPERSEDED` respecto de la autoridad de producto: describía un
-alcance exclusivamente interno para el POS. No se borra ni se reescribe.
-
 Jerarquía ante conflicto:
 
 ```text
-solicitud explícita del usuario
-→ AGENTS.md / reglas de seguridad del entorno
-→ producto > arquitectura > build plan
-→ backlog/dependencias/DoD + gates externos
-→ plan diario > implementación existente
+producto > arquitectura > build plan > backlog/dependencias/DoD + gates externos > plan diario > implementación existente
 ```
 
 ## 2. Estado actual
 
-La definición de producto está aprobada y congelada como **API fiscal comercial
-multitenant para ERP, POS, SaaS e integradores**, con el POS propio como primer
-cliente. El MVP incluye FEV, NC, ND, DEE POS y ajustes, más estado, webhooks
-autorizados, contingencias, idempotencia, auditoría, recuperación/reconciliación,
-soportes y aislamiento multiempresa.
-
-La planificación previa a implementación queda como contexto de ejecución y el
-proceso de desarrollo conserva su estado **APROBADO CON AJUSTES**; no implica
-que el runtime, CI remoto o la integración con un PT estén verificados en este
-corte.
+La planificación previa a implementación está cerrada y el **proceso de desarrollo quedó APROBADO CON AJUSTES tras contraste externo**.
 
 Auditoría del código existente sobre 59 jornadas técnicas:
 
@@ -125,11 +102,7 @@ Invariante superior:
 DESCONOCIDO != REEMITIR
 ```
 
-V1: FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado,
-webhooks de resultado para consumidores autorizados, XML/PDF, idempotencia,
-auditoría, recuperación/reconciliación y multiempresa. API comercial de acceso
-controlado; no self-service público, SDK público, segundo PT ni DIAN directa. El
-POS propio es el primer cliente, no el único mercado.
+V1: FEV, NC, ND, DEE POS, ajuste POS, contingencias indispensables, estado, XML/PDF, trazabilidad y multiempresa. No API pública, no segundo PT, no DIAN directa, no forks por cliente.
 
 Arquitectura: monolito modular Node 24 + TypeScript + NestJS/Fastify; PostgreSQL autoridad/trabajo durable; `pg` y SQL explícito crítico; tenant credential + RLS + FK tenant-safe; roles API/worker separados; `provider_attempt` antes del side effect; UNKNOWN→reconcile; evidencia append-only; kill switches; API sin secreto PT.
 
@@ -154,18 +127,6 @@ Existe evidencia ejecutable para gran parte del núcleo:
 
 No rehacer estas piezas por estética. Volver a probarlas después de cambios que puedan afectarlas.
 
-### Hardening Docker reciente
-
-El árbol local contiene packaging productivo en `Dockerfile.production`,
-`docker-compose.production.yml` e `infra/postgres/Dockerfile`, además de un
-workflow Trivy para escanear las imágenes API y PostgreSQL. La API productiva
-queda modelada como no-root y el Compose exige imágenes inmutables, red privada
-para PostgreSQL, healthchecks, capacidades reducidas y secretos por archivo.
-Esto está **VERIFICADO por inspección del repositorio** y no por ejecución de
-imágenes: se validó el build de la aplicación Node, pero no se hicieron builds
-ni escaneos Docker, despliegues o pruebas de backup/restore; la imagen derivada
-PostgreSQL y la readiness productiva siguen `UNVERIFIED`.
-
 ## 6. Huecos internos prioritarios
 
 Orden de reanudación recomendado:
@@ -189,23 +150,18 @@ Jornadas 39–44 y 56 dependen de PT real/evidencia externa.
 Orden racional de prueba actualmente documentado:
 
 ```text
-1. HKA — candidato inicial, no validado
+1. HKA
 2. DATAICO
 3. Facture / ESTELA
 ```
 
 No es selección final. `PROVEN_NOT_SENT` y `NOT_FOUND_CONCLUSIVE` requieren evidencia real; 404 o texto “no enviado” no autorizan reemisión por nombre.
 
-Además, antes de B9, B13 y B14 se debe revalidar normatividad/anexos DIAN
-vigentes y condición actual del PT elegido. HKA, sus credenciales, sandbox,
-contrato y semántica de reconciliación permanecen `UNVERIFIED`.
+Además, antes de B9, B13 y B14 se debe revalidar normatividad/anexos DIAN vigentes y condición actual del PT elegido.
 
 ## 8. Próxima acción inmediata
 
-**No declarar readiness ni empezar una frontera externa hasta verificar el
-baseline correspondiente.** El build, TypeScript, lint sin correcciones, unit,
-provider-contract y governance pasaron localmente; E2E y concurrencia quedaron
-bloqueados por PostgreSQL local no disponible.
+**No empezar J08 hasta verificar que el baseline actual sigue verde localmente.**
 
 Secuencia:
 
@@ -217,7 +173,7 @@ sin modificar código
 → si verde, iniciar J08 bajo DoD + gates externos
 ```
 
-La verificación baseline debe incluir como mínimo build, lint, unit, migraciones/roles, e2e, concurrencia y provider-contract harness, reutilizando los comandos/documentación ya existentes. Estos comandos son gates de una fase autorizada; `AGENTS.md` exige autorización explícita antes de ejecutarlos después de cambios y prohíbe usar credenciales productivas.
+La verificación baseline debe incluir como mínimo build, lint, unit, migraciones/roles, e2e, concurrencia y provider-contract harness, reutilizando los comandos/documentación ya existentes.
 
 ## 9. Uso eficiente de Codex/modelos
 
@@ -237,8 +193,8 @@ No cargar todo el repositorio.
 
 ## 10. Próximo hito
 
-1. verificar el baseline local y remoto con evidencia fechada;
-2. cerrar la validación del PT candidato bajo los gates externos;
+1. baseline local verde;
+2. J08 cerrado bajo `DEFINITION-OF-DONE-V1.md` + `PROCESS-GATES-EXTERNAL-VALIDATION-V1.md`;
 3. continuar por los huecos prioritarios en orden de dependencias.
 
 **DONE significa demostrado, no declarado.**

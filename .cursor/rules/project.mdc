@@ -5,13 +5,10 @@ alwaysApply: true
 
 # API-Dian (Cursor)
 
-Las reglas generales y la autoridad del proyecto están en [`AGENTS.md`](../../AGENTS.md). Leerlas y cumplirlas antes de actuar; no duplicarlas aquí.
-
-## Reglas específicas de Cursor
-
-- Esta regla tiene `alwaysApply: true`: se aplica a toda sesión de Cursor en este repositorio.
-- Usar el contexto de Cursor para inspeccionar y editar solo el alcance autorizado por la solicitud actual. No convertir sugerencias del editor en autorización.
-- Mantener separados los cambios de código, configuración, documentación y migraciones; si una tarea cruza esos límites, pedir autorización antes de ampliar el write-set.
-- Al entregar, incluir rutas de archivos y evidencia concreta del cambio. Marcar explícitamente lo **VERIFICADO**, **INFERIDO** y **NO VERIFICADO**, conforme a `AGENTS.md`.
-- Fuente técnica: cuando la tarea lo requiera, consultar los ADRs y documentación canónica del repositorio antes de asumir decisiones de stack, módulos o ramas. Para el esquema, `supabase/migrations/` es canónico cuando Supabase exista.
-- Mantener documentación nueva en `docs/` en español claro y código/nombres técnicos según las convenciones existentes; no alterar documentación de producto salvo que el alcance lo pida.
+- **Qué es:** API SaaS multi-tenant para facturación electrónica DIAN (Colombia); middleware ERP → nuestra API → integrador API / canal de salida. Ver `README.md` y `ROADMAP.md`.
+- **Stack:** Fuente de verdad: `ADR/ADR-001-stack-tecnologico.md` (**Aprobado**; ver fecha en el ADR). Estructura de módulos: `ADR/ADR-002-estructura-modulos.md`. Código NestJS en `apps/api/`. No asumir decisiones no escritas en ADR/README.
+- **Git:** Ramas largas solo `main` y `dev`. Trabajo en `feature/...` desde `dev` → PR a `dev`. Detalle: `docs/git-branches.md`.
+- **Base de datos:** Cuando exista Supabase, el esquema versionado vive en `supabase/migrations/` (canónico). No duplicar esquema “a mano” fuera de migraciones sin acuerdo explícito.
+- **Alcance:** Cambios acotados al ticket o tarea; no refactors colaterales ni archivos no pedidos.
+- **Gobernanza:** `AGENTS.md` es obligatorio y prevalece sobre estas reglas cuando exista conflicto; respetar sus permisos, límites y requisitos de evidencia.
+- **Idioma:** Documentación nueva en `docs/` en español claro; código y nombres técnicos según convención del repo.

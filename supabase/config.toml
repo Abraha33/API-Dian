@@ -369,7 +369,9 @@ deno_version = 2
 # secret_key = "env(SECRET_VALUE)"
 
 [analytics]
-enabled = true
+# Analytics no es necesario para el runtime fiscal local y requiere acceso al
+# Docker socket; mantenerlo desactivado evita un contenedor Vector inestable.
+enabled = false
 port = 54427
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"

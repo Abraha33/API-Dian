@@ -1,17 +1,13 @@
 # API-DIAN
 
-API fiscal comercial multitenant para software colombiano de ERP, POS, SaaS e
-integradores. El POS propio es el primer cliente y caso de operación; no es una
-exclusión del producto comercial.
+API fiscal comercial multitenant para comercio colombiano.
+
+**Estado:** ACTIVE
 
 ## Estado
 
-**Estado documental:** `ACTIVE` — entrada operativa del repositorio
-**Corte:** 2026-10-18
-**Rama de trabajo:** `chore/agent-governance-2026-10-18`
-**Definición de producto:** `FROZEN` — aprobada en [`docs/PRODUCT-DEFINITION-V1-FINAL.md`](./docs/PRODUCT-DEFINITION-V1-FINAL.md)
-**Verificación local:** build, TypeScript, lint sin correcciones, unit, provider-contract y governance `PASS`; E2E y concurrencia `BLOCKED` por PostgreSQL local no disponible.
-**CI remoto, auditoría de dependencias, Docker security y proveedor:** `UNVERIFIED`/`BLOCKED` en este corte.
+**Corte:** 2026-08-19
+**Rama consolidada:** `dev`
 
 ```text
 F0–F3  producto/requisitos/arquitectura/datos    ✅
@@ -20,43 +16,26 @@ F4C    sandbox/contrato PT                        ▶ bloqueo externo
 F5A    pruebas/runbooks genéricos                 ✅
 F6A    core SQL + canonicalización + fake         ✅
 F6B    auth/repos/worker fake vertical slice      ✅
-F6H    hardening interno + Docker                  ✅
 F6C    adapter PT real                            ⏸ depende F4C
 ```
 
-Las etiquetas de fase conservan el estado documental del baseline anterior; no
-son una reejecución completa de todos los gates en este corte. Los gates locales
-indicados arriba sí fueron ejecutados; CI remoto y PT permanecen `UNVERIFIED`.
-
 Fuentes principales:
 
-- [`docs/PRODUCT-DEFINITION-V1-FINAL.md`](./docs/PRODUCT-DEFINITION-V1-FINAL.md) — autoridad de producto V1 (`FROZEN`)
 - [`docs/f0-producto-v1-validado-2026-08-18.md`](./docs/f0-producto-v1-validado-2026-08-18.md)
 - [`docs/v1-requisitos.md`](./docs/v1-requisitos.md)
 - ADR-003..009
 - [`docs/f6-checkpoint-01-core-persistence.md`](./docs/f6-checkpoint-01-core-persistence.md)
 - [`docs/f6-checkpoint-02-fake-vertical-slice.md`](./docs/f6-checkpoint-02-fake-vertical-slice.md)
 - [`docs/runbook-fiscal-worker-v1.md`](./docs/runbook-fiscal-worker-v1.md)
-- [`docs/DOCKER-PRODUCTION.md`](./docs/DOCKER-PRODUCTION.md) — packaging productivo y límites (`UNVERIFIED` sin build/deploy)
 - [`ROADMAP.md`](./ROADMAP.md)
 
-## Producto comercial V1 — MVP
+## Producto V1
 
 ```text
-ERP/POS/SaaS/integrador → API fiscal comercial multitenant
-                                  → 1 Proveedor Tecnológico habilitado → DIAN
+POS propio → API fiscal propia → 1 Proveedor Tecnológico habilitado → DIAN
 ```
 
-El POS propio es el primer cliente y la primera superficie de validación. El
-MVP cubre FEV, Nota Crédito, Nota Débito, DEE POS y ajustes del DEE POS, con
-estado, webhooks de resultado para consumidores autorizados, contingencias,
-idempotencia, auditoría, recuperación/reconciliación, soportes y operación
-multiempresa. El acceso comercial puede ser controlado por onboarding y
-contrato; eso no implica una API self-service ni un SDK público en el MVP.
-
-HKA es candidato de validación, no proveedor seleccionado ni integrado. Su
-sandbox, contrato, credenciales, protocolo de reconciliación y condiciones
-operativas siguen `UNVERIFIED`.
+V1 inicia como una API comercial multitenant de acceso controlado para el POS propio; no se expone como API pública general.
 
 Regla crítica:
 
@@ -115,20 +94,13 @@ Detalle: [`docs/f6-checkpoint-02-fake-vertical-slice.md`](./docs/f6-checkpoint-0
 
 ## Gate PT
 
-HKA es el candidato inicial para validación; la candidatura no equivale a
-selección ni integración.
+Shortlist: The Factory HKA, DATAICO; Facture como reserva.
 
-No se implementa adapter real hasta disponer de sandbox/contrato y demostrar
-cómo se reconcilia un resultado ambiguo. Un 404 por sí solo no autoriza
-reemitir. Cualquier resultado actual del PT o de CI remoto que no tenga
-evidencia reproducible en este corte debe tratarse como `UNVERIFIED`.
+No se implementa adapter real hasta disponer de sandbox/contrato y demostrar cómo se reconcilia un resultado ambiguo. Un 404 por sí solo no autoriza reemitir.
 
 ## Siguiente trabajo
 
-El gate externo pendiente es F4C: validar HKA o el siguiente candidato con
-evidencia real. Mientras se resuelve, solo se avanza trabajo independiente del
-proveedor y se mantiene el core POS como primer cliente, sin inventar
-comportamiento del PT ni declarar readiness comercial o productiva.
+El gran gate funcional pendiente es F4C. Mientras se resuelve, solo se avanza trabajo independiente del proveedor: observabilidad, runbooks, carga/concurrencia, limpieza técnica y harness del adapter sin inventar comportamiento del PT.
 
 ## Setup local recomendado — Windows PowerShell
 
